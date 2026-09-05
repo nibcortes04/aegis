@@ -1,0 +1,23 @@
+{
+  "agy-powerpack": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./scripts/agy_hook_handler.py PreToolUse",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 ./scripts/agy_hook_handler.py Stop",
+        "timeout": 10
+      }
+    ]
+  }
+}

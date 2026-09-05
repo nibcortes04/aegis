@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Node / Web
+node_modules/
+.npm/
+.pnpm/
+
+# Backups & Local overrides
+*.bak
+*.tmp
+*.log
+.DS_Store
+.env
+.env.local
+
+# Worktrees & Temporary agent files
+.worktrees/
+worktrees/
+
