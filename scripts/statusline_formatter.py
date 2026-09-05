@@ -103,8 +103,13 @@ def record_session_mode(conv_id, cycle_mode):
     try:
         data = {}
         if os.path.isfile(cache_file):
-            with open(cache_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            try:
+                with open(cache_file, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    if content:
+                        data = json.loads(content)
+            except Exception:
+                data = {}
         data[conv_id] = {
             "cycle_mode": cycle_mode,
             "timestamp": time.time()
@@ -125,10 +130,12 @@ def get_session_mode(conv_id):
     try:
         if os.path.isfile(cache_file):
             with open(cache_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                entry = data.get(conv_id)
-                if entry and isinstance(entry, dict):
-                    return entry.get("cycle_mode", "accept-edits")
+                content = f.read().strip()
+                if content:
+                    data = json.loads(content)
+                    entry = data.get(conv_id)
+                    if entry and isinstance(entry, dict):
+                        return entry.get("cycle_mode", "accept-edits")
     except Exception:
         pass
     return "accept-edits"

@@ -95,8 +95,11 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
   - [ ] Native `vps-production` profile for remote servers managing production containers (n8n, Chatwoot, Caddy).
   - [ ] Enforces double confirmation interactively on any docker compose or volume operations.
 
-- [ ] **[EPIC-14](https://github.com/nibcortes04/aegis/issues/6): Official Antigravity Plugin Registry Packaging**
-  - [ ] Prepare distribution bundle and automated release pipeline for `agy plugin publish`.
+- [x] **[EPIC-14](https://github.com/nibcortes04/aegis/issues/6): Official Antigravity Plugin Registry Packaging**
+  - [x] Implement bundle creation script (`scripts/package_plugin.py`).
+  - [x] Add `.github/workflows/release.yml` triggering on tag `v*`.
+  - [x] Validate manifest against Antigravity plugin specification.
+  - [x] Generate SHA-256 checksums, dual archive distribution (`.tar.gz` and `.zip`), and post-packaging self-test.
 
 ---
 
