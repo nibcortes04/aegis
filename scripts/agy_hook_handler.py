@@ -14,51 +14,35 @@ import re
 import subprocess
 import sqlite3
 
-def ring_terminal_bell():
-    """Envía la señal de campana \a y OSC notifications a /dev/tty."""
-    try:
-        with open("/dev/tty", "w") as tty:
-            # BEL (ASCII 7) activa la campanita en Konsole / iTerm / Orca tab
-            tty.write("\a")
-            # OSC 9 y OSC 777 para emuladores modernos
-            tty.write("\033]9;AGY: Notificación\007")
-            tty.write("\033]777;notify;AGY;Notificación\007")
-            tty.flush()
-    except Exception:
-        try:
-            sys.stderr.write("\a")
-            sys.stderr.flush()
-        except Exception:
-            pass
-
-def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="dialog-information"):
-    """
-    Envía notificación nativa mediante notify-send con auto-cierre en milisegundos.
-    Usa -u normal y -h int:transient:1 para evitar que quede pegada en KDE Plasma.
-    """
-    try:
-        subprocess.run(
-            [
-                "notify-send",
-                "-a", "AGY",
-                "-u", urgency,
-                "-t", str(timeout_ms),
-                "-h", "int:transient:1",
-                "-i", icon,
-                title,
-                message
-            ],
-            capture_output=True,
-            timeout=1
-        )
-    except Exception:
-        pass
+# Importar detector de entorno y abstracciones multiplataforma
+try:
+    from env_detector import (
+        ring_terminal_bell,
+        send_desktop_notification,
+        is_path_in_workspace,
+        get_summaries_db_path,
+        get_os_type,
+        get_surface_type,
+    )
+except ImportError:
+    # Fallback si se ejecuta fuera del directorio scripts/
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from env_detector import (
+        ring_terminal_bell,
+        send_desktop_notification,
+        is_path_in_workspace,
+        get_summaries_db_path,
+        get_os_type,
+        get_surface_type,
+    )
 
 def get_session_title(conversation_id):
-    """Consulta el título o preview de la conversación en SQLite."""
+    """Consulta el título o preview de la conversación en SQLite de forma portable."""
     if not conversation_id:
         return "Sesión activa"
-    db_path = "/home/n_n/.gemini/antigravity-cli/conversation_summaries.db"
+    db_path = get_summaries_db_path()
+    if not os.path.isfile(db_path):
+        return f"Sesión {conversation_id[:8]}"
     try:
         con = sqlite3.connect(db_path, timeout=0.08)
         cur = con.cursor()
@@ -177,8 +161,9 @@ def handle_pre_tool_use(payload, raw_input):
     # 2. Herramientas de edición de archivos en workspace
     if tool_name in ("write_to_file", "replace_file_content"):
         target_file = args.get("TargetFile", "")
-        # Si el archivo está fuera del home / workspace -> Pedir confirmación con notificación temporal
-        if target_file.startswith("/") and not target_file.startswith("/home/n_n/"):
+        workspace_root = payload.get("cwd") or payload.get("workspace", {}).get("current_dir")
+        # Si el archivo está fuera del workspace o del home del usuario -> Pedir confirmación
+        if not is_path_in_workspace(target_file, workspace_root):
             ring_terminal_bell()
             session_title = get_session_title(conv_id)
             send_desktop_notification(

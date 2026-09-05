@@ -35,12 +35,12 @@
       <div class="hero-badge">🚀 v1.0.0 Ready for Production</div>
       <h1 class="hero-title">Supercharge Google <br><span class="gradient-text">Antigravity CLI</span></h1>
       <p class="hero-subtitle">
-        Smart Auto Mode without approval lag, terminal tab notification bells, auto-dismissing desktop alerts, a Claude Code-grade 3-line statusline, and cross-platform session continuity.
+        Smart Auto Mode without approval lag, cross-platform notifications (Linux, macOS, Windows), surface-aware execution (CLI, IDE, Desktop App), a Claude Code-grade 3-line statusline, and mobile Android PWA continuity.
       </p>
 
       <div class="install-box">
         <span class="prompt-sym">$</span>
-        <code id="install-cmd">git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack && ~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh</code>
+        <code id="install-cmd">git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack && python3 ~/.gemini/antigravity-cli/plugins/agy-powerpack/install.py</code>
         <button class="copy-btn" id="copy-btn" title="Copy to clipboard">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -179,6 +179,22 @@
             Standardized PR template and CI gate designed for both human engineers and autonomous agents (Codex, Claude, AGY) to contribute with zero merge regressions.
           </p>
         </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🌐</div>
+          <h3>Cross-Platform (Linux, macOS, Windows)</h3>
+          <p>
+            Native adaptors for KDE Konsole, Orca, macOS AppleScript/terminal-notifier, and Windows 10/11 WinRT Toast notifications. Dynamic path resolution without hardcoding.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🖥️</div>
+          <h3>Surface Aware (CLI, IDE, Desktop App)</h3>
+          <p>
+            Detects whether AGY is executing inside a pure terminal, the Antigravity IDE (VS Code), or Antigravity 2.0 (Electron App), tailoring hooks and security boundaries accordingly.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -239,15 +255,26 @@
 
       <div class="install-steps">
         <div class="install-step">
-          <h4>Option A: Automatic Installer</h4>
+          <h4>Option A: Universal Python (All OS)</h4>
           <div class="code-block">
             <pre><code>git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack
-~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh</code></pre>
+python3 ~/.gemini/antigravity-cli/plugins/agy-powerpack/install.py</code></pre>
           </div>
         </div>
 
         <div class="install-step">
-          <h4>Option B: Antigravity CLI Plugin Manager</h4>
+          <h4>Option B: Linux / macOS / Windows Native</h4>
+          <div class="code-block">
+            <pre><code># Linux / macOS:
+~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh
+
+# Windows (PowerShell):
+powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <h4>Option C: Antigravity CLI Plugin Manager</h4>
           <div class="code-block">
             <pre><code>agy plugin install ./agy-powerpack
 agy plugin validate agy-powerpack</code></pre>

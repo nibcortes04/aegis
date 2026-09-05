@@ -13,9 +13,12 @@
 
 - **⚡ Smart Auto Mode without Delay**: Auto-approves safe read tools (`view_file`, `list_dir`, `grep_search`), in-workspace file edits, and safe test/build commands with **0s approval delay**.
 - **🛡️ Fail-Closed Security Gate**: Strictly halts and requests human confirmation for destructive shell commands (`rm -rf`, `git push -f`, `docker rm/stop`, `dd`, `mkfs`, `sudo`) and file edits outside the workspace.
+- **🌐 100% Cross-Platform & Surface-Aware**:
+  - **Operating Systems**: Native support for **Linux** (KDE Plasma, GNOME, Orca), **macOS** (AppleScript/terminal-notifier), and **Windows 10/11** (Windows Terminal, WinRT PowerShell Toasts).
+  - **Antigravity Surfaces**: Automatically detects execution environment across **Antigravity CLI (`agy`)**, **Antigravity IDE (VS Code)**, and **Antigravity 2.0 (Electron Desktop App)**.
 - **🔔 Terminal Tab Bell & Auto-Dismiss Notifications**:
-  - Emits ASCII 7 (`\a`) directly to `/dev/tty`, lighting up the bell icon on terminal tabs in KDE Konsole, Orca, iTerm2, and Kitty.
-  - Triggers native desktop notifications (`notify-send`) configured with `-h int:transient:1` and a 4-second timeout to **never get stuck on screen**.
+  - Emits ASCII 7 (`\a`) to `/dev/tty` (Linux/macOS) or `CONOUT$` (Windows), lighting up the bell icon on terminal tabs in KDE Konsole, Orca, iTerm2, Kitty, and Windows Terminal.
+  - Triggers native desktop notifications: Linux (`notify-send -h int:transient:1`), macOS (`osascript`), and Windows (PowerShell WinRT Toast) with auto-dismissal to **never get stuck on screen**.
 - **📊 Claude Code-Grade 3-Line Statusline**:
   - **Line 1**: Model & reasoning effort (`🧠 high`), directory, Git branch, and live diff lines counter (`+42 -3`).
   - **Line 2**: Context window bar (`███░░░░░░░ 35%`), cost in USD (`💰 $0.0421`), duration (`⏱ 2m5s`), and 5h/7d quotas with local reset time (`5h:45%(🕦04:30) 7d:12%`).
@@ -39,19 +42,25 @@
 
 ## 🚀 Quick Installation
 
-### Option 1: One-Line Installer
+### Universal (Linux, macOS, Windows)
 ```bash
+# Clone the repository
 git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack
-~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh
+cd ~/.gemini/antigravity-cli/plugins/agy-powerpack
+
+# Run Universal Python Installer
+python3 install.py
+# (On Windows: python install.py or powershell -File install.ps1)
+# (On Linux/macOS: ./install.sh)
 ```
 
-### Option 2: Antigravity Plugin Manager
+### Antigravity Plugin Manager
 ```bash
 agy plugin install ./agy-powerpack
 agy plugin validate agy-powerpack
 ```
 
-### Option 3: Verification
+### Verification
 ```bash
 # Validate plugin integrity
 agy plugin validate ~/.gemini/antigravity-cli/plugins/agy-powerpack

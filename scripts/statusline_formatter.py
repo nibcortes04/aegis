@@ -66,10 +66,18 @@ def get_git_info(directory):
         pass
     return branch, add, sub
 
+try:
+    from env_detector import get_summaries_db_path, get_surface_type
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from env_detector import get_summaries_db_path, get_surface_type
+
 def get_session_name(conv_id):
     if not conv_id:
         return ""
-    db_path = "/home/n_n/.gemini/antigravity-cli/conversation_summaries.db"
+    db_path = get_summaries_db_path()
+    if not os.path.isfile(db_path):
+        return conv_id[:8]
     try:
         con = sqlite3.connect(db_path, timeout=0.05)
         cur = con.cursor()

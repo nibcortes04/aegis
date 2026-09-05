@@ -34,7 +34,7 @@ jobs:
 
       - name: Syntax check
         run: |
-          python3 -m py_compile scripts/*.py tests/*.py
+          python3 -m py_compile scripts/*.py tests/*.py install.py
           bash -n scripts/*.sh tests/*.sh install.sh uninstall.sh
 
       - name: Run Test Suites

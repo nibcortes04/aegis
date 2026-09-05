@@ -34,6 +34,12 @@ description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides 
 - **Android PWA:** Step-by-step setup to install the official Progressive Web App on Android devices to monitor, approve, and continue sessions remotely.
 - Read more: [references/remote_sessions.md](references/remote_sessions.md)
 
+### E. Cross-Platform & Surface Portability (Linux, macOS, Windows | CLI, IDE, Desktop App)
+- **Zero Hardcoding:** Dynamic resolution of user home (`os.path.expanduser("~")`), application data dir (`ANTIGRAVITY_APP_DATA_DIR`), and drive letters (`C:\`, `D:\`).
+- **Surface Awareness:** Automatically detects whether it is running in pure CLI, Antigravity IDE (VS Code), or Antigravity 2.0 (Electron App).
+- **Native Notifications:** Adapts between Linux (`notify-send` transient), macOS (`osascript`/`terminal-notifier`), and Windows (PowerShell WinRT Toast).
+- Read more: [references/cross_platform.md](references/cross_platform.md)
+
 ---
 
 ## 2. Quick Setup & Verification

@@ -27,7 +27,7 @@ jobs:
 
       - name: Syntax check Python scripts
         run: |
-          python3 -m py_compile scripts/*.py tests/*.py
+          python3 -m py_compile scripts/*.py tests/*.py install.py
 
       - name: Syntax check Shell scripts
         run: |

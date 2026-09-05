@@ -18,7 +18,9 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v notify-send >/dev/null 2>&1; then
+if [ "$(uname)" = "Darwin" ]; then
+  echo "✔ macOS detectado (notificaciones nativas vía osascript/terminal-notifier)."
+elif ! command -v notify-send >/dev/null 2>&1; then
   echo "⚠️ Advertencia: notify-send no fue detectado. Las alertas de escritorio no se emitirán (la campana de terminal seguirá funcionando)."
 fi
 
@@ -27,12 +29,13 @@ mkdir -p "$USER_SCRIPTS" "$GEMINI_CONFIG" "$GEMINI_CLI" "$GEMINI_SKILLS"
 
 # 3. Copiar scripts ejecutables
 echo "▶ Instalando scripts en $USER_SCRIPTS..."
+cp "${SCRIPT_DIR}/scripts/env_detector.py" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/agy_hook_handler.py" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/agy-hook-dispatcher.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/statusline_formatter.py" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/statusline.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/agy-session.sh" "$USER_SCRIPTS/"
-chmod +x "${USER_SCRIPTS}"/agy*.py "${USER_SCRIPTS}"/agy*.sh "${USER_SCRIPTS}"/statusline*.py "${USER_SCRIPTS}"/statusline*.sh 2>/dev/null || true
+chmod +x "${USER_SCRIPTS}"/*.py "${USER_SCRIPTS}"/*.sh 2>/dev/null || true
 
 # Opcional: enlazar agy-session a ~/.local/bin si existe
 if [ -d "${HOME}/.local/bin" ]; then
