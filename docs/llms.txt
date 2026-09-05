@@ -1,0 +1,52 @@
+# Aegis — High-Performance Runtime & Guardrails for AI Terminal Agents
+
+> Aegis supercharges terminal AI coding agents (Google Antigravity CLI, Claude Code, and Codex workflows) with smart auto-mode, live statusline telemetry, a two-factor safety gate for destructive commands, and cross-platform notifications.
+
+- **Author & Architect:** Nicolas Cortes (@nibcortes04 - https://github.com/nibcortes04)
+- **Engine & Foundations:** Built with Gemini 2.5 Pro & Google Antigravity (AGY)
+- **Repository:** https://github.com/nibcortes04/aegis
+- **Documentation & Live Portal:** https://nibcortes04.github.io/aegis
+- **License:** MIT Open Source
+
+---
+
+## What is Aegis?
+Aegis bridges the gap between state-of-the-art terminal coding agents, porting and unifying the most celebrated capabilities from Anthropic's Claude Code and OpenAI's Codex into the Google Antigravity (AGY) ecosystem:
+1. **Zero-Lag Smart Auto Mode:** Replaces slow model-based permission classification with a deterministic, sub-10ms 4-tier trust engine (`audit`, `workspace-safe`, `full-developer`, `subagent-worker`).
+2. **Two-Factor Safety Gate:** Destructive commands (`rm -rf`, `docker stop/rm`, `drop database`, `mkfs`) require two consecutive confirmations before execution, preventing irreversible data loss on workstations and production VPS.
+3. **Claude Code Grade Statusline:** 3-line real-time terminal telemetry displaying model name, current branch, live Git diff lines (+X -Y), session title from SQLite, reasoning effort (🧠), 35% context bar with color thresholds, and 5h/7d quota tracking with local reset timestamp.
+4. **Multi-Session Notification & Tab Bell Telemetry:** Emits ASCII 7 (`\a`) to `/dev/tty` so terminal tabs in KDE Konsole, Orca, iTerm2, and WezTerm light up the 🔔 icon. Desktop toasts (`notify-send`) auto-expire after 4-5 seconds and never stay stuck on screen.
+5. **Mobile Android Continuity:** Full integration with Google Antigravity Remote PWA (`https://antigravity.google`) allowing engineers to approve tools and continue sessions on Android phones or tablets.
+6. **Multi-Agent Catalog:** Bundled subagents (`researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`) operating across Git worktrees.
+
+---
+
+## Quick Installation & VPS Deployment
+
+### Universal Python (Linux, macOS, Windows)
+```bash
+git clone https://github.com/nibcortes04/aegis.git ~/.gemini/antigravity-cli/plugins/aegis && python3 ~/.gemini/antigravity-cli/plugins/aegis/install.py
+```
+
+### One-Liner POSIX (Linux / VPS)
+```bash
+curl -sSL https://raw.githubusercontent.com/nibcortes04/aegis/main/install.sh | bash
+```
+
+### Updating in a Remote VPS
+```bash
+git -C ~/.gemini/antigravity-cli/plugins/aegis pull && python3 ~/.gemini/antigravity-cli/plugins/aegis/install.py
+```
+
+---
+
+## Architecture & File Reference
+
+- `plugin.json`: Official Antigravity plugin manifest.
+- `scripts/agy_hook_handler.py`: Sub-10ms lifecycle hook dispatcher for PreToolUse and Stop.
+- `scripts/trust_levels.py`: 4-tier graduated trust engine and two-factor safety gate.
+- `scripts/env_detector.py`: Surface, terminal, and OS detection, multi-session debounce, inotify kernel capacity telemetry.
+- `scripts/statusline_formatter.py`: 3-line ANSI statusline renderer.
+- `scripts/aegis_test_notify.py`: Live interactive diagnostic suite (`--verify`, `--bell`, `--desktop`, `--simulate-stop`).
+- `scripts/env_inspector.py`: Host compiler, runtime, and package manager scanner.
+- `mcp/mcp_server.py`: Built-in stdio JSON-RPC 2.0 MCP documentation server.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nibcortes04.github.io/aegis/sitemap.xml

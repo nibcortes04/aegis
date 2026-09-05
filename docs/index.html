@@ -3,88 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aegis — High-Performance Runtime & Safety Guardrails for AI Terminal Agents</title>
+  <title>Aegis — High-Performance Runtime, Live Telemetry & Safety Guardrails for AI Terminal Agents</title>
   
   <!-- Primary SEO Meta Tags -->
-  <meta name="title" content="Aegis — High-Performance Runtime & Safety Guardrails for AI Terminal Agents">
-  <meta name="description" content="Aegis delivers smart zero-delay auto-mode, live statusline telemetry, two-factor safety guardrails, and mobile continuity for autonomous AI terminal agents.">
-  <meta name="keywords" content="Aegis, Antigravity, AI Agents, CLI, DevOps, Auto Mode, Safety Guardrails, Telemetry, Linux, macOS, Windows, Developer Tools">
+  <meta name="title" content="Aegis — High-Performance Runtime, Live Telemetry & Safety Guardrails for AI Terminal Agents">
+  <meta name="description" content="Aegis supercharges Google Antigravity (AGY), bringing Claude Code auto-mode and statusline telemetry alongside OpenAI Codex execution models into a resilient autonomous runtime. Orchestrated by @nibcortes04.">
+  <meta name="keywords" content="Aegis, Antigravity, AGY, Gemini 2.5, Claude Code, OpenAI Codex, AI Agents, Terminal Coding, DevOps, Auto Mode, Safety Guardrails, Telemetry, Linux, macOS, Windows, Developer Tools, nibcortes04">
   <meta name="author" content="nibcortes04">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <link rel="canonical" href="https://nibcortes04.github.io/aegis/">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+  <!-- AEO / LLM Discovery Standard -->
+  <link rel="alternate" type="text/plain" href="https://nibcortes04.github.io/aegis/llms.txt" title="LLM documentation index">
 
   <!-- Open Graph / Facebook / LinkedIn -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nibcortes04.github.io/aegis/">
-  <meta property="og:title" content="Aegis — High-Performance Runtime & Guardrails for AI Agents">
-  <meta property="og:description" content="Intelligent execution engine, real-time telemetry, and safety guardrails for autonomous terminal coding agents.">
+  <meta property="og:site_name" content="Aegis Agentic Runtime">
+  <meta property="og:title" content="Aegis — High-Performance Runtime & Safety Guardrails for AI Terminal Agents">
+  <meta property="og:description" content="Bringing Claude Code auto-mode, 3-line statusline telemetry, and Codex execution to Google Antigravity (AGY). Orchestrated by @nibcortes04.">
   <meta property="og:image" content="https://nibcortes04.github.io/aegis/assets/preview.png">
+  <meta property="og:locale" content="en_US">
 
   <!-- Twitter Cards -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://nibcortes04.github.io/aegis/">
-  <meta property="twitter:title" content="Aegis — Intelligent Runtime for AI Terminal Agents">
-  <meta property="twitter:description" content="Zero-lag auto-mode, two-factor safety gate, real-time statusline telemetry, and mobile session continuity.">
+  <meta property="twitter:title" content="Aegis — Intelligent Runtime & Telemetry for AI Terminal Agents">
+  <meta property="twitter:description" content="Zero-lag smart auto-mode, two-factor safety gate for destructive commands, and Claude Code statusline for Google Antigravity. By @nibcortes04.">
   <meta property="twitter:image" content="https://nibcortes04.github.io/aegis/assets/preview.png">
+  <meta property="twitter:creator" content="@nibcortes04">
 
-  <!-- Schema.org JSON-LD Structured Data -->
+  <!-- Schema.org JSON-LD Structured Data for Search & AI Engines -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Aegis",
-    "operatingSystem": "Linux, macOS, Windows",
-    "applicationCategory": "DeveloperApplication",
-    "description": "High-performance runtime, live telemetry, and execution guardrails for autonomous terminal agents.",
-    "url": "https://nibcortes04.github.io/aegis",
-    "author": {
-      "@type": "Person",
-      "name": "nibcortes04",
-      "url": "https://github.com/nibcortes04"
-    },
-    "license": "https://opensource.org/licenses/MIT"
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Aegis",
+        "headline": "High-Performance Runtime, Live Telemetry & Safety Guardrails for AI Terminal Agents",
+        "operatingSystem": "Linux, macOS, Windows",
+        "applicationCategory": "DeveloperApplication",
+        "softwareVersion": "1.5.0",
+        "description": "Aegis supercharges Google Antigravity (AGY) with smart zero-delay auto-mode, real-time statusline telemetry, a two-factor safety gate for destructive operations, and mobile Android session continuity.",
+        "url": "https://nibcortes04.github.io/aegis",
+        "author": {
+          "@type": "Person",
+          "name": "Nicolas Cortes",
+          "alternateName": "nibcortes04",
+          "url": "https://github.com/nibcortes04",
+          "jobTitle": "Systems Architect & Orchestrator"
+        },
+        "maintainer": {
+          "@type": "Person",
+          "name": "nibcortes04",
+          "url": "https://github.com/nibcortes04"
+        },
+        "license": "https://opensource.org/licenses/MIT",
+        "programmingLanguage": ["Python", "Shell", "JavaScript", "HTML/CSS"],
+        "keywords": "Antigravity, AGY, AI Agents, Auto Mode, Claude Code, OpenAI Codex, Terminal Telemetry, Guardrails, Gemini"
+      },
+      {
+        "@type": "WebSite",
+        "name": "Aegis Official Portal",
+        "url": "https://nibcortes04.github.io/aegis",
+        "author": {
+          "@type": "Person",
+          "name": "nibcortes04"
+        }
+      }
+    ]
   }
   </script>
 
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="background-glow"></div>
+  <!-- Ambient backdrop lighting -->
+  <div class="background-glow" aria-hidden="true"></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
 
   <!-- Header / Navigation -->
-  <header class="navbar">
+  <header class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="#" class="nav-brand">
-        <span class="brand-badge">⚡</span>
+      <a href="#" class="nav-brand" aria-label="Aegis Home">
+        <!-- Official Cyber Shield SVG Logo -->
+        <svg class="brand-logo" viewBox="0 0 64 64" width="34" height="34" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="nav-shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f0ff" />
+              <stop offset="50%" stop-color="#3b82f6" />
+              <stop offset="100%" stop-color="#6366f1" />
+            </linearGradient>
+            <linearGradient id="nav-core-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#c084fc" />
+            </linearGradient>
+          </defs>
+          <path d="M32 6 L52 15 L48 39 L32 56 L16 39 L12 15 Z" fill="#090d16" stroke="url(#nav-shield-grad)" stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M32 12 L45 18 L42 36 L32 49 L22 36 L19 18 Z" fill="url(#nav-shield-grad)" fill-opacity="0.16" stroke="url(#nav-shield-grad)" stroke-width="1.2" stroke-opacity="0.7" />
+          <path d="M32 20 L40 28 L32 36 L24 28 Z" fill="url(#nav-core-grad)" stroke="#00f0ff" stroke-width="1.4" />
+          <circle cx="32" cy="28" r="2.2" fill="#ffffff" />
+        </svg>
         <span class="brand-name">Aegis</span>
+        <span class="version-tag">v1.5.0</span>
       </a>
+
       <nav class="nav-links">
         <a href="#features">Features</a>
-        <a href="#terminal-preview">Live Preview</a>
-        <a href="#android-pwa">Android PWA</a>
-        <a href="#worktrees">Worktrees</a>
-        <a href="#install" class="btn-nav">Install</a>
+        <a href="#interactive-preview">Terminal Lab</a>
+        <a href="#safety-gate">Safety Gate</a>
+        <a href="#android-pwa">Mobile PWA</a>
+        <a href="#install" class="nav-link-cta">Install</a>
+        
+        <!-- Official GitHub Link with SVG Icon -->
+        <a href="https://github.com/nibcortes04/aegis" target="_blank" rel="noopener noreferrer" class="github-nav-btn" aria-label="Aegis GitHub Repository">
+          <svg class="github-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span class="github-btn-label">GitHub</span>
+          <span class="star-badge" id="star-count">★ Star</span>
+        </a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero Section -->
   <main>
+    <!-- Hero Section -->
     <section class="hero">
-      <div class="hero-badge">🚀 v1.4.2 Production Ready</div>
-      <h1 class="hero-title">Supercharge Terminal <br><span class="gradient-text">AI Coding Agents</span></h1>
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span>Aegis v1.5.0 Production Ready · Powered by Gemini 2.5</span>
+      </div>
+
+      <h1 class="hero-title">
+        The Intelligent Runtime &amp; Telemetry Core for <span class="gradient-text">Terminal AI Agents</span>
+      </h1>
+
       <p class="hero-subtitle">
-        Smart Auto Mode without approval lag, two-factor safety gate for destructive operations, cross-platform notifications without spam, a Claude Code-grade 3-line statusline, and mobile Android continuity.
+        Bridging the finest capabilities of <strong>Claude Code</strong> and <strong>OpenAI Codex</strong> into <strong>Google Antigravity (AGY)</strong>. Zero-lag Auto Mode, deterministic two-factor safety gate for destructive operations, 3-line live statusline, and mobile Android continuity.
       </p>
 
       <div class="install-box">
         <span class="prompt-sym">$</span>
-        <code id="install-cmd">git clone https://github.com/nibcortes04/aegis.git ~/.gemini/antigravity-cli/plugins/aegis && python3 ~/.gemini/antigravity-cli/plugins/aegis/install.py</code>
-        <button class="copy-btn" id="copy-btn" title="Copy to clipboard">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <code id="install-cmd">git clone https://github.com/nibcortes04/aegis.git ~/.gemini/antigravity-cli/plugins/aegis &amp;&amp; python3 ~/.gemini/antigravity-cli/plugins/aegis/install.py</code>
+        <button class="copy-btn" id="copy-btn" aria-label="Copy installation command">
+          <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
@@ -93,29 +161,47 @@
       </div>
 
       <div class="hero-stats">
-        <div class="stat-item">
+        <div class="stat-card">
           <span class="stat-val">&lt; 10ms</span>
-          <span class="stat-label">Hook & Statusline Latency</span>
+          <span class="stat-label">Hook &amp; Statusline Execution</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
+        <div class="stat-card">
           <span class="stat-val">0s</span>
-          <span class="stat-label">Auto Mode Approval Delay</span>
+          <span class="stat-label">Auto Mode Safe Tool Latency</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
+        <div class="stat-card">
           <span class="stat-val">100%</span>
-          <span class="stat-label">Fail-Closed Security</span>
+          <span class="stat-label">Two-Factor Fail-Closed Safety</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-val">33 / 33</span>
+          <span class="stat-label">Passing CI Test Suites</span>
         </div>
       </div>
     </section>
 
-    <!-- Terminal Mockup Section -->
-    <section id="terminal-preview" class="section">
+    <!-- Interactive Terminal Lab Section -->
+    <section id="interactive-preview" class="section">
       <div class="section-header">
-        <span class="section-tag">Statusline & Hooks</span>
-        <h2>Terminal Experience, Reimagined</h2>
-        <p>Exact replica of the rich telemetry statusline and non-intrusive alert system.</p>
+        <span class="section-tag">Interactive Terminal Lab</span>
+        <h2>High-Fidelity Telemetry &amp; Guardrails</h2>
+        <p>Experience real-time execution flows directly from the AGY terminal engine.</p>
+      </div>
+
+      <!-- Tab Selectors for Terminal View -->
+      <div class="terminal-tab-selector" role="tablist">
+        <button class="tab-btn active" data-tab="statusline" role="tab" aria-selected="true">
+          <span>📊 3-Line Statusline</span>
+        </button>
+        <button class="tab-btn" data-tab="automode" role="tab" aria-selected="false">
+          <span>⚡ Smart Auto Mode</span>
+        </button>
+        <button class="tab-btn" data-tab="safety" role="tab" aria-selected="false">
+          <span>🛡️ Two-Factor Safety Gate</span>
+        </button>
+        <button class="tab-btn" data-tab="notifications" role="tab" aria-selected="false">
+          <span>🔔 Multi-Session Tab Bell</span>
+        </button>
       </div>
 
       <div class="terminal-window">
@@ -125,217 +211,198 @@
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
           </div>
-          <div class="terminal-title">bash — konsole / orca (🔔 Terminal Tab Bell Active)</div>
+          <div class="terminal-title" id="term-title">bash — konsole · session-87c8834d (🔔 Tab Bell Active)</div>
           <div class="terminal-actions">
-            <span class="badge-pill">4s Auto-Dismiss</span>
+            <span class="badge-pill" id="term-badge">Live Telemetry</span>
           </div>
         </div>
-        <div class="terminal-body">
-          <div class="term-line output-text"><span class="term-gray">Running task in isolated workspace...</span></div>
-          <div class="term-line output-text"><span class="term-green">✔</span> Verified all 5 unit tests passed in 0.013s</div>
-          <div class="term-line output-text"><span class="term-blue">ℹ</span> Hook emitted BEL (\a) to /dev/tty · KDE Konsole tab notified 🔔</div>
-          <div class="term-line output-text"><span class="term-gray">------------------------------------------------------------</span></div>
-          <!-- Line 1 Statusline -->
-          <div class="term-line statusline-l1">
-            <span class="cyan-bold">[Gemini-2.5 Pro]</span>
-            <span class="term-white"> 📁 agy-powerpack</span>
-            <span class="term-blue"> 🌿 main</span>
-            <span class="term-green"> +42</span><span class="term-red">-3</span>
-            <span class="term-yellow"> 🧠 high</span>
-            <span class="term-dim"> 🏷️  Refactor Auto Mode Hooks…</span>
+
+        <div class="terminal-body" id="term-body">
+          <!-- Default View: Statusline -->
+          <div class="terminal-pane active" id="pane-statusline">
+            <div class="term-line output-text"><span class="term-gray">Running task in isolated workspace: /home/n_n/projects/aegis</span></div>
+            <div class="term-line output-text"><span class="term-green">✔</span> Loaded trust level profile: <span class="term-cyan">workspace-safe</span> (0s delay for read/test/git)</div>
+            <div class="term-line output-text"><span class="term-green">✔</span> Ran 33 unit tests: <span class="term-white">All 33 tests passed in 1.82s</span></div>
+            <div class="term-line output-text"><span class="term-blue">ℹ</span> Hook emitted BEL (\a) to /dev/tty · Tab bell badge lit up 🔔</div>
+            <div class="term-line output-text"><span class="term-gray">──────────────────────────────────────────────────────────────────────────</span></div>
+            <!-- Line 1: Identity & Git -->
+            <div class="term-line statusline-l1">
+              <span class="cyan-bold">[Gemini-2.5 Pro]</span>
+              <span class="term-white"> 📁 aegis</span>
+              <span class="term-blue"> 🌿 main</span>
+              <span class="term-green"> +119</span><span class="term-red">-8</span>
+              <span class="term-yellow"> 🧠 high</span>
+              <span class="term-dim"> 🏷️  Strict Auto-Closing Timers…</span>
+            </div>
+            <!-- Line 2: Context & Quotas -->
+            <div class="term-line statusline-l2">
+              <span class="term-green">███░░░░░░░</span>
+              <span class="term-white"> 35%</span>
+              <span class="term-dim"> │ </span>
+              <span class="term-yellow">💰 $0.0421</span>
+              <span class="term-dim"> │ </span>
+              <span class="term-white">⏱ 2m14s</span>
+              <span class="term-dim"> │ </span>
+              <span class="term-green">5h:42%</span><span class="term-dim">(🕦04:30)</span>
+              <span class="term-green"> 7d:11%</span>
+            </div>
+            <!-- Line 3: Auto Mode Selector -->
+            <div class="term-line statusline-l3">
+              <span class="term-yellow">▶▶</span>
+              <span class="term-white"> auto (workspace-safe) </span>
+              <span class="term-dim">(shift+tab to cycle) · ← for agents</span>
+            </div>
           </div>
-          <!-- Line 2 Statusline -->
-          <div class="term-line statusline-l2">
-            <span class="term-green">███░░░░░░░</span>
-            <span class="term-white"> 35%</span>
-            <span class="term-dim"> │ </span>
-            <span class="term-yellow">💰 $0.0421</span>
-            <span class="term-dim"> │ </span>
-            <span class="term-white">⏱ 2m5s</span>
-            <span class="term-dim"> │ </span>
-            <span class="term-green">5h:45%</span><span class="term-dim">(🕦04:30)</span>
-            <span class="term-green"> 7d:12%</span>
+
+          <!-- View: Auto Mode -->
+          <div class="terminal-pane" id="pane-automode">
+            <div class="term-line output-text"><span class="term-cyan">[Aegis Auto Mode Classifier]</span> Evaluating toolCall: <code>view_file</code></div>
+            <div class="term-line output-text"><span class="term-green">✔ ALLOW:</span> Read-only operation inside workspace root (latency: 1.2ms)</div>
+            <div class="term-line output-text"><span class="term-cyan">[Aegis Auto Mode Classifier]</span> Evaluating toolCall: <code>run_command("npm test")</code></div>
+            <div class="term-line output-text"><span class="term-green">✔ ALLOW:</span> Test command classified safe under <code>workspace-safe</code> (latency: 1.8ms)</div>
+            <div class="term-line output-text"><span class="term-dim">Agent executed 14 consecutive tool calls autonomously with 0 human approval lag.</span></div>
           </div>
-          <!-- Line 3 Statusline -->
-          <div class="term-line statusline-l3">
-            <span class="term-yellow">▶▶</span>
-            <span class="term-white"> auto (dev) </span>
-            <span class="term-dim">(shift+tab to cycle) · ← for agents</span>
+
+          <!-- View: Safety Gate -->
+          <div class="terminal-pane" id="pane-safety">
+            <div class="term-line output-text"><span class="term-red">[CRITICAL COMMAND DETECTED]</span> <code>rm -rf /var/data/project</code></div>
+            <div class="term-line output-text"><span class="term-yellow">⚠️ STEP 1 OF 2 (DENIED):</span> Destructive action recorded in confirmation ledger (TTL: 120s).</div>
+            <div class="term-line output-text"><span class="term-gray">Data preserved. Agent cannot execute without explicit confirmation.</span></div>
+            <div class="term-line output-text"><span class="term-yellow">⚠️ STEP 2 OF 2 (ELEVATED):</span> User prompted interactively with risk assessment.</div>
+            <div class="term-line output-text"><span class="term-green">✔ VERIFIED:</span> Command executed only after physical human authorization.</div>
+          </div>
+
+          <!-- View: Multi-Session Notifications -->
+          <div class="terminal-pane" id="pane-notifications">
+            <div class="term-line output-text"><span class="term-blue">[Session-01]</span> Finished response · Dispatched notify-send (replace_id=9941, timer=4000ms)</div>
+            <div class="term-line output-text"><span class="term-blue">[Session-02]</span> Concurrent terminal finished · Dispatched notify-send (replace_id=9942, timer=4000ms)</div>
+            <div class="term-line output-text"><span class="term-green">✔ NO COLLISION:</span> Each session isolated by <code>conversationId</code>. Zero cross-tab muting.</div>
+            <div class="term-line output-text"><span class="term-green">✔ STRICT TIMERS:</span> Urgency normalized to normal. Zero sticky/frozen popups on KDE.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Key Features Grid -->
+    <!-- Core Capabilities Grid -->
     <section id="features" class="section">
       <div class="section-header">
-        <span class="section-tag">Core Capabilities</span>
-        <h2>Built for High-Velocity Engineering</h2>
+        <span class="section-tag">Core Architecture</span>
+        <h2>Engineered for Autonomous Reliability</h2>
+        <p>Combining the best patterns from across the agentic engineering frontier.</p>
       </div>
 
       <div class="feature-grid">
         <div class="feature-card">
-          <div class="card-icon">⚡</div>
-          <h3>Smart Auto Mode & Trust Levels</h3>
+          <div class="card-icon-wrapper">⚡</div>
+          <h3>Smart Auto Mode</h3>
           <p>
-            4 graduated runtime trust profiles (<code>audit</code>, <code>workspace-safe</code>, <code>full-developer</code>, <code>subagent-worker</code>). Zero lag for safe tools; strictly fails closed on destructive commands (<code>rm -rf</code>, <code>mkfs</code>, <code>docker rm</code>, <code>sudo</code>).
+            4-tier graduated trust profiles (<code>audit</code>, <code>workspace-safe</code>, <code>full-developer</code>, <code>subagent-worker</code>). Sub-10ms deterministic filtering eliminates prompt lag while securing the workspace.
+          </p>
+        </div>
+
+        <div class="feature-card" id="safety-gate">
+          <div class="card-icon-wrapper">🛡️</div>
+          <h3>Two-Factor Safety Gate</h3>
+          <p>
+            Irreversible commands (<code>rm -rf</code>, <code>mkfs</code>, <code>docker stop/rm</code>, <code>drop database</code>) trigger a mandatory 2-step verification ledger, protecting host and VPS production containers.
           </p>
         </div>
 
         <div class="feature-card">
-          <div class="card-icon">🔔</div>
-          <h3>Single-Card Notifications</h3>
-          <p>
-            In-place notification replacement (<code>-r 9942</code> / <code>x-canonical-private-synchronous</code>) prevents stacking. Emits <code>\a</code> to <code>/dev/tty</code> for Konsole & Orca tab bell icons. Silenced during tests.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">📊</div>
+          <div class="card-icon-wrapper">📊</div>
           <h3>Claude Code Statusline</h3>
           <p>
-            Real-time reasoning effort (🧠), live Git diff line counter (+X -Y), session title from SQLite database, context bar with color thresholds (&gt;70% yellow, &gt;90% red), and 5h/7d quota tracking with local reset time.
+            Live Git diff lines (+X -Y), active reasoning effort (🧠), session title from SQLite, visual context usage bar with threshold warnings, and 5h/7d quota tracking with local reset timestamps.
           </p>
         </div>
 
         <div class="feature-card">
-          <div class="card-icon">🤖</div>
-          <h3>Multi-Agent Delegation</h3>
+          <div class="card-icon-wrapper">🔔</div>
+          <h3>Multi-Session Tab Bell Telemetry</h3>
           <p>
-            5 bundled subagents (<code>researcher</code>, <code>worker-backend</code>, <code>worker-frontend</code>, <code>qa-tester</code>, <code>reviewer-bot</code>) executing concurrent Fork &amp; Join and Reviewer Gate patterns without context pollution.
+            Emits ASCII 7 <code>\a</code> to <code>/dev/tty</code> to light up the 🔔 icon in terminal tabs. Enforces 4-5s auto-expiring desktop toasts without stacking or freezing on KDE Plasma / Linux.
+          </div>
+
+        <div class="feature-card">
+          <div class="card-icon-wrapper">🤖</div>
+          <h3>Multi-Agent Catalog</h3>
+          <p>
+            5 specialized subagents (<code>researcher</code>, <code>worker-backend</code>, <code>worker-frontend</code>, <code>qa-tester</code>, <code>reviewer-bot</code>) operating across isolated Git worktrees without polluting context.
           </p>
         </div>
 
         <div class="feature-card">
-          <div class="card-icon">🔌</div>
-          <h3>Documentation MCP Server</h3>
+          <div class="card-icon-wrapper">📱</div>
+          <h3>Android PWA Continuity</h3>
           <p>
-            Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools to dynamically query active trust levels, surface information, delegation architectures, and health checks.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">📱</div>
-          <h3>Android PWA & Cloud Sync</h3>
-          <p>
-            Seamless remote control via official Google Antigravity Remote PWA (<code>antigravity.google</code>). Full workflow to pair, monitor, and resume sessions from Android phones or tablets.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">🌳</div>
-          <h3>Git Worktree Workflow</h3>
-          <p>
-            Built-in scripts (<code>scripts/dev-worktree.sh</code>) to isolate features, fixes, and autonomous bot contributions without polluting main or dirtying working trees.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">🤖</div>
-          <h3>Bot & Human Ready PRs</h3>
-          <p>
-            Standardized PR template, Project backlog board, and automated CI validator action for human engineers and autonomous agents (Codex, Claude, AGY).
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">🌐</div>
-          <h3>Cross-Platform (Linux, macOS, Windows)</h3>
-          <p>
-            Native adaptors for KDE Konsole, Orca, macOS AppleScript/terminal-notifier, and Windows 10/11 WinRT Toast notifications. Dynamic path resolution without hardcoding.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="card-icon">🖥️</div>
-          <h3>Surface Aware (CLI, IDE, Desktop App)</h3>
-          <p>
-            Detects whether AGY is executing inside a pure terminal, the Antigravity IDE (VS Code), or Antigravity 2.0 (Electron App), tailoring hooks and security boundaries accordingly.
+            Seamless remote pairing via Google Antigravity Remote PWA (<code>antigravity.google</code>). Approve tools, monitor build logs, and resume sessions from Android phones or tablets.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- Android PWA Setup Guide -->
+    <!-- Android PWA Walkthrough -->
     <section id="android-pwa" class="section">
       <div class="section-header">
-        <span class="section-tag">Cross-Platform Continuity</span>
-        <h2>Access AGY from Android via Google PWA</h2>
-        <p>Monitor long-running tasks, approve critical tools, and continue sessions on mobile.</p>
+        <span class="section-tag">Anywhere Continuity</span>
+        <h2>Control AGY from Android Mobile</h2>
+        <p>Monitor long-running tasks, approve critical tools, and resume sessions on the go.</p>
       </div>
 
       <div class="steps-grid">
         <div class="step-card">
-          <div class="step-num">01</div>
+          <div class="step-badge">1</div>
           <h4>Start Remote Control</h4>
-          <p>Run <code>agy remote-control start</code> on your workstation or VPS to generate an authenticated session pairing token.</p>
+          <p>Run <code>agy remote-control start</code> on your workstation or VPS to generate an authenticated pairing token.</p>
         </div>
         <div class="step-card">
-          <div class="step-num">02</div>
+          <div class="step-badge">2</div>
           <h4>Open PWA in Chrome</h4>
-          <p>Navigate to <code>https://antigravity.google</code> on Chrome Mobile. Tap the three dots menu (⋮) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
+          <p>Navigate to <code>https://antigravity.google</code> on Chrome Mobile. Tap the menu (⋮) and select <strong>"Install app"</strong>.</p>
         </div>
         <div class="step-card">
-          <div class="step-num">03</div>
-          <h4>Pair & Resume</h4>
-          <p>Log in with your Google account, select your remote workstation, and resume any active CLI session in real-time.</p>
+          <div class="step-badge">3</div>
+          <h4>Pair &amp; Supervise</h4>
+          <p>Sign in with your Google account, select your machine, and monitor all concurrent agent workflows in real-time.</p>
         </div>
       </div>
     </section>
 
-    <!-- Git Worktrees Section -->
-    <section id="worktrees" class="section">
-      <div class="section-header">
-        <span class="section-tag">DevOps & Collaboration</span>
-        <h2>Git Worktree Isolation Standard</h2>
-        <p>No more stash conflicts. Every feature, bugfix, or autonomous bot PR gets its own isolated tree.</p>
-      </div>
-
-      <div class="code-terminal">
-        <pre><code><span class="term-dim"># 1. Create an isolated worktree for a new feature</span>
-<span class="term-green">$</span> ./scripts/dev-worktree.sh new feat/smart-filtering
-
-<span class="term-dim"># 2. Develop & run tests inside the isolated worktree</span>
-<span class="term-green">$</span> cd worktrees/feat/smart-filtering
-<span class="term-green">$</span> python3 -m unittest discover -s tests -p "test_*.py"
-
-<span class="term-dim"># 3. Clean up when merged into dev</span>
-<span class="term-green">$</span> ./scripts/dev-worktree.sh remove feat/smart-filtering</code></pre>
-      </div>
-    </section>
-
-    <!-- Installation & Setup -->
+    <!-- Installation Section -->
     <section id="install" class="section">
       <div class="section-header">
-        <span class="section-tag">Getting Started</span>
-        <h2>Quick Installation</h2>
+        <span class="section-tag">Deployment</span>
+        <h2>Quick Installation &amp; Setup</h2>
+        <p>Idempotent and cross-platform. Ready for developer workstations and remote VPS.</p>
       </div>
 
-      <div class="install-steps">
-        <div class="install-step">
-          <h4>Option A: Universal Python (All OS)</h4>
-          <div class="code-block">
-            <pre><code>git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack
-python3 ~/.gemini/antigravity-cli/plugins/agy-powerpack/install.py</code></pre>
+      <div class="install-grid">
+        <div class="install-card">
+          <div class="card-tag">Recommended</div>
+          <h4>Universal Python (Linux, macOS, Windows)</h4>
+          <p class="install-desc">Standard Python 3.8+ setup. Zero third-party dependencies.</p>
+          <div class="code-box">
+            <pre><code>git clone https://github.com/nibcortes04/aegis.git ~/.gemini/antigravity-cli/plugins/aegis
+python3 ~/.gemini/antigravity-cli/plugins/aegis/install.py</code></pre>
           </div>
         </div>
 
-        <div class="install-step">
-          <h4>Option B: Linux / macOS / Windows Native</h4>
-          <div class="code-block">
-            <pre><code># Linux / macOS:
-~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh
-
-# Windows (PowerShell):
-powershell -ExecutionPolicy Bypass -File .\install.ps1</code></pre>
+        <div class="install-card">
+          <div class="card-tag">One-Liner</div>
+          <h4>POSIX Fast Script (Linux &amp; VPS)</h4>
+          <p class="install-desc">Fast automated install via cURL directly into your shell.</p>
+          <div class="code-box">
+            <pre><code>curl -sSL https://raw.githubusercontent.com/nibcortes04/aegis/main/install.sh | bash</code></pre>
           </div>
         </div>
 
-        <div class="install-step">
-          <h4>Option C: Antigravity CLI Plugin Manager</h4>
-          <div class="code-block">
-            <pre><code>agy plugin install ./agy-powerpack
-agy plugin validate agy-powerpack</code></pre>
+        <div class="install-card">
+          <div class="card-tag">Diagnostics</div>
+          <h4>Verify &amp; Test Live Telemetry</h4>
+          <p class="install-desc">Interactive diagnostic tool for terminal tab bell and notifications.</p>
+          <div class="code-box">
+            <pre><code>python3 ~/scripts/aegis_test_notify.py --verify
+python3 ~/scripts/aegis_test_notify.py --bell</code></pre>
           </div>
         </div>
       </div>
@@ -344,9 +411,61 @@ agy plugin validate agy-powerpack</code></pre>
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="footer-content">
-      <p>AGY PowerPack is open source software licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.</p>
-      <p class="term-dim">Built with ❤️ for the Google Antigravity & Agentic Engineering community.</p>
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="brand-line">
+            <svg class="brand-logo-small" viewBox="0 0 64 64" width="24" height="24" fill="none" aria-hidden="true">
+              <path d="M32 6 L52 15 L48 39 L32 56 L16 39 L12 15 Z" fill="#090d16" stroke="#00f0ff" stroke-width="2.5" stroke-linejoin="round" />
+              <path d="M32 20 L40 28 L32 36 L24 28 Z" fill="#6366f1" stroke="#00f0ff" stroke-width="1.4" />
+            </svg>
+            <span class="footer-title">Aegis</span>
+          </div>
+          <p class="footer-tagline">
+            High-Performance Runtime, Live Telemetry &amp; Safety Guardrails for AI Terminal Agents.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <div class="link-group">
+            <h5>Project</h5>
+            <a href="https://github.com/nibcortes04/aegis" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+            <a href="https://github.com/nibcortes04/aegis/releases" target="_blank" rel="noopener noreferrer">Releases (v1.5.0)</a>
+            <a href="https://github.com/nibcortes04/aegis/issues" target="_blank" rel="noopener noreferrer">Issue Tracker</a>
+            <a href="https://nibcortes04.github.io/aegis/llms.txt" target="_blank" rel="noopener noreferrer">LLMs.txt Spec</a>
+          </div>
+          <div class="link-group">
+            <h5>Ecosystem</h5>
+            <a href="https://antigravity.google" target="_blank" rel="noopener noreferrer">Google Antigravity</a>
+            <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener noreferrer">Anthropic Skills</a>
+            <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT License</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Human Architect & System Attribution -->
+      <div class="footer-bottom">
+        <div class="orchestrator-credit">
+          <span class="role-badge">System Architecture &amp; Orchestration</span>
+          <span class="credit-text">
+            Orchestrated &amp; Architected by 
+            <a href="https://github.com/nibcortes04" target="_blank" rel="noopener noreferrer" class="architect-link">
+              <svg class="author-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              @nibcortes04
+            </a>
+          </span>
+        </div>
+
+        <p class="model-credit">
+          Engineered with <strong>Gemini 2.5</strong> &amp; <strong>Google Antigravity (AGY)</strong> · Seamlessly integrating Claude Code &amp; OpenAI Codex capabilities into autonomous terminal development.
+        </p>
+
+        <p class="copyright-notice">
+          © 2026 Aegis. Open source software released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">MIT License</a>.
+        </p>
+      </div>
     </div>
   </footer>
 
