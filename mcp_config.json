@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "agy-powerpack-docs": {
+    "aegis": {
       "command": "python3",
       "args": [
         "./mcp/mcp_server.py"

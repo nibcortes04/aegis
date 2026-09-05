@@ -1,11 +1,11 @@
-# ⚡ AGY PowerPack
+# ⚡ Aegis
 
-[![CI Verification](https://github.com/n-n/agy-powerpack/actions/workflows/ci.yml/badge.svg)](https://github.com/n-n/agy-powerpack/actions/workflows/ci.yml)
-[![Deploy Pages](https://github.com/n-n/agy-powerpack/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/n-n/agy-powerpack/actions/workflows/deploy-pages.yml)
+[![CI Verification](https://github.com/nibcortes04/aegis/actions/workflows/ci.yml/badge.svg)](https://github.com/nibcortes04/aegis/actions/workflows/ci.yml)
+[![Deploy Pages](https://github.com/nibcortes04/aegis/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/nibcortes04/aegis/actions/workflows/deploy-pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Antigravity](https://img.shields.io/badge/Antigravity-2.5%2B-blueviolet.svg)](https://antigravity.google)
 
-> **Supercharge Google Antigravity CLI (`agy`) with Smart Auto Mode, terminal tab notification bells, auto-dismissing desktop alerts, a Claude Code-grade 3-line statusline, cross-platform Android PWA continuity, and isolated Git Worktree development.**
+> **High-performance runtime, live telemetry, and execution guardrails for autonomous terminal agents.** Smart Auto Mode, two-factor safety gate for destructive commands, clean cross-platform notifications without spam, Claude Code-grade 3-line statusline, and mobile Android PWA continuity.
 
 ---
 
@@ -23,7 +23,7 @@
 - **🔔 Single-Card & Strict Notifications (Cero Ruido Intermedio)**:
   - Notifications fire **ONLY** when waiting for human action (`decision: ask`) or final turn completion. Never during continuous intermediate execution or tool calls.
   - Eliminated duplicate Konsole alerts by stripping OSC 777 escape codes and maintaining pure terminal bell (`\a`).
-  - In-place single notification replacement (`-r 9942` / `x-canonical-private-synchronous:agy-notification` / `$toast.Tag`) preventing desktop alert stacking.
+  - In-place single notification replacement (`-r 9942` / `x-canonical-private-synchronous:aegis-notification` / `$toast.Tag`) preventing desktop alert stacking.
   - Test & batch silence detection (`AGY_HOOK_SILENT=1`, `pytest`, `unittest`) producing 0 notification popups during automated test runs.
 - **📊 Claude Code-Grade 3-Line Statusline**:
   - **Line 1**: Model & reasoning effort (`🧠 high`), directory, Git branch, and live diff lines counter (`+42 -3`).
@@ -39,7 +39,7 @@
 ## 🖥️ Terminal Statusline Preview
 
 ```text
-[Gemini-2.5 Pro] 📁 agy-powerpack 🌿 main +42-3 🧠 high 🏷️  Refactor Auto Mode Hooks…
+[Gemini-2.5 Pro] 📁 aegis 🌿 main +42-3 🧠 high 🏷️  Refactor Auto Mode Hooks…
 ███░░░░░░░ 35% │ 💰 $0.0421 │ ⏱ 2m5s │ 5h:45%(🕦04:30) 7d:12%
 ▶▶ auto mode on (shift+tab to cycle) · ← for agents
 ```
@@ -51,8 +51,8 @@
 ### Universal (Linux, macOS, Windows)
 ```bash
 # Clone the repository
-git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack
-cd ~/.gemini/antigravity-cli/plugins/agy-powerpack
+git clone https://github.com/nibcortes04/aegis.git ~/.gemini/antigravity-cli/plugins/aegis
+cd ~/.gemini/antigravity-cli/plugins/aegis
 
 # Run Universal Python Installer
 python3 install.py

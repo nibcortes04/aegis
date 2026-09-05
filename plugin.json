@@ -1,20 +1,25 @@
 {
-  "name": "agy-powerpack",
-  "version": "1.3.0",
-  "description": "Smart Auto Mode, terminal bell notifications (tab bell), advanced Claude-style statusline, and multiplatform session continuity for Antigravity CLI.",
+  "name": "aegis",
+  "version": "1.4.0",
+  "description": "High-performance runtime, live telemetry, and execution guardrails for autonomous terminal agents.",
   "author": {
-    "name": "Antigravity Community"
+    "name": "nibcortes04"
   },
   "license": "MIT",
+  "homepage": "https://nibcortes04.github.io/aegis",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nibcortes04/aegis.git"
+  },
   "keywords": [
+    "aegis",
     "antigravity",
-    "cli",
+    "agentic-ai",
     "auto-mode",
+    "safety-guardrails",
     "statusline",
-    "notifications",
-    "remote-control",
-    "pwa",
-    "konsole",
-    "orca"
+    "telemetry",
+    "devops",
+    "cli"
   ]
 }

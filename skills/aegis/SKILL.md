@@ -1,11 +1,11 @@
 ---
-name: agy-powerpack
-description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides Smart Auto Mode (safe tool auto-approval), terminal tab bell (🔔) and auto-closing desktop notifications, real-time statusline inspired by Claude Code, and multiplatform session continuity (CLI, IDE, Antigravity 2.0, and Android PWA Remote Control). Use when configuring agy, troubleshooting permissions, enhancing the statusline, or managing sessions across devices.
+name: aegis
+description: High-performance runtime, live telemetry, and execution guardrails for autonomous terminal agents. Provides Smart Auto Mode (safe tool auto-approval), Two-Factor Safety Gate for critical commands, clean notifications without spam, real-time 3-line statusline, and multiplatform session continuity (CLI, IDE, Antigravity 2.0, and Android PWA).
 ---
 
-# Antigravity Powerpack (`agy-powerpack`)
+# Aegis (`aegis`)
 
-`agy-powerpack` elevates the Google Antigravity CLI experience with features inspired by modern agentic workflows (like Claude Code and Codex), optimized specifically for Antigravity's architecture and Linux/Unix terminal environments (KDE Konsole, Orca, iTerm2, Kitty, Alacritty).
+`aegis` is a high-performance runtime and governance framework for AI terminal agents, optimized specifically for Antigravity and modern agentic developer workflows.
 
 ---
 

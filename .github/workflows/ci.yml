@@ -50,6 +50,6 @@ jobs:
               assert 'name' in p and 'version' in p, 'Invalid plugin.json'
           with open('hooks.json') as f:
               h = json.load(f)
-              assert 'agy-powerpack' in h, 'Invalid hooks.json'
+              assert 'aegis' in h, 'Invalid hooks.json'
           print('Plugin & Hooks JSON schemas validated successfully.')
           "

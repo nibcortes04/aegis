@@ -13,6 +13,8 @@ import json
 import re
 import subprocess
 import sqlite3
+import time
+import tempfile
 
 # Importar detector de entorno y abstracciones multiplataforma
 try:
@@ -170,7 +172,7 @@ def handle_pre_tool_use(payload, raw_input):
         ring_terminal_bell()
         session_title = get_session_title(conv_id)
         send_desktop_notification(
-            f"AGY: {session_title}",
+            f"Aegis: {session_title}",
             f"Aprobación requerida: {reason[:65]}",
             urgency="normal",
             timeout_ms=5000,
@@ -181,7 +183,7 @@ def handle_pre_tool_use(payload, raw_input):
     if decision == "deny":
         session_title = get_session_title(conv_id)
         send_desktop_notification(
-            f"AGY: {session_title}",
+            f"Aegis: {session_title}",
             f"Comando interceptado: {reason[:65]}",
             urgency="critical",
             timeout_ms=5000,
@@ -191,22 +193,18 @@ def handle_pre_tool_use(payload, raw_input):
 
     return {"decision": "allow"}
 
-_LAST_STOP_NOTIFY_TIME = 0.0
-
 def handle_stop(payload, raw_input):
     """
-    Manejo del evento Stop: AGY ha terminado de responder.
-    - Emite campanita en TTY y notificación ÚNICAMENTE cuando la respuesta final
-      ha concluido completamente y queda esperando el siguiente prompt del usuario.
-    - NO emite alertas en pasos intermedios ni ejecuciones continuas de tareas.
+    Manejo del evento Stop: El agente ha terminado su ejecución completa.
+    - Emite notificación ÚNICAMENTE cuando la respuesta final ha concluido completamente
+      (fullyIdle is True) y el agente queda libre esperando el siguiente prompt del usuario.
+    - NO emite alertas en pasos intermedios, subagentes ni tareas en ejecución.
     """
-    global _LAST_STOP_NOTIFY_TIME
-
     conv_id = payload.get("conversationId", "")
     termination_reason = payload.get("terminationReason", "")
     fully_idle = payload.get("fullyIdle", False)
 
-    # Si hay herramientas pendientes o el estado sigue activo, NO es final
+    # Si hay herramientas pendientes o el estado sigue activo o es paso intermedio, NO es final
     has_pending = bool(
         payload.get("toolCalls") or
         payload.get("pendingToolCalls") or
@@ -216,21 +214,32 @@ def handle_stop(payload, raw_input):
     if has_pending:
         return {"decision": ""}
 
-    # Solo notificar si realmente ha terminado el turno final
-    is_truly_idle = fully_idle or termination_reason == "model_stop"
-    if not is_truly_idle:
+    # Solo notificar si el estado es total y explícitamente idle final
+    if not fully_idle:
         return {"decision": ""}
 
-    import time
+    # Debounce persistente en disco entre procesos (mínimo 6.0s entre alertas de parada)
+    stop_state_file = os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
     now = time.time()
-    if (now - _LAST_STOP_NOTIFY_TIME) < 3.5:
-        return {"decision": ""}
+    try:
+        if os.path.isfile(stop_state_file):
+            with open(stop_state_file, "r", encoding="utf-8") as f:
+                last_stop = float(json.load(f).get("time", 0.0))
+                if (now - last_stop) < 6.0:
+                    return {"decision": ""}
+    except Exception:
+        pass
 
-    _LAST_STOP_NOTIFY_TIME = now
+    try:
+        with open(stop_state_file, "w", encoding="utf-8") as f:
+            json.dump({"time": now, "conv_id": conv_id}, f)
+    except Exception:
+        pass
+
     ring_terminal_bell()
     session_title = get_session_title(conv_id)
     send_desktop_notification(
-        f"AGY: {session_title}",
+        f"Aegis: {session_title}",
         "Respuesta completada.",
         urgency="normal",
         timeout_ms=4000,

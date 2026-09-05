@@ -78,14 +78,14 @@ def copy_scripts(scripts_dir):
             pass
 
 def install_skill(skills_dir):
-    src_skill = os.path.join(SCRIPT_DIR, "skills", "agy-powerpack")
-    dst_skill = os.path.join(skills_dir, "agy-powerpack")
+    src_skill = os.path.join(SCRIPT_DIR, "skills", "aegis")
+    dst_skill = os.path.join(skills_dir, "aegis")
     print(f"▶ Installing Skill to: {dst_skill}")
 
     if os.path.exists(dst_skill):
         shutil.rmtree(dst_skill)
     shutil.copytree(src_skill, dst_skill)
-    print("✔ Skill agy-powerpack installed.")
+    print("✔ Skill aegis installed.")
 
 def configure_hooks(config_dir, scripts_dir):
     hooks_file = os.path.join(config_dir, "hooks.json")
@@ -138,14 +138,15 @@ def configure_hooks(config_dir, scripts_dir):
     }
 
     # Idempotencia: Verificar si ya está exactamente configurado
-    if data.get("agy-powerpack") == expected_entry:
+    if data.get("aegis") == expected_entry:
         print("✔ Hooks already active and correctly configured (idempotent, no rewrite needed).")
         return
 
     if os.path.isfile(hooks_file):
         shutil.copy2(hooks_file, f"{hooks_file}.bak.{int(time.time())}")
 
-    data["agy-powerpack"] = expected_entry
+    data.pop("agy-powerpack", None)
+    data["aegis"] = expected_entry
 
     with open(hooks_file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

@@ -86,12 +86,13 @@ expected_entry = {
     ]
 }
 
-if data.get("agy-powerpack") == expected_entry:
+if data.get("aegis") == expected_entry:
     print("✔ Hooks ya configurados correctamente (idempotente, omitiendo escritura).")
 else:
     if os.path.isfile(hooks_path):
         shutil.copy2(hooks_path, f"{hooks_path}.bak.{int(time.time())}")
-    data["agy-powerpack"] = expected_entry
+    data.pop("agy-powerpack", None)
+    data["aegis"] = expected_entry
     with open(hooks_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print("✔ Hooks registrados exitosamente en:", hooks_path)

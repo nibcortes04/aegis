@@ -10,6 +10,9 @@ import os
 import platform
 import subprocess
 import shutil
+import time
+import json
+import tempfile
 
 def get_os_type():
     """
@@ -145,8 +148,8 @@ def is_silent_mode():
 def get_notification_channel():
     """
     Determina el canal de notificación configurado:
+    - 'desktop' (default): Solo notificación de escritorio limpia (evita que Konsole muestre alertas de timbre).
     - 'all': Notificación de escritorio (tarjeta única) + campana en terminal.
-    - 'desktop': Solo notificación de escritorio (evita que Konsole muestre alertas de timbre).
     - 'bell': Solo campana en terminal (sin popups de escritorio).
     - 'none': Silenciado total.
     """
@@ -165,7 +168,7 @@ def get_notification_channel():
     except Exception:
         pass
 
-    return "all"
+    return "desktop"
 
 def ring_terminal_bell():
     """
@@ -201,7 +204,6 @@ def ring_terminal_bell():
         try:
             with open("/dev/tty", "w", encoding="utf-8", errors="ignore") as tty:
                 # Solo emitir \a (BEL puro). NO emitir secuencias OSC 777 ni OSC 9
-                # para evitar que terminales como Konsole generen notificaciones duplicadas.
                 tty.write("\a")
                 tty.flush()
                 return
@@ -214,14 +216,35 @@ def ring_terminal_bell():
     except Exception:
         pass
 
+def check_persistent_debounce(title, message, min_interval=3.5):
+    """Garantiza rate-limiting entre procesos mediante un archivo atómico en /tmp."""
+    state_file = os.path.join(tempfile.gettempdir(), ".aegis_notify_state.json")
+    now = time.time()
+    try:
+        if os.path.isfile(state_file):
+            with open(state_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                last_time = float(data.get("time", 0.0))
+                last_key = data.get("key", "")
+                if (now - last_time) < min_interval:
+                    return False
+                if last_key == f"{title}:{message}" and (now - last_time) < 10.0:
+                    return False
+    except Exception:
+        pass
+    try:
+        with open(state_file, "w", encoding="utf-8") as f:
+            json.dump({"time": now, "key": f"{title}:{message}"}, f)
+    except Exception:
+        pass
+    return True
+
 def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="utilities-terminal", replace_id=9942):
     """
     Dispara notificación nativa de escritorio adaptada al sistema operativo.
     Utiliza ID de reemplazo y tags sincronizados para que las notificaciones no se apilen.
     Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'bell'/'none'.
     """
-    global _LAST_NOTIFICATION_TIME, _LAST_NOTIFICATION_CONTENT
-
     if is_silent_mode():
         return
 
@@ -229,15 +252,8 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
     if channel in ("none", "bell"):
         return
 
-    import time
-    now = time.time()
-    # Anti-spam: Si el mismo mensaje se disparó hace menos de 2.5s, ignorar
-    content_key = f"{title}:{message}"
-    if content_key == _LAST_NOTIFICATION_CONTENT and (now - _LAST_NOTIFICATION_TIME) < 2.5:
+    if not check_persistent_debounce(title, message, min_interval=3.0):
         return
-
-    _LAST_NOTIFICATION_TIME = now
-    _LAST_NOTIFICATION_CONTENT = content_key
 
     os_type = get_os_type()
 
@@ -247,12 +263,12 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
             try:
                 cmd = [
                     "notify-send",
-                    "-a", "AGY",
+                    "-a", "Aegis",
                     "-r", str(replace_id),
                     "-u", urgency,
                     "-t", str(timeout_ms),
                     "-h", "int:transient:1",
-                    "-h", "string:x-canonical-private-synchronous:agy-notification",
+                    "-h", "string:x-canonical-private-synchronous:aegis-notification",
                     "-i", icon,
                     title,
                     message
