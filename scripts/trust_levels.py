@@ -144,15 +144,29 @@ class DangerousConfirmationLedger:
         data = {k: v for k, v in data.items() if (now - v.get("timestamp", 0)) < self.ttl_seconds}
 
         entry = data.get(cmd_hash)
-        if entry and entry.get("stage") == 1:
-            # Paso 2 alcanzado dentro de la ventana de TTL
-            del data[cmd_hash]
-            self._write_ledger(data)
-            return 2, (
-                f"⚠️ [CONFIRMACIÓN DEFINITIVA - PASO 2 DE 2]: Se ha recibido la primera confirmación. "
-                f"El comando '{cmd}' modificará o eliminará datos permanentemente. "
-                f"¿Autorizas la ejecución definitiva en el sistema?"
-            )
+        if entry:
+            stage_current = entry.get("stage", 1)
+            if stage_current == 1:
+                # Paso 2 alcanzado dentro de la ventana de TTL
+                entry["stage"] = 2
+                entry["stage2_time"] = now
+                self._write_ledger(data)
+                return 2, (
+                    f"⚠️ [CONFIRMACIÓN DEFINITIVA - PASO 2 DE 2]: Se ha recibido la primera confirmación. "
+                    f"El comando '{cmd}' modificará o eliminará datos permanentemente. "
+                    f"¿Autorizas la ejecución definitiva en el sistema?"
+                )
+            elif stage_current == 2:
+                # Si se invoca en la misma ráfaga de hooks (< 1.5s), mantener stage 2 para evitar desacuerdo
+                if (now - entry.get("stage2_time", 0)) < 1.5:
+                    return 2, (
+                        f"⚠️ [CONFIRMACIÓN DEFINITIVA - PASO 2 DE 2]: Se ha recibido la primera confirmación. "
+                        f"El comando '{cmd}' modificará o eliminará datos permanentemente. "
+                        f"¿Autorizas la ejecución definitiva en el sistema?"
+                    )
+                else:
+                    # Token ya consumido en una llamada previa; reiniciar ciclo a stage 1
+                    del data[cmd_hash]
 
         # Paso 1: Registrar nuevo intento y denegar para forzar confirmación en chat
         data[cmd_hash] = {

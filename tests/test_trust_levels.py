@@ -15,6 +15,10 @@ from trust_levels import (
 )
 
 class TestTrustLevels(unittest.TestCase):
+    def setUp(self):
+        from trust_levels import DangerousConfirmationLedger
+        DangerousConfirmationLedger().clear()
+
     def test_level_audit_blocks_all_mutations(self):
         # Read tools allowed
         dec, _ = evaluate_trust("view_file", {"AbsolutePath": "/tmp/test"}, level=LEVEL_AUDIT)
@@ -104,7 +108,9 @@ class TestTrustLevels(unittest.TestCase):
             self.assertEqual(stage2, 2)
             self.assertIn("PASO 2 DE 2", reason2)
 
-            # 3. Tercer intento tras consumir token -> regresa a stage 1
+            # 3. Tercer intento tras consumir token (esperando fin de ventana de gracia) -> regresa a stage 1
+            import time
+            time.sleep(1.6)
             stage3, reason3 = ledger.check_and_advance(test_cmd)
             self.assertEqual(stage3, 1)
 
