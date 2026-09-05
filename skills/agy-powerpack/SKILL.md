@@ -11,21 +11,22 @@ description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides 
 
 ## 1. Core Modules
 
-### A. Smart Auto Mode
+### A. Smart Auto Mode & Graduated Trust Levels
 - **Zero-friction execution:** Automatically approves read-only tools (`view_file`, `list_dir`, `grep_search`), safe inspection and test commands (`git status`, `git diff`, `pnpm test`, `pytest`), and in-workspace file edits.
-- **Fail-closed security:** Potentially destructive operations (`rm -rf`, `git push --force`, `docker rm/stop`, modifications outside workspace) trigger an interactive prompt, ring the terminal bell, and issue a transient desktop notification.
+- **Graduated Trust Levels:** 4 security profiles (`audit`, `workspace-safe` [default], `full-developer`, `subagent-worker`) allowing users to safely expand agent permissions (package managers, local servers, isolated subagents) without ever risking catastrophic commands.
+- **Fail-closed security:** Potentially destructive operations (`rm -rf`, `git push --force`, `docker rm/stop`, modifications outside workspace) trigger an interactive prompt, ring the terminal bell, and issue an auto-dismissing desktop notification.
 - Read more: [references/auto_mode.md](references/auto_mode.md)
 
-### B. Terminal Bell & Desktop Notifications (🔔)
+### B. Terminal Bell & Single-Card Desktop Notifications (🔔)
 - **Tab Bell Icon:** Emits the standard POSIX ASCII BEL character (`\a`) and OSC 9/777 sequences to `/dev/tty` upon turn completion (`Stop` hook) and when approval is required. In KDE Konsole, Orca, and modern terminals, this renders the notification bell icon on the terminal tab.
-- **Transient Desktop Popups:** Fires `notify-send` with `-t 4000`, `-u normal`, and `-h int:transient:1`, preventing sticky or persistent notification bubbles in KDE Plasma.
+- **In-Place Notification Replacement:** Replaces notifications in-place (`-r 9942` / `x-canonical-private-synchronous:agy-notification` / `$toast.Tag`), preventing notification stacking. Silences notifications during automated test suites.
 - Read more: [references/notifications.md](references/notifications.md)
 
 ### C. Advanced Statusline (Claude Code Style)
 - **Real-time 3-line status bar:**
   - **Line 1:** Model with reasoning effort (`🧠 high`), directory, Git branch with live line diff (`+X -Y`), and session name/preview.
   - **Line 2:** Graphic context window bar (`[████░░░░░░] 24%`), session cost, duration, 5-hour quota with local reset time (`(🕦18:30)`), and weekly 7-day quota.
-  - **Line 3:** Interactive cycle mode indicator (`▶▶ auto mode on (shift+tab to cycle) · ← for agents`).
+  - **Line 3:** Interactive cycle mode indicator (`▶▶ auto (safe) (shift+tab to cycle) · ← for agents`).
 - Read more: [references/statusline.md](references/statusline.md)
 
 ### D. Multiplatform Session Continuity & Android PWA
@@ -39,6 +40,15 @@ description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides 
 - **Surface Awareness:** Automatically detects whether it is running in pure CLI, Antigravity IDE (VS Code), or Antigravity 2.0 (Electron App).
 - **Native Notifications:** Adapts between Linux (`notify-send` transient), macOS (`osascript`/`terminal-notifier`), and Windows (PowerShell WinRT Toast).
 - Read more: [references/cross_platform.md](references/cross_platform.md)
+
+### F. Multi-Agent Delegation & Subagent Catalog
+- **Concurrent Subagents:** Native multi-agent patterns (Fork & Join, Worker Pool, Reviewer Gate) using `invoke_subagent`.
+- **5 Bundled Subagents:** `researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`.
+- Read more: [references/multi_agent_delegation.md](references/multi_agent_delegation.md)
+
+### G. Built-in Documentation MCP Server
+- **Zero-Dependency Stdio MCP Server:** Exposes `powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, and `powerpack_verify_system` via stdio JSON-RPC 2.0.
+- Registered via `mcp_config.json`.
 
 ---
 

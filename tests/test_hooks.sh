@@ -5,6 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 HOOK_SCRIPT="$REPO_ROOT/scripts/agy_hook_handler.py"
+export AGY_HOOK_SILENT=1
 
 echo "=== Running AGY Hook Contract Tests ==="
 

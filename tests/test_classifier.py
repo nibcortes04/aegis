@@ -2,7 +2,8 @@ import unittest
 import sys
 import os
 
-# Agregar scripts al path
+# Agregar scripts al path y silenciar notificaciones en pruebas
+os.environ["AGY_HOOK_SILENT"] = "1"
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../scripts")))
 from agy_hook_handler import is_command_critical, handle_pre_tool_use, handle_stop
 

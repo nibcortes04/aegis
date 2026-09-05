@@ -12,17 +12,21 @@
 ## 🌟 Highlights
 
 - **⚡ Smart Auto Mode without Delay**: Auto-approves safe read tools (`view_file`, `list_dir`, `grep_search`), in-workspace file edits, and safe test/build commands with **0s approval delay**.
+- **🛡️ Graduated Trust Levels (Niveles de Confianza)**: 4 distinct runtime security profiles (`audit`, `workspace-safe` [default], `full-developer`, `subagent-worker`) allowing users to safely expand agent autonomy from read-only auditing to automated dependency installation and local dev servers.
+- **🤖 Native Multi-Agent Delegation**: 5 bundled subagents (`researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`) for Fork & Join, Worker Pool, and Reviewer Gate orchestration while preserving a clean context window.
+- **🔌 Built-in MCP Documentation Server**: Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools (`powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`) for dynamic agent self-discovery.
 - **🛡️ Fail-Closed Security Gate**: Strictly halts and requests human confirmation for destructive shell commands (`rm -rf`, `git push -f`, `docker rm/stop`, `dd`, `mkfs`, `sudo`) and file edits outside the workspace.
 - **🌐 100% Cross-Platform & Surface-Aware**:
   - **Operating Systems**: Native support for **Linux** (KDE Plasma, GNOME, Orca), **macOS** (AppleScript/terminal-notifier), and **Windows 10/11** (Windows Terminal, WinRT PowerShell Toasts).
   - **Antigravity Surfaces**: Automatically detects execution environment across **Antigravity CLI (`agy`)**, **Antigravity IDE (VS Code)**, and **Antigravity 2.0 (Electron Desktop App)**.
-- **🔔 Terminal Tab Bell & Auto-Dismiss Notifications**:
+- **🔔 Single-Card & Anti-Spam Notifications**:
   - Emits ASCII 7 (`\a`) to `/dev/tty` (Linux/macOS) or `CONOUT$` (Windows), lighting up the bell icon on terminal tabs in KDE Konsole, Orca, iTerm2, Kitty, and Windows Terminal.
-  - Triggers native desktop notifications: Linux (`notify-send -h int:transient:1`), macOS (`osascript`), and Windows (PowerShell WinRT Toast) with auto-dismissal to **never get stuck on screen**.
+  - In-place single notification replacement (`-r 9942` / `x-canonical-private-synchronous:agy-notification` / `$toast.Tag`) preventing desktop alert stacking.
+  - Test & batch silence detection (`AGY_HOOK_SILENT=1`, `pytest`, `unittest`) producing 0 notification popups during automated test runs.
 - **📊 Claude Code-Grade 3-Line Statusline**:
   - **Line 1**: Model & reasoning effort (`🧠 high`), directory, Git branch, and live diff lines counter (`+42 -3`).
   - **Line 2**: Context window bar (`███░░░░░░░ 35%`), cost in USD (`💰 $0.0421`), duration (`⏱ 2m5s`), and 5h/7d quotas with local reset time (`5h:45%(🕦04:30) 7d:12%`).
-  - **Line 3**: Interactive cycle mode indicator (`▶▶ auto mode on (shift+tab to cycle) · ← for agents`).
+  - **Line 3**: Interactive cycle mode indicator (`▶▶ auto (safe) (shift+tab to cycle) · ← for agents`).
 - **📱 Android Remote Control via Official Google PWA**:
   - Monitor long-running agent tasks and resume sessions directly from your mobile device using the official web app at `https://antigravity.google`.
 - **🌳 Git Worktree Isolation & Bot-Ready Contributions**:
@@ -79,8 +83,19 @@ python3 -m unittest discover -s tests -p "test_*.py"
 agy-powerpack/
 ├── plugin.json                 # Antigravity Plugin Manifest (passes agy plugin validate)
 ├── hooks.json                  # Hook declarations (PreToolUse & Stop)
-├── install.sh                  # One-click installer & configuration updater
+├── mcp_config.json             # MCP server registration config
+├── install.py                  # Cross-platform Python installer (idempotent)
+├── install.sh                  # One-click POSIX installer
 ├── uninstall.sh                # Clean uninstaller
+├── agents/                     # Bundled subagents catalog
+│   ├── researcher/             # Read-only exploration & documentation search
+│   ├── worker-backend/         # Backend implementation & unit tests
+│   ├── worker-frontend/        # UI/UX & frontend implementation
+│   ├── qa-tester/              # Automated QA suites & verification
+│   └── reviewer-bot/           # Code review & compliance gating
+├── mcp/                        # Built-in documentation & diagnostic MCP server
+│   ├── mcp_server.py           # Stdio JSON-RPC 2.0 server
+│   └── README.md               # MCP documentation
 ├── rules/
 │   └── AGENTS.md               # Standard agent governance rule
 ├── skills/
@@ -88,11 +103,14 @@ agy-powerpack/
 │       ├── SKILL.md            # Master operational skill
 │       └── references/         # Deep architectural guides
 │           ├── auto_mode.md    # Classifier design & critical command rules
-│           ├── notifications.md# Terminal bell & KDE transient notifications
+│           ├── notifications.md# Terminal bell & single-card notifications
 │           ├── statusline.md   # Statusline ANSI spec & quota schema
-│           └── remote_sessions.md # Android PWA & session continuity guide
+│           ├── remote_sessions.md # Android PWA & session continuity guide
+│           └── multi_agent_delegation.md # Multi-agent orchestration patterns
 ├── scripts/
-│   ├── agy_hook_handler.py     # Sub-10ms hook dispatcher & classifier
+│   ├── agy_hook_handler.py     # Sub-10ms hook dispatcher & security gate
+│   ├── trust_levels.py         # 4-tier graduated trust levels engine
+│   ├── env_detector.py         # Cross-platform & surface detector with debounce
 │   ├── agy-hook-dispatcher.sh  # Fast execution wrapper
 │   ├── statusline_formatter.py # Claude Code statusline renderer
 │   ├── statusline.sh           # Statusline wrapper
@@ -101,15 +119,77 @@ agy-powerpack/
 ├── tests/
 │   ├── test_classifier.py      # Classifier unit test suite
 │   ├── test_statusline.py      # Statusline formatting & quota test suite
+│   ├── test_trust_levels.py    # Trust levels permissions test suite
+│   ├── test_mcp_server.py      # MCP server tools unit test suite
 │   └── test_hooks.sh           # End-to-end hook contract test
-├── docs/                       # GitHub Pages documentation landing
+├── docs/                       # Documentation landing & guides
+│   ├── index.html              # GitHub Pages dashboard
+│   ├── TERMINALS.md            # Terminal setup guide (Konsole, Orca, Kitty, etc.)
+│   └── COMPATIBILITY_CHECKLIST.md # OS & Surface verification checklist
 └── .github/
+    ├── PROJECT_TASKS.md        # Roadmap & task backlog board
     ├── workflows/
     │   ├── ci.yml              # CI verification pipeline
-    │   └── deploy-pages.yml    # Automated deploy strictly gated on passing CI
-    ├── ISSUE_TEMPLATE/         # Bug & Feature templates
+    │   ├── deploy-pages.yml    # Automated deploy gated on passing CI
+    │   └── pr-bot-validator.yml# Automated PR validation & bot labeling
+    ├── ISSUE_TEMPLATE/
+    │   ├── bug_report.md       # Bug template
+    │   ├── feature_request.md  # Feature template
+    │   └── task.md             # Task template for Project boards
     └── PULL_REQUEST_TEMPLATE.md# Human & Autonomous Bot PR standard
 ```
+
+---
+
+## 🛡️ Auto Mode Trust Levels
+
+Configure how much autonomy your agents have without ever risking catastrophic system damage:
+
+| Level | Name | Autonomy Scope | Typical Commands |
+| :--- | :--- | :--- | :--- |
+| **0** | `audit` | **Read-Only** | `cat`, `ls`, `grep`, `find`, `git log/status/diff` |
+| **1** | `workspace-safe` *(Default)* | **In-Workspace Edits & Standard Tests** | Level 0 + `git add/commit`, `pytest`, `npm test`, `cargo test`, workspace edits |
+| **2** | `full-developer` | **Developer Autonomy** | Level 1 + `npm install`, `pip install`, `pnpm add`, `docker compose up`, local servers |
+| **3** | `subagent-worker` | **Autonomous Subagent Pool** | Subagent isolation: in-workspace edits + compilation/linting; blocks git push & external ops |
+
+> **Always Blocked (All Levels)**: Destructive commands (`rm -rf /`, `mkfs`, `dd`, `sudo`, `docker rm -f`, `git push --force`) always halt and require explicit interactive human approval.
+
+### Setting Active Level
+In `~/.gemini/antigravity-cli/settings.json`:
+```json
+{
+  "autoModeLevel": "full-developer"
+}
+```
+Or via environment variable:
+```bash
+export AGY_TRUST_LEVEL="full-developer"
+```
+
+---
+
+## 🤖 Multi-Agent Delegation & Bundled Subagents
+
+Run complex projects in parallel without context bloat using AGY's native subagent system:
+
+- **`researcher`**: Read-only codebase explorer for searching files, analyzing AST, and checking documentation.
+- **`worker-backend`**: Implements backend services, API endpoints, migrations, and unit tests.
+- **`worker-frontend`**: Implements visual components, templates, styles, and client-side interactions.
+- **`qa-tester`**: Redacts QA test plans, executes unit/integration suites, and diagnoses test failures.
+- **`reviewer-bot`**: Independent reviewer for code compliance, security, and edge-case verification.
+
+See the complete guide in [skills/agy-powerpack/references/multi_agent_delegation.md](file:///home/n_n/projects/agy-powerpack/skills/agy-powerpack/references/multi_agent_delegation.md).
+
+---
+
+## 🔌 Built-in Documentation MCP Server
+
+The plugin includes a stdio JSON-RPC 2.0 MCP server (`mcp/mcp_server.py`) that agents can query dynamically:
+
+- **`powerpack_get_trust_levels`**: Query available security profiles and permitted commands.
+- **`powerpack_get_surface_info`**: Inspect current OS, terminal emulator, and Antigravity surface.
+- **`powerpack_get_delegation_guide`**: Retrieve recommended multi-agent delegation architectures.
+- **`powerpack_verify_system`**: Run quick health checks on local scripts and configs.
 
 ---
 

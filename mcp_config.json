@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "agy-powerpack-docs": {
+      "command": "python3",
+      "args": [
+        "./mcp/mcp_server.py"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

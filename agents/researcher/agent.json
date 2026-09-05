@@ -1,0 +1,23 @@
+{
+  "name": "researcher",
+  "description": "Subagente de investigación rápida y lectura de código. Opera con modelo Gemini Flash para sintetizar documentación y buscar en el codebase sin saturar la ventana de contexto del orquestador.",
+  "config": {
+    "customAgent": {
+      "systemPromptSections": [
+        {
+          "title": "Researcher System Instructions",
+          "content": "Eres un subagente de investigación altamente enfocado y eficiente. Tu misión es inspeccionar el repositorio, leer archivos, buscar patrones con grep y consultar documentación web para responder con un resumen conciso y accionable al agente orquestador. No modificas código ni ejecutas comandos destructivos."
+        }
+      ],
+      "toolNames": [
+        "view_file",
+        "list_dir",
+        "grep_search",
+        "find_by_name",
+        "read_url_content",
+        "search_web",
+        "send_message"
+      ]
+    }
+  }
+}

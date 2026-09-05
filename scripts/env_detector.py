@@ -130,16 +130,31 @@ def is_path_in_workspace(target_file, workspace_root=None):
         # En caso de error de resolución, fallar de forma segura
         return False
 
+# Cache simple en memoria para anti-spam y rate-limiting (en segundos)
+_LAST_NOTIFICATION_TIME = 0.0
+_LAST_NOTIFICATION_CONTENT = ""
+
+def is_silent_mode():
+    """Determina si las notificaciones y campanas deben silenciarse (tests, CI, batch)."""
+    if os.environ.get("AGY_HOOK_SILENT") == "1" or os.environ.get("AGY_TESTING") == "1":
+        return True
+    if "unittest" in sys.modules or "pytest" in sys.modules:
+        return True
+    return False
+
 def ring_terminal_bell():
     """
     Emite señal de campana (BEL ASCII 7) compatible con Linux, macOS y Windows.
     - Linux/macOS: Escribe en /dev/tty o sys.stderr.
     - Windows: Escribe en CONOUT$ o sys.stderr o usa Beep de kernel32.
+    Silenciado automáticamente durante tests o con AGY_HOOK_SILENT=1.
     """
+    if is_silent_mode():
+        return
+
     os_type = get_os_type()
 
     if os_type == "windows":
-        # 1. Intentar consola Windows
         try:
             with open("CONOUT$", "w", encoding="utf-8", errors="ignore") as con:
                 con.write("\a")
@@ -147,7 +162,6 @@ def ring_terminal_bell():
                 return
         except Exception:
             pass
-        # 2. Intentar beep nativo de Windows (sin sonido invasivo o fallback)
         try:
             import winsound
             winsound.MessageBeep(winsound.MB_OK)
@@ -155,7 +169,6 @@ def ring_terminal_bell():
         except Exception:
             pass
     else:
-        # Linux / macOS: /dev/tty soporta secuencias OSC
         try:
             with open("/dev/tty", "w", encoding="utf-8", errors="ignore") as tty:
                 tty.write("\a")
@@ -166,47 +179,58 @@ def ring_terminal_bell():
         except Exception:
             pass
 
-    # Fallback universal a stderr
     try:
         sys.stderr.write("\a")
         sys.stderr.flush()
     except Exception:
         pass
 
-def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="utilities-terminal"):
+def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="utilities-terminal", replace_id=9942):
     """
-    Dispara notificación nativa de escritorio adaptada al sistema operativo:
-    - Linux: notify-send con flag transitoria (-h int:transient:1)
-    - macOS: osascript con display notification o terminal-notifier
-    - Windows: PowerShell Toast Notification
+    Dispara notificación nativa de escritorio adaptada al sistema operativo.
+    Utiliza ID de reemplazo y tags sincronizados para que las notificaciones no se apilen.
+    Silenciado automáticamente durante tests o con AGY_HOOK_SILENT=1.
     """
+    global _LAST_NOTIFICATION_TIME, _LAST_NOTIFICATION_CONTENT
+
+    if is_silent_mode():
+        return
+
+    import time
+    now = time.time()
+    # Anti-spam: Si el mismo mensaje se disparó hace menos de 1.5s, ignorar
+    content_key = f"{title}:{message}"
+    if content_key == _LAST_NOTIFICATION_CONTENT and (now - _LAST_NOTIFICATION_TIME) < 1.5:
+        return
+
+    _LAST_NOTIFICATION_TIME = now
+    _LAST_NOTIFICATION_CONTENT = content_key
+
     os_type = get_os_type()
 
-    # 1. Linux
+    # 1. Linux: Usar -r 9942 y x-canonical-private-synchronous para reemplazar en vez de apilar
     if os_type == "linux":
         if shutil.which("notify-send"):
             try:
-                subprocess.run(
-                    [
-                        "notify-send",
-                        "-a", "AGY",
-                        "-u", urgency,
-                        "-t", str(timeout_ms),
-                        "-h", "int:transient:1",
-                        "-i", icon,
-                        title,
-                        message
-                    ],
-                    capture_output=True,
-                    timeout=1.0
-                )
+                cmd = [
+                    "notify-send",
+                    "-a", "AGY",
+                    "-r", str(replace_id),
+                    "-u", urgency,
+                    "-t", str(timeout_ms),
+                    "-h", "int:transient:1",
+                    "-h", "string:x-canonical-private-synchronous:agy-notification",
+                    "-i", icon,
+                    title,
+                    message
+                ]
+                subprocess.run(cmd, capture_output=True, timeout=1.0)
             except Exception:
                 pass
         return
 
     # 2. macOS
     if os_type == "macos":
-        # Probar primero terminal-notifier si está disponible
         if shutil.which("terminal-notifier"):
             try:
                 subprocess.run(
@@ -223,17 +247,12 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
             except Exception:
                 pass
 
-        # Fallback a AppleScript osascript
         if shutil.which("osascript"):
             safe_title = title.replace('"', '\\"')
             safe_msg = message.replace('"', '\\"')
             script = f'display notification "{safe_msg}" with title "{safe_title}" sound name "default"'
             try:
-                subprocess.run(
-                    ["osascript", "-e", script],
-                    capture_output=True,
-                    timeout=1.0
-                )
+                subprocess.run(["osascript", "-e", script], capture_output=True, timeout=1.0)
             except Exception:
                 pass
         return
@@ -244,7 +263,6 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
         safe_title = title.replace('"', '`"').replace("'", "''")
         safe_msg = message.replace('"', '`"').replace("'", "''")
 
-        # Script PowerShell de una sola línea para Toast nativo de Windows 10/11
         ps_cmd = (
             f"$title = '{safe_title}'; $msg = '{safe_msg}'; "
             "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null; "
@@ -253,6 +271,7 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
             "$textNodes.Item(0).AppendChild($template.CreateTextNode($title)) > $null; "
             "$textNodes.Item(1).AppendChild($template.CreateTextNode($msg)) > $null; "
             "$toast = [Windows.UI.Notifications.ToastNotification]::new($template); "
+            "$toast.Tag = 'agy-notification'; $toast.Group = 'agy'; "
             "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Antigravity').Show($toast);"
         )
         try:

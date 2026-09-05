@@ -143,60 +143,40 @@ def is_command_critical(cmd):
             return True
     return False
 
+try:
+    from trust_levels import evaluate_trust, is_command_critical, get_active_trust_level
+except ImportError:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from trust_levels import evaluate_trust, is_command_critical, get_active_trust_level
+
 def handle_pre_tool_use(payload, raw_input):
     """
-    Clasificador de Auto Mode:
-    - Retorna 'allow' para herramientas seguras y comandos no destructivos.
-    - Retorna 'ask' si el comando es crítico o requiere autorización humana.
+    Clasificador de Auto Mode basado en Niveles de Confianza (Trust Levels):
+    - 'audit': Todo comando o mutación pide aprobación humana.
+    - 'workspace-safe' (default): Lecturas y ediciones en workspace seguras, comandos dev permitidos.
+    - 'full-developer': Autonomía para build, install y servers locales. Bloquea daño irreversible.
+    - 'subagent-worker': Autonomía acotada al worktree asignado.
     """
     tool_call = payload.get("toolCall") or {}
     tool_name = tool_call.get("name", "")
     args = tool_call.get("args") or {}
     conv_id = payload.get("conversationId", "")
+    workspace_root = payload.get("cwd") or payload.get("workspace", {}).get("current_dir")
 
-    # 1. Herramientas de solo lectura -> Auto-Allow
-    if tool_name in SAFE_READ_TOOLS:
-        return {"decision": "allow"}
+    decision, reason = evaluate_trust(tool_name, args, workspace_root=workspace_root)
 
-    # 2. Herramientas de edición de archivos en workspace
-    if tool_name in ("write_to_file", "replace_file_content"):
-        target_file = args.get("TargetFile", "")
-        workspace_root = payload.get("cwd") or payload.get("workspace", {}).get("current_dir")
-        # Si el archivo está fuera del workspace o del home del usuario -> Pedir confirmación
-        if not is_path_in_workspace(target_file, workspace_root):
-            ring_terminal_bell()
-            session_title = get_session_title(conv_id)
-            send_desktop_notification(
-                f"AGY: {session_title}",
-                f"Aprobación requerida para editar fuera de workspace: {target_file}",
-                urgency="normal",
-                timeout_ms=5000,
-                icon="dialog-warning"
-            )
-            return {"decision": "ask", "reason": "Edición en archivo fuera de workspace"}
-        return {"decision": "allow"}
+    if decision == "ask":
+        ring_terminal_bell()
+        session_title = get_session_title(conv_id)
+        send_desktop_notification(
+            f"AGY: {session_title}",
+            f"Aprobación requerida: {reason[:65]}",
+            urgency="normal",
+            timeout_ms=5000,
+            icon="dialog-warning"
+        )
+        return {"decision": "ask", "reason": reason}
 
-    # 3. Comandos de terminal (run_command)
-    if tool_name == "run_command":
-        cmd = args.get("CommandLine", "").strip()
-
-        # Si es destructivo -> Pedir aprobación + notificar (5s) + campanita
-        if is_command_critical(cmd):
-            ring_terminal_bell()
-            session_title = get_session_title(conv_id)
-            send_desktop_notification(
-                f"AGY: {session_title}",
-                f"Aprobación requerida: {cmd[:50]}...",
-                urgency="normal",
-                timeout_ms=5000,
-                icon="dialog-warning"
-            )
-            return {"decision": "ask", "reason": "Comando potencialmente destructivo"}
-
-        # De lo contrario -> Auto-Allow
-        return {"decision": "allow"}
-
-    # 4. Por defecto en Auto Mode -> allow
     return {"decision": "allow"}
 
 def handle_stop(payload, raw_input):

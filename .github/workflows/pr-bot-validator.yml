@@ -1,0 +1,73 @@
+name: Bot PR Validator & Auto-Triage
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ "main", "dev" ]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  validate-bot-pr:
+    name: Verify PR Integrity & Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout pull request code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -qy jq libnotify-bin
+
+      - name: Syntax Check All Source Files
+        run: |
+          python3 -m py_compile scripts/*.py tests/*.py mcp/*.py install.py
+          bash -n scripts/*.sh tests/*.sh install.sh uninstall.sh
+
+      - name: Run Full Test Suite (Silent Mode)
+        env:
+          AGY_HOOK_SILENT: "1"
+        run: |
+          python3 -m unittest discover -s tests -p "test_*.py" -v
+          ./tests/test_hooks.sh
+
+      - name: Validate Plugin & MCP Schemas
+        run: |
+          python3 -c "
+          import json
+          with open('plugin.json') as f:
+              p = json.load(f)
+              assert 'name' in p and 'version' in p, 'Invalid plugin.json'
+          with open('hooks.json') as f:
+              h = json.load(f)
+              assert 'agy-powerpack' in h, 'Invalid hooks.json'
+          with open('mcp_config.json') as f:
+              m = json.load(f)
+              assert 'mcpServers' in m, 'Invalid mcp_config.json'
+          print('All plugin manifests verified successfully.')
+          "
+
+      - name: Auto-Label Bot Contributions
+        if: startsWith(github.head_ref, 'bot/')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['bot-pr', 'auto-verified']
+              });
+            } catch (err) {
+              console.log('Notice: Labels step skipped or not permitted', err);
+            }

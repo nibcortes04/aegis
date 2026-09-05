@@ -117,7 +117,7 @@
           <!-- Line 3 Statusline -->
           <div class="term-line statusline-l3">
             <span class="term-yellow">▶▶</span>
-            <span class="term-white"> auto mode on </span>
+            <span class="term-white"> auto (dev) </span>
             <span class="term-dim">(shift+tab to cycle) · ← for agents</span>
           </div>
         </div>
@@ -134,17 +134,17 @@
       <div class="feature-grid">
         <div class="feature-card">
           <div class="card-icon">⚡</div>
-          <h3>Smart Auto Mode</h3>
+          <h3>Smart Auto Mode & Trust Levels</h3>
           <p>
-            Zero approval lag for safe tools (reads, searches, in-workspace edits, tests). Fails closed and requests human approval for critical commands (<code>rm -rf</code>, <code>git push -f</code>, <code>docker rm</code>, <code>dd</code>).
+            4 graduated runtime trust profiles (<code>audit</code>, <code>workspace-safe</code>, <code>full-developer</code>, <code>subagent-worker</code>). Zero lag for safe tools; strictly fails closed on destructive commands (<code>rm -rf</code>, <code>mkfs</code>, <code>docker rm</code>, <code>sudo</code>).
           </p>
         </div>
 
         <div class="feature-card">
           <div class="card-icon">🔔</div>
-          <h3>Tab Bell & Notifications</h3>
+          <h3>Single-Card Notifications</h3>
           <p>
-            Direct <code>\a</code> ASCII 7 emit to <code>/dev/tty</code> for native bell icons in KDE Konsole and Orca tabs. Auto-dismissing desktop notifications (4s) via <code>notify-send</code> with <code>int:transient:1</code> to prevent sticky alerts.
+            In-place notification replacement (<code>-r 9942</code> / <code>x-canonical-private-synchronous</code>) prevents stacking. Emits <code>\a</code> to <code>/dev/tty</code> for Konsole & Orca tab bell icons. Silenced during tests.
           </p>
         </div>
 
@@ -153,6 +153,22 @@
           <h3>Claude Code Statusline</h3>
           <p>
             Real-time reasoning effort (🧠), live Git diff line counter (+X -Y), session title from SQLite database, context bar with color thresholds (&gt;70% yellow, &gt;90% red), and 5h/7d quota tracking with local reset time.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🤖</div>
+          <h3>Multi-Agent Delegation</h3>
+          <p>
+            5 bundled subagents (<code>researcher</code>, <code>worker-backend</code>, <code>worker-frontend</code>, <code>qa-tester</code>, <code>reviewer-bot</code>) executing concurrent Fork &amp; Join and Reviewer Gate patterns without context pollution.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🔌</div>
+          <h3>Documentation MCP Server</h3>
+          <p>
+            Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools to dynamically query active trust levels, surface information, delegation architectures, and health checks.
           </p>
         </div>
 
@@ -176,7 +192,7 @@
           <div class="card-icon">🤖</div>
           <h3>Bot & Human Ready PRs</h3>
           <p>
-            Standardized PR template and CI gate designed for both human engineers and autonomous agents (Codex, Claude, AGY) to contribute with zero merge regressions.
+            Standardized PR template, Project backlog board, and automated CI validator action for human engineers and autonomous agents (Codex, Claude, AGY).
           </p>
         </div>
 

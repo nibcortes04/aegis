@@ -203,10 +203,23 @@ def format_statusline(payload):
     # Línea 2
     line2 = f"{bar_str} │ {cost_str} │ {time_str}{quota_segment}"
 
-    # 7. Línea 3: Modo de Ejecución (Auto Mode / Shift+Tab)
+    # 7. Línea 3: Modo de Ejecución y Nivel de Confianza (Auto Mode / Shift+Tab)
     cycle_mode = payload.get("cycle_mode", "accept-edits")
+    try:
+        from trust_levels import get_active_trust_level, LEVEL_AUDIT, LEVEL_FULL_DEVELOPER, LEVEL_SUBAGENT_WORKER
+        t_level = get_active_trust_level()
+    except Exception:
+        t_level = "workspace-safe"
+
     if cycle_mode in ("accept-edits", "auto", "always-proceed"):
-        mode_label = "auto mode on"
+        if t_level == "full-developer":
+            mode_label = "auto mode (dev)"
+        elif t_level == "audit":
+            mode_label = "auto mode (audit)"
+        elif t_level == "subagent-worker":
+            mode_label = "auto mode (worker)"
+        else:
+            mode_label = "auto mode on"
         mode_icon = f"{YELLOW}▶▶{RESET}"
     elif cycle_mode in ("plan", "plan-only"):
         mode_label = "plan mode"
