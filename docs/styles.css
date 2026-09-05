@@ -677,17 +677,31 @@ body {
 /* Installation Grid */
 .install-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem;
+  max-width: 1040px;
+  margin: 0 auto 1.75rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .install-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 1.85rem;
+  padding: 2.25rem 2rem;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.install-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 .card-tag {
@@ -695,41 +709,126 @@ body {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.15rem 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.75rem;
   border-radius: 999px;
   background: rgba(0, 240, 255, 0.1);
   color: var(--primary);
   border: 1px solid rgba(0, 240, 255, 0.25);
-  margin-bottom: 0.85rem;
+  margin-bottom: 1.1rem;
 }
 
 .install-card h4 {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.015em;
+  color: #ffffff;
 }
 
 .install-desc {
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
-  margin-bottom: 1.15rem;
+  margin-bottom: 1.35rem;
+  line-height: 1.55;
 }
 
 .code-box {
   background: var(--terminal-bg);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  padding: 1rem;
+  padding: 1rem 1.15rem;
   overflow-x: auto;
+  max-width: 100%;
+  box-sizing: border-box;
   flex: 1;
+}
+
+.code-box pre {
+  margin: 0;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .code-box pre code {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: #e2e8f0;
   line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Install Verify Card */
+.install-verify-card {
+  max-width: 1040px;
+  margin: 0 auto;
+  background: rgba(14, 21, 37, 0.7);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  box-sizing: border-box;
+  width: 100%;
+  transition: border-color var(--transition-smooth);
+}
+
+.install-verify-card:hover {
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+.verify-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  white-space: nowrap;
+}
+
+.verify-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.verify-details h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: #ffffff;
+}
+
+.verify-details p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.verify-code {
+  background: var(--terminal-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1.15rem;
+  overflow-x: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.verify-code pre {
+  margin: 0;
+}
+
+.verify-code pre code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #38bdf8;
+  white-space: nowrap;
 }
 
 /* Footer */
@@ -889,8 +988,11 @@ body {
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .hero-title { font-size: 2.85rem; }
-  .feature-grid, .steps-grid, .install-grid { grid-template-columns: repeat(2, 1fr); }
+  .feature-grid, .steps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .install-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
   .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .install-verify-card { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.5rem; }
+  .verify-code { width: 100%; }
 }
 
 @media (max-width: 768px) {

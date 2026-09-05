@@ -3,7 +3,7 @@
 > Aegis supercharges terminal AI coding agents (Google Antigravity CLI, Claude Code, and Codex workflows) with smart auto-mode, live statusline telemetry, a two-factor safety gate for destructive commands, and cross-platform notifications.
 
 - **Author & Architect:** Nicolas Cortes (@nibcortes04 - https://github.com/nibcortes04)
-- **Engine & Foundations:** Built with Gemini 2.5 Pro & Google Antigravity (AGY)
+- **Engine & Foundations:** Built with Gemini 3.8 Flash (High) & Google Antigravity (AGY)
 - **Repository:** https://github.com/nibcortes04/aegis
 - **Documentation & Live Portal:** https://nibcortes04.github.io/aegis
 - **License:** MIT Open Source

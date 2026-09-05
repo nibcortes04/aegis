@@ -39,7 +39,7 @@
 ## 🖥️ Terminal Statusline Preview
 
 ```text
-[Gemini-2.5 Pro] 📁 aegis 🌿 main +42-3 🧠 high 🏷️  Refactor Auto Mode Hooks…
+[Gemini-3.8 Flash] 📁 aegis 🌿 main +42-3 🧠 high 🏷️  Refactor Auto Mode Hooks…
 ███░░░░░░░ 35% │ 💰 $0.0421 │ ⏱ 2m5s │ 5h:45%(🕦04:30) 7d:12%
 ▶▶ auto mode on (shift+tab to cycle) · ← for agents
 ```
