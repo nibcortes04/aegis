@@ -32,6 +32,7 @@ class TestMCPServer(unittest.TestCase):
         self.assertIn("powerpack_get_surface_info", tool_names)
         self.assertIn("powerpack_get_delegation_guide", tool_names)
         self.assertIn("powerpack_verify_system", tool_names)
+        self.assertIn("powerpack_inspect_environment", tool_names)
 
     def test_call_get_trust_levels(self):
         req = {
@@ -62,6 +63,22 @@ class TestMCPServer(unittest.TestCase):
         content_text = res["result"]["content"][0]["text"]
         data = json.loads(content_text)
         self.assertEqual(data["status"], "healthy")
+
+    def test_call_inspect_environment(self):
+        req = {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "powerpack_inspect_environment",
+                "arguments": {"apply": False}
+            }
+        }
+        res = process_message(req)
+        content_text = res["result"]["content"][0]["text"]
+        data = json.loads(content_text)
+        self.assertIn("system", data)
+        self.assertIn("detected_tools", data)
 
 if __name__ == "__main__":
     unittest.main()

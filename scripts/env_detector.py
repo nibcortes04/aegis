@@ -142,14 +142,43 @@ def is_silent_mode():
         return True
     return False
 
+def get_notification_channel():
+    """
+    Determina el canal de notificación configurado:
+    - 'all': Notificación de escritorio (tarjeta única) + campana en terminal.
+    - 'desktop': Solo notificación de escritorio (evita que Konsole muestre alertas de timbre).
+    - 'bell': Solo campana en terminal (sin popups de escritorio).
+    - 'none': Silenciado total.
+    """
+    env_ch = os.environ.get("AGY_NOTIFICATION_CHANNEL", "").strip().lower()
+    if env_ch in ("all", "desktop", "bell", "none"):
+        return env_ch
+
+    try:
+        settings_file = os.path.join(get_app_data_dir(), "settings.json")
+        if os.path.isfile(settings_file):
+            with open(settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                ch = data.get("notificationChannel") or data.get("notifications", {}).get("channel")
+                if ch and str(ch).lower() in ("all", "desktop", "bell", "none"):
+                    return str(ch).lower()
+    except Exception:
+        pass
+
+    return "all"
+
 def ring_terminal_bell():
     """
     Emite señal de campana (BEL ASCII 7) compatible con Linux, macOS y Windows.
     - Linux/macOS: Escribe en /dev/tty o sys.stderr.
     - Windows: Escribe en CONOUT$ o sys.stderr o usa Beep de kernel32.
-    Silenciado automáticamente durante tests o con AGY_HOOK_SILENT=1.
+    Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'desktop'/'none'.
     """
     if is_silent_mode():
+        return
+
+    channel = get_notification_channel()
+    if channel in ("none", "desktop"):
         return
 
     os_type = get_os_type()
@@ -171,9 +200,9 @@ def ring_terminal_bell():
     else:
         try:
             with open("/dev/tty", "w", encoding="utf-8", errors="ignore") as tty:
+                # Solo emitir \a (BEL puro). NO emitir secuencias OSC 777 ni OSC 9
+                # para evitar que terminales como Konsole generen notificaciones duplicadas.
                 tty.write("\a")
-                tty.write("\033]9;AGY: Notificación\007")
-                tty.write("\033]777;notify;AGY;Notificación\007")
                 tty.flush()
                 return
         except Exception:
@@ -189,18 +218,22 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
     """
     Dispara notificación nativa de escritorio adaptada al sistema operativo.
     Utiliza ID de reemplazo y tags sincronizados para que las notificaciones no se apilen.
-    Silenciado automáticamente durante tests o con AGY_HOOK_SILENT=1.
+    Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'bell'/'none'.
     """
     global _LAST_NOTIFICATION_TIME, _LAST_NOTIFICATION_CONTENT
 
     if is_silent_mode():
         return
 
+    channel = get_notification_channel()
+    if channel in ("none", "bell"):
+        return
+
     import time
     now = time.time()
-    # Anti-spam: Si el mismo mensaje se disparó hace menos de 1.5s, ignorar
+    # Anti-spam: Si el mismo mensaje se disparó hace menos de 2.5s, ignorar
     content_key = f"{title}:{message}"
-    if content_key == _LAST_NOTIFICATION_CONTENT and (now - _LAST_NOTIFICATION_TIME) < 1.5:
+    if content_key == _LAST_NOTIFICATION_CONTENT and (now - _LAST_NOTIFICATION_TIME) < 2.5:
         return
 
     _LAST_NOTIFICATION_TIME = now

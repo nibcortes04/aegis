@@ -50,6 +50,7 @@ def copy_scripts(scripts_dir):
         "statusline.sh",
         "agy-session.sh",
         "dev-worktree.sh",
+        "env_inspector.py",
     ]
 
     for fname in files_to_copy:
@@ -221,11 +222,25 @@ def main():
     configure_hooks(config_dir, scripts_dir)
     configure_settings(app_data_dir, scripts_dir)
 
+    # 5. Ejecutar escaneo autónomo del entorno e incorporar herramientas locales
+    print("\n▶ Running Autonomous Environment Inspector...")
+    try:
+        sys.path.insert(0, scripts_dir)
+        import env_inspector
+        profile = env_inspector.inspect_environment()
+        _, added = env_inspector.apply_profile(profile)
+        print(f"✔ Environment profile: {profile['total_tools_found']} developer tools detected.")
+        if added > 0:
+            print(f"✔ Personalized Auto Mode allowlist populated with {added} new safe commands.")
+    except Exception as e:
+        print(f"⚠️ Inspector note: {e}")
+
     print("\n🎉 Installation completed successfully on all platforms!")
     print("----------------------------------------------------")
-    print("• Auto Mode    : Active (accept-edits)")
+    print("• Auto Mode    : Active (accept-edits) with graduated Trust Levels")
+    print("• Safety Gate  : Two-Factor Double Confirmation enabled for destructive commands")
     print("• Statusline   : 3-line Claude Code format with local quota reset")
-    print("• Notifications: Bell & native desktop notifications configured")
+    print("• Notifications: Single-card replacement & test silence active")
     print("====================================================")
 
 if __name__ == "__main__":

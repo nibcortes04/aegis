@@ -2,15 +2,21 @@
 
 When operating within a project using the `agy-powerpack` plugin:
 
-## 1. Auto Mode and Safe Execution
+## 1. Auto Mode, Safe Execution & Two-Factor Safety Gate
 - Favor safe, idempotent operations that can be automatically approved by the classifier.
-- Keep commands prefix-matchable (`git status`, `git diff`, `pnpm test`, `pytest`).
-- Avoid running compound dangerous commands (e.g. `rm -rf`, `git push --force`) unless explicitly instructed by the user.
-- If a command requires root/sudo or alters files outside the workspace, state the risk clearly before attempting execution.
+- Keep commands prefix-matchable (`git status`, `git diff`, `pnpm test`, `pytest`, `cargo test`).
+- **Protocolo de Doble Confirmación para Operaciones Destructivas (CRÍTICO):**
+  - Queda estrictamente prohibido intentar ejecutar operaciones destructivas (`rm -rf`, `docker rm/stop/volume rm`, `dd`, `mkfs`, `sudo`, `drop database/table`, `git push --force`) sin solicitar y recibir la confirmación explícita del usuario **dos veces consecutivas**.
+  - **Paso 1:** El agente debe explicar con total claridad el riesgo y preguntar al usuario en el chat (`"¿Estás seguro de que deseas proceder con la eliminación/modificación de X?"`).
+  - **Paso 2:** El hook de seguridad del sistema intercepta y exige la confirmación final interactiva antes de autorizar la llamada a la herramienta.
+- Si un comando requiere permisos de superusuario (`sudo`) o altera archivos fuera del workspace, exponga el motivo y solicite autorización previa.
 
 ## 2. Notification Awareness
-- The user is automatically notified via terminal bell (`\a`) and desktop notifications when a turn completes or when approval is needed.
-- Keep user-facing prompts concise and direct.
+- El usuario recibe alertas limpias (campana de pestaña `\a` y notificación flotante no apilable) **únicamente cuando se requiere acción interactiva o al concluir el turno final**.
+- No ejecute bucles que saturen la terminal de alertas sonoras.
 
-## 3. Session Continuity
-- When switching tasks or working on separate features, guide the user to create a dedicated Git worktree or resume prior sessions with `/resume` or `agy -c`.
+## 3. Inspección Autónoma del Entorno
+- Utilice el inspector autónomo (`python3 scripts/env_inspector.py` o herramienta MCP `powerpack_inspect_environment`) para verificar qué compiladores, runtimes y herramientas DevOps están presentes en el host antes de asumir disponibilidad de software.
+
+## 4. Session Continuity & Worktrees
+- Para tareas complejas, aislamiento de bugs o colaboración con bots autónomos, cree un Git Worktree dedicado con `./scripts/dev-worktree.sh` para preservar el contexto limpio y evitar conflictos en la rama principal.

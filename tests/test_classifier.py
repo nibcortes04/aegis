@@ -48,8 +48,15 @@ class TestHookClassifier(unittest.TestCase):
         for cmd in critical_commands:
             self.assertTrue(is_command_critical(cmd), f"Should be critical: {cmd}")
             payload = {"toolCall": {"name": "run_command", "args": {"CommandLine": cmd}}}
-            res = handle_pre_tool_use(payload, "")
-            self.assertEqual(res.get("decision"), "ask", f"Failed to block {cmd}")
+            # Intento 1: Debe retornar 'deny' para forzar al agente a pedir confirmación previa
+            res1 = handle_pre_tool_use(payload, "")
+            self.assertEqual(res1.get("decision"), "deny", f"Intento 1 falló al denegar para {cmd}")
+            self.assertIn("DOBLE CONFIRMACIÓN REQUERIDA", res1.get("reason", ""))
+
+            # Intento 2 dentro del TTL: Debe retornar 'ask' para autorización interactiva
+            res2 = handle_pre_tool_use(payload, "")
+            self.assertEqual(res2.get("decision"), "ask", f"Intento 2 falló al requerir confirmación interactiva para {cmd}")
+            self.assertIn("CONFIRMACIÓN DEFINITIVA", res2.get("reason", ""))
 
     def test_workspace_file_edits(self):
         # Safe in-workspace file edit

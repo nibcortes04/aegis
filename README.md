@@ -13,14 +13,16 @@
 
 - **⚡ Smart Auto Mode without Delay**: Auto-approves safe read tools (`view_file`, `list_dir`, `grep_search`), in-workspace file edits, and safe test/build commands with **0s approval delay**.
 - **🛡️ Graduated Trust Levels (Niveles de Confianza)**: 4 distinct runtime security profiles (`audit`, `workspace-safe` [default], `full-developer`, `subagent-worker`) allowing users to safely expand agent autonomy from read-only auditing to automated dependency installation and local dev servers.
+- **🔒 Two-Factor Safety Gate (Doble Confirmación Obligatoria)**: Destructive commands (`rm -rf`, `docker rm/stop/volume rm`, `dd`, `mkfs`, `sudo`, `drop database`, `git push --force`) are intercepted in two mandatory phases (Step 1 denies execution and forces agent to ask user; Step 2 within 120s prompts physical `y/n` confirmation in terminal).
+- **🔍 Autonomous Environment Inspector (`env_inspector.py`)**: Automatically scans host compilers, runtimes (Python, Node, Rust, Go, Java), package managers (pnpm, npm, cargo, pip), and devops tools at install time, auto-populating `settings.json` with personalized safe rules.
 - **🤖 Native Multi-Agent Delegation**: 5 bundled subagents (`researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`) for Fork & Join, Worker Pool, and Reviewer Gate orchestration while preserving a clean context window.
-- **🔌 Built-in MCP Documentation Server**: Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools (`powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`) for dynamic agent self-discovery.
-- **🛡️ Fail-Closed Security Gate**: Strictly halts and requests human confirmation for destructive shell commands (`rm -rf`, `git push -f`, `docker rm/stop`, `dd`, `mkfs`, `sudo`) and file edits outside the workspace.
+- **🔌 Built-in MCP Documentation Server**: Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools (`powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`, `powerpack_inspect_environment`) for dynamic agent self-discovery.
 - **🌐 100% Cross-Platform & Surface-Aware**:
   - **Operating Systems**: Native support for **Linux** (KDE Plasma, GNOME, Orca), **macOS** (AppleScript/terminal-notifier), and **Windows 10/11** (Windows Terminal, WinRT PowerShell Toasts).
   - **Antigravity Surfaces**: Automatically detects execution environment across **Antigravity CLI (`agy`)**, **Antigravity IDE (VS Code)**, and **Antigravity 2.0 (Electron Desktop App)**.
-- **🔔 Single-Card & Anti-Spam Notifications**:
-  - Emits ASCII 7 (`\a`) to `/dev/tty` (Linux/macOS) or `CONOUT$` (Windows), lighting up the bell icon on terminal tabs in KDE Konsole, Orca, iTerm2, Kitty, and Windows Terminal.
+- **🔔 Single-Card & Strict Notifications (Cero Ruido Intermedio)**:
+  - Notifications fire **ONLY** when waiting for human action (`decision: ask`) or final turn completion. Never during continuous intermediate execution or tool calls.
+  - Eliminated duplicate Konsole alerts by stripping OSC 777 escape codes and maintaining pure terminal bell (`\a`).
   - In-place single notification replacement (`-r 9942` / `x-canonical-private-synchronous:agy-notification` / `$toast.Tag`) preventing desktop alert stacking.
   - Test & batch silence detection (`AGY_HOOK_SILENT=1`, `pytest`, `unittest`) producing 0 notification popups during automated test runs.
 - **📊 Claude Code-Grade 3-Line Statusline**:

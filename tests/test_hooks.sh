@@ -21,15 +21,25 @@ else
     exit 1
 fi
 
-# 2. Test PreToolUse with critical command (rm -rf) -> Must return decision: "ask"
-echo -n "Test 2: PreToolUse critical command (rm -rf) -> "
-INPUT_JSON='{"hookEventName":"PreToolUse","toolCall":{"name":"run_command","args":{"CommandLine":"rm -rf /tmp/data"}}}'
+# 2. Test PreToolUse with critical command (rm -rf) -> Two-Factor Safety Gate (deny -> ask)
+echo -n "Test 2a: PreToolUse critical command Step 1 (rm -rf) -> "
+INPUT_JSON='{"hookEventName":"PreToolUse","toolCall":{"name":"run_command","args":{"CommandLine":"rm -rf /tmp/data_test_double_confirm"}}}'
 OUTPUT=$(echo "$INPUT_JSON" | python3 "$HOOK_SCRIPT")
 DECISION=$(echo "$OUTPUT" | jq -r '.decision')
-if [ "$DECISION" == "ask" ]; then
-    echo "PASS (decision: $DECISION)"
+if [ "$DECISION" == "deny" ]; then
+    echo "PASS (decision: $DECISION - Step 1 blocked)"
 else
-    echo "FAIL (expected 'ask', got '$DECISION')"
+    echo "FAIL (expected 'deny', got '$DECISION')"
+    exit 1
+fi
+
+echo -n "Test 2b: PreToolUse critical command Step 2 within TTL -> "
+OUTPUT2=$(echo "$INPUT_JSON" | python3 "$HOOK_SCRIPT")
+DECISION2=$(echo "$OUTPUT2" | jq -r '.decision')
+if [ "$DECISION2" == "ask" ]; then
+    echo "PASS (decision: $DECISION2 - Step 2 elevated to human prompt)"
+else
+    echo "FAIL (expected 'ask', got '$DECISION2')"
     exit 1
 fi
 

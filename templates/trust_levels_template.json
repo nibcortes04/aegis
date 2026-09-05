@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AGY PowerPack Trust Levels Specification",
+  "version": "1.3.0",
+  "default_level": "workspace-safe",
+  "safety_gate": {
+    "double_confirmation_required": true,
+    "ttl_seconds": 120,
+    "ledger_file": "~/.gemini/antigravity-cli/.danger_confirmations.json",
+    "critical_commands": [
+      "rm -rf", "rm -r", "rm -f", "shred", "wipe",
+      "dd", "mkfs", "fdisk", "parted", "sfdisk", "mkswap",
+      "docker rm", "docker rmi", "docker stop", "docker kill", "docker system prune", "docker volume rm",
+      "drop database", "drop table", "truncate table",
+      "git push --force", "git push -f", "git reset --hard", "git clean -f", "git branch -D",
+      "shutdown", "reboot", "poweroff", "init 0",
+      "systemctl stop", "systemctl disable", "systemctl mask",
+      "sudo", "su", "chmod -R 777"
+    ]
+  },
+  "levels": {
+    "audit": {
+      "id": 0,
+      "name": "Audit Mode (Zero-Trust)",
+      "badge": "▶▶ auto (audit)",
+      "description": "Solo lectura estricta. Toda edición de archivo y ejecución de comando requiere aprobación humana obligatoria.",
+      "read_tools": [
+        "view_file", "list_dir", "grep_search", "find_by_name",
+        "read_url_content", "search_web", "invoke_subagent", "send_message",
+        "manage_subagents", "manage_task", "schedule", "ask_question"
+      ],
+      "write_tools_allowed": false,
+      "commands_allowed": false,
+      "use_case": "Auditorías de seguridad, entornos de producción sensible, verificación previa de dependencias."
+    },
+    "workspace-safe": {
+      "id": 1,
+      "name": "Workspace Safe (Default)",
+      "badge": "▶▶ auto (safe)",
+      "description": "Predeterminado de producción segura: lectura libre, edición en el workspace/home del usuario y comandos seguros de inspección y test.",
+      "read_tools": [
+        "view_file", "list_dir", "grep_search", "find_by_name",
+        "read_url_content", "search_web", "invoke_subagent", "send_message",
+        "manage_subagents", "manage_task", "schedule", "ask_question"
+      ],
+      "write_tools_allowed": true,
+      "write_scope": "in_workspace_only",
+      "commands_allowed": [
+        "git status", "git diff", "git log", "git show", "git branch",
+        "pytest", "pnpm test", "npm test", "yarn test", "bun test", "cargo test", "cargo check", "go test",
+        "pnpm lint", "npm run lint", "ruff check", "flake8",
+        "ls", "cat", "head", "tail", "grep", "find", "pwd", "which", "echo", "wc", "uname"
+      ],
+      "dangerous_commands": "requires_double_confirmation",
+      "use_case": "Desarrollo diario habitual en proyectos con balance perfecto entre velocidad y seguridad."
+    },
+    "full-developer": {
+      "id": 2,
+      "name": "Full Developer",
+      "badge": "▶▶ auto (dev)",
+      "description": "Alta autonomía para iteración ágil: instalación de dependencias, servidores de desarrollo local, Docker Compose y gestión de ramas locales.",
+      "read_tools": "all_safe_reads",
+      "write_tools_allowed": true,
+      "write_scope": "in_workspace_only",
+      "commands_allowed": [
+        "all_level_1_commands",
+        "pnpm install", "pnpm add", "npm install", "yarn add", "bun add", "pip install", "cargo add",
+        "pnpm dev", "pnpm start", "pnpm build", "npm run dev", "npm run build",
+        "python3 main.py", "python app.py", "node server.js",
+        "git commit", "git add", "git checkout", "git switch", "git merge", "git rebase", "git stash",
+        "docker compose up", "docker compose down", "docker compose logs", "docker compose ps", "docker ps", "docker logs"
+      ],
+      "dangerous_commands": "requires_double_confirmation",
+      "use_case": "Desarrollo acelerado de funcionalidades completas, refactorizaciones y creación de proyectos desde cero."
+    },
+    "subagent-worker": {
+      "id": 3,
+      "name": "Subagent Worker",
+      "badge": "▶▶ auto (worker)",
+      "description": "Autonomía acotada para subagentes concurrentes que trabajan dentro de un Git Worktree aislado.",
+      "read_tools": "all_safe_reads",
+      "write_tools_allowed": true,
+      "write_scope": "assigned_worktree_only",
+      "commands_allowed": "worktree_local_build_and_test",
+      "blocked_operations": ["git push", "external_system_modifications", "host_escapes"],
+      "dangerous_commands": "requires_double_confirmation",
+      "use_case": "Subagentes en paralelo ejecutados por invoke_subagent para tareas específicas manteniendo contexto limpio."
+    }
+  }
+}

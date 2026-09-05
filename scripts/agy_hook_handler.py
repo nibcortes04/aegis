@@ -156,6 +156,7 @@ def handle_pre_tool_use(payload, raw_input):
     - 'workspace-safe' (default): Lecturas y ediciones en workspace seguras, comandos dev permitidos.
     - 'full-developer': Autonomía para build, install y servers locales. Bloquea daño irreversible.
     - 'subagent-worker': Autonomía acotada al worktree asignado.
+    - Protocolo de Doble Confirmación para comandos destructivos (deny en paso 1 -> ask en paso 2).
     """
     tool_call = payload.get("toolCall") or {}
     tool_name = tool_call.get("name", "")
@@ -163,7 +164,7 @@ def handle_pre_tool_use(payload, raw_input):
     conv_id = payload.get("conversationId", "")
     workspace_root = payload.get("cwd") or payload.get("workspace", {}).get("current_dir")
 
-    decision, reason = evaluate_trust(tool_name, args, workspace_root=workspace_root)
+    decision, reason = evaluate_trust(tool_name, args, workspace_root=workspace_root, session_id=conv_id)
 
     if decision == "ask":
         ring_terminal_bell()
@@ -177,28 +178,64 @@ def handle_pre_tool_use(payload, raw_input):
         )
         return {"decision": "ask", "reason": reason}
 
+    if decision == "deny":
+        session_title = get_session_title(conv_id)
+        send_desktop_notification(
+            f"AGY: {session_title}",
+            f"Comando interceptado: {reason[:65]}",
+            urgency="critical",
+            timeout_ms=5000,
+            icon="dialog-error"
+        )
+        return {"decision": "deny", "reason": reason}
+
     return {"decision": "allow"}
+
+_LAST_STOP_NOTIFY_TIME = 0.0
 
 def handle_stop(payload, raw_input):
     """
     Manejo del evento Stop: AGY ha terminado de responder.
-    - Emite campanita en TTY (icono de campana en la tab de Konsole / Orca).
-    - Muestra notificación en el escritorio que desaparece a los 4 segundos.
+    - Emite campanita en TTY y notificación ÚNICAMENTE cuando la respuesta final
+      ha concluido completamente y queda esperando el siguiente prompt del usuario.
+    - NO emite alertas en pasos intermedios ni ejecuciones continuas de tareas.
     """
+    global _LAST_STOP_NOTIFY_TIME
+
     conv_id = payload.get("conversationId", "")
     termination_reason = payload.get("terminationReason", "")
-    fully_idle = payload.get("fullyIdle", True)
+    fully_idle = payload.get("fullyIdle", False)
 
-    if fully_idle or termination_reason in ("model_stop", ""):
-        ring_terminal_bell()
-        session_title = get_session_title(conv_id)
-        send_desktop_notification(
-            f"AGY: {session_title}",
-            "Respuesta completada.",
-            urgency="normal",
-            timeout_ms=4000,
-            icon="utilities-terminal"
-        )
+    # Si hay herramientas pendientes o el estado sigue activo, NO es final
+    has_pending = bool(
+        payload.get("toolCalls") or
+        payload.get("pendingToolCalls") or
+        payload.get("status") == "running" or
+        termination_reason in ("tool_use", "intermediate")
+    )
+    if has_pending:
+        return {"decision": ""}
+
+    # Solo notificar si realmente ha terminado el turno final
+    is_truly_idle = fully_idle or termination_reason == "model_stop"
+    if not is_truly_idle:
+        return {"decision": ""}
+
+    import time
+    now = time.time()
+    if (now - _LAST_STOP_NOTIFY_TIME) < 3.5:
+        return {"decision": ""}
+
+    _LAST_STOP_NOTIFY_TIME = now
+    ring_terminal_bell()
+    session_title = get_session_title(conv_id)
+    send_desktop_notification(
+        f"AGY: {session_title}",
+        "Respuesta completada.",
+        urgency="normal",
+        timeout_ms=4000,
+        icon="utilities-terminal"
+    )
 
     return {"decision": ""}
 

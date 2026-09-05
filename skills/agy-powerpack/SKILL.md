@@ -11,15 +11,16 @@ description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides 
 
 ## 1. Core Modules
 
-### A. Smart Auto Mode & Graduated Trust Levels
+### A. Smart Auto Mode, Graduated Trust Levels & Two-Factor Safety Gate
 - **Zero-friction execution:** Automatically approves read-only tools (`view_file`, `list_dir`, `grep_search`), safe inspection and test commands (`git status`, `git diff`, `pnpm test`, `pytest`), and in-workspace file edits.
-- **Graduated Trust Levels:** 4 security profiles (`audit`, `workspace-safe` [default], `full-developer`, `subagent-worker`) allowing users to safely expand agent permissions (package managers, local servers, isolated subagents) without ever risking catastrophic commands.
-- **Fail-closed security:** Potentially destructive operations (`rm -rf`, `git push --force`, `docker rm/stop`, modifications outside workspace) trigger an interactive prompt, ring the terminal bell, and issue an auto-dismissing desktop notification.
-- Read more: [references/auto_mode.md](references/auto_mode.md)
+- **Graduated Trust Levels:** 4 security profiles (`audit`, `workspace-safe` [default], `full-developer`, `subagent-worker`) allowing users to safely expand agent permissions without risking system integrity.
+- **Two-Factor Safety Gate (Doble Confirmación):** Comandos destructivos (`rm -rf`, `docker rm/stop/volume rm`, `dd`, `mkfs`, `sudo`, `drop database`, `git push --force`) son interceptados obligatoriamente en 2 fases: el Paso 1 deniega la acción y exige al agente solicitar confirmación explícita al usuario en chat; tras recibir el 'Sí', el Paso 2 dentro de 120s eleva a confirmación física/interactiva en la terminal (`y/n`).
+- Read more: [references/auto_mode.md](references/auto_mode.md) y [../../docs/TRUST_LEVELS.md](../../docs/TRUST_LEVELS.md)
 
 ### B. Terminal Bell & Single-Card Desktop Notifications (🔔)
-- **Tab Bell Icon:** Emits the standard POSIX ASCII BEL character (`\a`) and OSC 9/777 sequences to `/dev/tty` upon turn completion (`Stop` hook) and when approval is required. In KDE Konsole, Orca, and modern terminals, this renders the notification bell icon on the terminal tab.
-- **In-Place Notification Replacement:** Replaces notifications in-place (`-r 9942` / `x-canonical-private-synchronous:agy-notification` / `$toast.Tag`), preventing notification stacking. Silences notifications during automated test suites.
+- **Tab Bell Icon:** Emits clean POSIX ASCII BEL (`\a`) to `/dev/tty` without duplicate OSC 777 escape codes, lighting up the bell icon on Konsole, Orca, and iTerm2 tabs.
+- **Strict Triggering:** Notifications fire **ONLY** when human action is needed (`decision: ask` or critical command step) or upon final turn completion (`fullyIdle: True`), eliminating notification noise during intermediate execution.
+- **In-Place Replacement & Test Silence:** Single-card notification replacement (`-r 9942` / `x-canonical-private-synchronous`) and automatic silencing during test runs (`AGY_HOOK_SILENT=1`).
 - Read more: [references/notifications.md](references/notifications.md)
 
 ### C. Advanced Statusline (Claude Code Style)
@@ -47,8 +48,13 @@ description: Comprehensive powerpack for Google Antigravity CLI (agy). Provides 
 - Read more: [references/multi_agent_delegation.md](references/multi_agent_delegation.md)
 
 ### G. Built-in Documentation MCP Server
-- **Zero-Dependency Stdio MCP Server:** Exposes `powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, and `powerpack_verify_system` via stdio JSON-RPC 2.0.
+- **Zero-Dependency Stdio MCP Server:** Exposes `powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`, and `powerpack_inspect_environment` via stdio JSON-RPC 2.0.
 - Registered via `mcp_config.json`.
+
+### H. Autonomous Environment Inspector
+- **Dynamic Tool Probing:** Scans host compilers, runtimes, package managers, and DevOps tools (`scripts/env_inspector.py`).
+- **Personalized Allowlist:** Auto-populates `settings.json` with safe rules tailored to the host machine.
+- Run anytime via `python3 scripts/env_inspector.py --apply`.
 
 ---
 

@@ -69,6 +69,19 @@ TOOLS_DEFINITIONS = [
             "type": "object",
             "properties": {}
         }
+    },
+    {
+        "name": "powerpack_inspect_environment",
+        "description": "Inspecciona de forma autónoma el host para detectar compiladores, runtimes, gestores de paquetes y herramientas DevOps, generando un perfil y recomendaciones de permisos para Auto Mode.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "apply": {
+                    "type": "boolean",
+                    "description": "Si es True, aplica automáticamente los comandos seguros detectados a settings.json."
+                }
+            }
+        }
     }
 ]
 
@@ -171,6 +184,23 @@ def handle_verify_system(args):
 
     return json.dumps(results, indent=2, ensure_ascii=False)
 
+def handle_inspect_environment(args):
+    try:
+        import env_inspector
+    except ImportError:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
+        import env_inspector
+
+    profile = env_inspector.inspect_environment()
+    should_apply = args.get("apply", False)
+    if should_apply:
+        profile_file, added = env_inspector.apply_profile(profile)
+        profile["applied"] = {
+            "profile_file": profile_file,
+            "commands_added": added
+        }
+    return json.dumps(profile, indent=2, ensure_ascii=False)
+
 def process_message(msg):
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -187,7 +217,7 @@ def process_message(msg):
                 },
                 "serverInfo": {
                     "name": "agy-powerpack-mcp",
-                    "version": "1.2.0"
+                    "version": "1.3.0"
                 }
             }
         }
@@ -220,6 +250,8 @@ def process_message(msg):
             out_text = handle_get_delegation_guide(tool_args)
         elif tool_name == "powerpack_verify_system":
             out_text = handle_verify_system(tool_args)
+        elif tool_name == "powerpack_inspect_environment":
+            out_text = handle_inspect_environment(tool_args)
         else:
             return {
                 "jsonrpc": "2.0",

@@ -12,6 +12,8 @@ import os
 import re
 import json
 import sys
+import hashlib
+import time
 
 # Importar detector de entorno para resolución de workspace y settings
 try:
@@ -46,6 +48,7 @@ SAFE_READ_TOOLS = {
     "manage_subagents",
     "manage_task",
     "schedule",
+    "ask_question",
 }
 
 # 2. Comandos de inspección y validación seguros (permitidos en Nivel 1, 2 y 3)
@@ -67,18 +70,111 @@ DEVELOPER_EXTENDED_COMMAND_PATTERNS = [
     r"^\s*docker\s+(compose\s+(up|down|logs|ps)|ps|logs)\b",
 ]
 
-# 4. Comandos de daño irreversible (bloqueados en TODOS los niveles)
+# 4. Comandos de daño irreversible (bloqueados con DOBLE CONFIRMACIÓN obligatoria en TODOS los niveles)
 CRITICAL_COMMAND_PATTERNS = [
     r"\brm\s+-(?:[a-zA-Z0-9]*r[a-zA-Z0-9]*f|[a-zA-Z0-9]*f[a-zA-Z0-9]*r)\b",
     r"\brm\s+.*-(?:r|R|-recursive)\b.*-(?:f|-force)\b",
     r"\brm\s+.*-(?:f|-force)\b.*-(?:r|R|-recursive)\b",
+    r"\brm\s+-(?:r|R|f)\b",
+    r"\b(?:shred|wipe)\b",
     r"\bgit\s+(?:push\s+(?:-[a-zA-Z0-9]*f|--force)|reset\s+--hard|clean\s+-(?:[a-zA-Z0-9]*f))\b",
     r"\bdocker\s+(?:rm|rmi|stop|kill|system\s+prune|volume\s+rm)\b",
-    r"\b(?:mkfs|fdisk|parted)\b|\bdd\s+(?:if|of)=",
+    r"\b(?:mkfs|fdisk|parted|sfdisk|mkswap)\b|\bdd\s+(?:if|of)=",
     r"\b(?:shutdown|reboot|poweroff|init\s+0)\b",
-    r"\bdrop\s+database\b",
-    r"\bsudo\b",
+    r"\bsystemctl\s+(?:stop|disable|mask)\b",
+    r"\b(?:drop\s+database|drop\s+table|truncate\s+table)\b",
+    r"\b(?:sudo|su\s+-?)\b",
+    r"\bchmod\s+.*-R\s+777\b",
 ]
+
+class DangerousConfirmationLedger:
+    """
+    Registro de estado para la DOBLE CONFIRMACIÓN OBLIGATORIA de comandos peligrosos.
+    - Intento 1: Devuelve 'deny' instruyendo al agente a solicitar confirmación explícita
+      al usuario antes de reintentar. Se registra un token con TTL de 120s.
+    - Intento 2: Si el comando se reintenta dentro de 120s, se eleva a 'ask' para que el usuario
+      confirme de forma física e interactiva en la terminal (y/n).
+    - Tras ser procesado o expirar el TTL, el token se invalida para evitar reusabilidad.
+    """
+    def __init__(self, ledger_file=None, ttl_seconds=120):
+        self.ttl_seconds = ttl_seconds
+        if ledger_file is None:
+            self.ledger_file = os.path.join(get_app_data_dir(), ".danger_confirmations.json")
+        else:
+            self.ledger_file = ledger_file
+
+    def _normalize_command(self, cmd):
+        return re.sub(r"\s+", " ", cmd.strip().lower())
+
+    def _get_hash(self, cmd):
+        normalized = self._normalize_command(cmd)
+        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:16]
+
+    def _read_ledger(self):
+        if not os.path.isfile(self.ledger_file):
+            return {}
+        try:
+            with open(self.ledger_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+
+    def _write_ledger(self, data):
+        try:
+            os.makedirs(os.path.dirname(os.path.abspath(self.ledger_file)), exist_ok=True)
+            with open(self.ledger_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+        except Exception:
+            pass
+
+    def check_and_advance(self, cmd, session_id=""):
+        """
+        Retorna (stage, reason):
+        - stage 1: Primer intento. Denegado con instrucción obligatoria de solicitar confirmación.
+        - stage 2: Segundo intento válido dentro del TTL. Autorizado para prompt interactivo 'ask'.
+        """
+        if os.environ.get("AGY_DANGER_SKIP_DOUBLE_CONFIRM") == "1":
+            return 2, "Doble confirmación omitida por entorno de prueba"
+
+        now = time.time()
+        cmd_hash = self._get_hash(cmd)
+        data = self._read_ledger()
+
+        # Limpiar tokens expirados
+        data = {k: v for k, v in data.items() if (now - v.get("timestamp", 0)) < self.ttl_seconds}
+
+        entry = data.get(cmd_hash)
+        if entry and entry.get("stage") == 1:
+            # Paso 2 alcanzado dentro de la ventana de TTL
+            del data[cmd_hash]
+            self._write_ledger(data)
+            return 2, (
+                f"⚠️ [CONFIRMACIÓN DEFINITIVA - PASO 2 DE 2]: Se ha recibido la primera confirmación. "
+                f"El comando '{cmd}' modificará o eliminará datos permanentemente. "
+                f"¿Autorizas la ejecución definitiva en el sistema?"
+            )
+
+        # Paso 1: Registrar nuevo intento y denegar para forzar confirmación en chat
+        data[cmd_hash] = {
+            "command": cmd,
+            "stage": 1,
+            "timestamp": now,
+            "session_id": session_id
+        }
+        self._write_ledger(data)
+        return 1, (
+            f"⚠️ [DOBLE CONFIRMACIÓN REQUERIDA - PASO 1 DE 2]: El comando '{cmd}' está clasificado como "
+            f"CRÍTICO/DESTRUCTIVO. Por directiva estricta de seguridad, el agente DEBE solicitar al usuario "
+            f"confirmación explícita antes de proceder. Se ha registrado la intención (Paso 1). "
+            f"Reintente la ejecución dentro de los próximos {self.ttl_seconds}s solo tras recibir la aprobación del usuario."
+        )
+
+    def clear(self):
+        try:
+            if os.path.isfile(self.ledger_file):
+                os.remove(self.ledger_file)
+        except Exception:
+            pass
 
 def get_active_trust_level():
     """
@@ -139,11 +235,11 @@ def is_command_dev_allowed(cmd):
             return True
     return False
 
-def evaluate_trust(tool_name, args, workspace_root=None, level=None):
+def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id="", ledger=None):
     """
     Evalúa si la herramienta solicitada se aprueba automáticamente o requiere confirmación.
     Retorna: (decision, reason)
-    - decision: 'allow' o 'ask'
+    - decision: 'allow', 'ask', o 'deny'
     """
     if level is None:
         level = get_active_trust_level()
@@ -169,9 +265,14 @@ def evaluate_trust(tool_name, args, workspace_root=None, level=None):
         if not cmd:
             return "allow", "Comando vacío"
 
-        # Daño irreversible bloqueado siempre
+        # Daño irreversible bloqueado SIEMPRE con protocolo de DOBLE CONFIRMACIÓN
         if is_command_critical(cmd):
-            return "ask", f"Comando crítico o potencialmente destructivo: {cmd}"
+            conf_ledger = ledger or DangerousConfirmationLedger()
+            stage, reason = conf_ledger.check_and_advance(cmd, session_id=session_id)
+            if stage == 1:
+                return "deny", reason
+            else:
+                return "ask", reason
 
         # Nivel 1: 'workspace-safe'
         if level == LEVEL_WORKSPACE_SAFE:

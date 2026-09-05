@@ -36,6 +36,7 @@ cp "${SCRIPT_DIR}/scripts/agy-hook-dispatcher.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/statusline_formatter.py" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/statusline.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/agy-session.sh" "$USER_SCRIPTS/"
+cp "${SCRIPT_DIR}/scripts/env_inspector.py" "$USER_SCRIPTS/"
 chmod +x "${USER_SCRIPTS}"/*.py "${USER_SCRIPTS}"/*.sh 2>/dev/null || true
 
 # Opcional: enlazar agy-session a ~/.local/bin si existe
@@ -165,11 +166,16 @@ EOF_ORCA
   echo "✔ Hook para Orca IDE sincronizado."
 fi
 
+# 8. Escaneo autónomo del entorno e incorporación de herramientas
+echo "▶ Ejecutando escaneo autónomo del entorno..."
+python3 "${USER_SCRIPTS}/env_inspector.py" --apply || true
+
 echo ""
 echo "🎉 ¡Instalación completada exitosamente!"
 echo "----------------------------------------------------"
-echo "• Smart Auto Mode: Activo (Shift+Tab para ciclar)."
-echo "• Notificaciones: Campana en terminal (🔔) y avisos de escritorio de 4s."
+echo "• Smart Auto Mode: Activo con Niveles de Confianza (Shift+Tab para ciclar)."
+echo "• Doble Confirmación: Two-Factor Safety Gate activo para comandos destructivos."
+echo "• Notificaciones: Tarjeta única in-place y silenciado en tests activo."
 echo "• Statusline: Enriquecida con cuotas 5h/7d y diff git."
 echo "• Gestor de sesiones: Ejecuta 'agy-session list' para ver tus sesiones."
 echo "===================================================="
