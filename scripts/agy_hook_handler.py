@@ -176,7 +176,8 @@ def handle_pre_tool_use(payload, raw_input):
             f"Aprobación requerida: {reason[:65]}",
             urgency="normal",
             timeout_ms=5000,
-            icon="dialog-warning"
+            icon="dialog-warning",
+            session_id=conv_id
         )
         return {"decision": "ask", "reason": reason}
 
@@ -187,7 +188,8 @@ def handle_pre_tool_use(payload, raw_input):
             f"Comando interceptado: {reason[:65]}",
             urgency="critical",
             timeout_ms=5000,
-            icon="dialog-error"
+            icon="dialog-error",
+            session_id=conv_id
         )
         return {"decision": "deny", "reason": reason}
 
@@ -197,12 +199,12 @@ def handle_stop(payload, raw_input):
     """
     Manejo del evento Stop: El agente ha terminado su ejecución completa.
     - Emite notificación ÚNICAMENTE cuando la respuesta final ha concluido completamente
-      (fullyIdle is True) y el agente queda libre esperando el siguiente prompt del usuario.
+      y el agente queda libre esperando el siguiente prompt del usuario.
     - NO emite alertas en pasos intermedios, subagentes ni tareas en ejecución.
     """
     conv_id = payload.get("conversationId", "")
     termination_reason = payload.get("terminationReason", "")
-    fully_idle = payload.get("fullyIdle", False)
+    fully_idle = payload.get("fullyIdle")
 
     # Si hay herramientas pendientes o el estado sigue activo o es paso intermedio, NO es final
     has_pending = bool(
@@ -214,25 +216,38 @@ def handle_stop(payload, raw_input):
     if has_pending:
         return {"decision": ""}
 
-    # Solo notificar si el estado es total y explícitamente idle final
-    if not fully_idle:
+    # Si fullyIdle está explícitamente en False, todavía hay tareas en background corriendo
+    if fully_idle is False:
         return {"decision": ""}
 
-    # Debounce persistente en disco entre procesos (mínimo 6.0s entre alertas de parada)
+    # Debounce persistente en disco entre procesos aislado por sesión (mínimo 3.0s entre paradas para la misma sesión)
     stop_state_file = os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
     now = time.time()
+    session_key = conv_id or "default"
+
+    data = {"sessions": {}}
     try:
         if os.path.isfile(stop_state_file):
             with open(stop_state_file, "r", encoding="utf-8") as f:
-                last_stop = float(json.load(f).get("time", 0.0))
-                if (now - last_stop) < 6.0:
-                    return {"decision": ""}
+                loaded = json.load(f)
+                if isinstance(loaded, dict) and "sessions" in loaded:
+                    data = loaded
+                elif isinstance(loaded, dict):
+                    data = {"sessions": {"default": loaded}}
     except Exception:
         pass
 
+    sessions = data.get("sessions", {})
+    session_info = sessions.get(session_key, {})
+    last_stop = float(session_info.get("time", 0.0))
+    if (now - last_stop) < 3.0:
+        return {"decision": ""}
+
+    sessions[session_key] = {"time": now, "conv_id": conv_id}
+    data["sessions"] = {k: v for k, v in sessions.items() if (now - v.get("time", 0)) < 3600}
     try:
         with open(stop_state_file, "w", encoding="utf-8") as f:
-            json.dump({"time": now, "conv_id": conv_id}, f)
+            json.dump(data, f)
     except Exception:
         pass
 
@@ -243,7 +258,8 @@ def handle_stop(payload, raw_input):
         "Respuesta completada.",
         urgency="normal",
         timeout_ms=4000,
-        icon="utilities-terminal"
+        icon="utilities-terminal",
+        session_id=conv_id
     )
 
     return {"decision": ""}

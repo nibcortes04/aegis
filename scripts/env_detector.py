@@ -148,8 +148,8 @@ def is_silent_mode():
 def get_notification_channel():
     """
     Determina el canal de notificación configurado:
-    - 'desktop' (default): Solo notificación de escritorio limpia (evita que Konsole muestre alertas de timbre).
-    - 'all': Notificación de escritorio (tarjeta única) + campana en terminal.
+    - 'all' (default): Notificación de escritorio + campana de pestaña de terminal.
+    - 'desktop': Solo notificación de escritorio (sin campana en terminal).
     - 'bell': Solo campana en terminal (sin popups de escritorio).
     - 'none': Silenciado total.
     """
@@ -168,14 +168,14 @@ def get_notification_channel():
     except Exception:
         pass
 
-    return "desktop"
+    return "all"
 
 def ring_terminal_bell():
     """
-    Emite señal de campana (BEL ASCII 7) compatible con Linux, macOS y Windows.
+    Emite señal de campana (BEL ASCII 7) para iluminar el icono de pestaña en Konsole, Orca, iTerm2, etc.
     - Linux/macOS: Escribe en /dev/tty o sys.stderr.
     - Windows: Escribe en CONOUT$ o sys.stderr o usa Beep de kernel32.
-    Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'desktop'/'none'.
+    Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'none' o 'desktop'.
     """
     if is_silent_mode():
         return
@@ -203,10 +203,9 @@ def ring_terminal_bell():
     else:
         try:
             with open("/dev/tty", "w", encoding="utf-8", errors="ignore") as tty:
-                # Solo emitir \a (BEL puro). NO emitir secuencias OSC 777 ni OSC 9
+                # BEL puro para encender el badge 🔔 de la pestaña del terminal
                 tty.write("\a")
                 tty.flush()
-                return
         except Exception:
             pass
 
@@ -216,33 +215,51 @@ def ring_terminal_bell():
     except Exception:
         pass
 
-def check_persistent_debounce(title, message, min_interval=3.5):
-    """Garantiza rate-limiting entre procesos mediante un archivo atómico en /tmp."""
+def check_persistent_debounce(title, message, session_id="", min_interval=2.5):
+    """Garantiza rate-limiting aislado por cada sesión de AGY mediante un archivo atómico en /tmp."""
+    if is_silent_mode():
+        return False
+
     state_file = os.path.join(tempfile.gettempdir(), ".aegis_notify_state.json")
     now = time.time()
+    session_key = session_id or "default"
+
+    data = {"sessions": {}}
     try:
         if os.path.isfile(state_file):
             with open(state_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                last_time = float(data.get("time", 0.0))
-                last_key = data.get("key", "")
-                if (now - last_time) < min_interval:
-                    return False
-                if last_key == f"{title}:{message}" and (now - last_time) < 10.0:
-                    return False
+                loaded = json.load(f)
+                if isinstance(loaded, dict) and "sessions" in loaded:
+                    data = loaded
+                elif isinstance(loaded, dict):
+                    data = {"sessions": {"default": loaded}}
     except Exception:
         pass
+
+    sessions = data.get("sessions", {})
+    session_info = sessions.get(session_key, {})
+    last_time = float(session_info.get("time", 0.0))
+
+    # Debounce específico de la sesión actual
+    if (now - last_time) < min_interval:
+        return False
+
+    sessions[session_key] = {"time": now, "content": f"{title}:{message}"}
+    data["sessions"] = {k: v for k, v in sessions.items() if (now - v.get("time", 0)) < 3600}
+
     try:
         with open(state_file, "w", encoding="utf-8") as f:
-            json.dump({"time": now, "key": f"{title}:{message}"}, f)
+            json.dump(data, f)
     except Exception:
         pass
+
     return True
 
-def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="utilities-terminal", replace_id=9942):
+def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000, icon="utilities-terminal", replace_id=9942, session_id=""):
     """
     Dispara notificación nativa de escritorio adaptada al sistema operativo.
-    Utiliza ID de reemplazo y tags sincronizados para que las notificaciones no se apilen.
+    Utiliza ID de reemplazo y tags sincronizados por sesión para que no se apilen dentro
+    de la misma sesión pero no interfieran con sesiones concurrentes.
     Silenciado automáticamente durante tests, con AGY_HOOK_SILENT=1 o si el canal es 'bell'/'none'.
     """
     if is_silent_mode():
@@ -252,23 +269,27 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
     if channel in ("none", "bell"):
         return
 
-    if not check_persistent_debounce(title, message, min_interval=3.0):
+    if not check_persistent_debounce(title, message, session_id=session_id, min_interval=2.5):
         return
 
     os_type = get_os_type()
 
-    # 1. Linux: Usar -r 9942 y x-canonical-private-synchronous para reemplazar en vez de apilar
+    # 1. Linux: Usar replace_id y x-canonical-private-synchronous por sesión
     if os_type == "linux":
         if shutil.which("notify-send"):
             try:
+                target_replace_id = replace_id
+                if session_id and replace_id == 9942:
+                    target_replace_id = 9940 + (abs(hash(session_id)) % 30)
+                sync_tag = f"aegis-{session_id}" if session_id else "aegis-notification"
                 cmd = [
                     "notify-send",
                     "-a", "Aegis",
-                    "-r", str(replace_id),
+                    "-r", str(target_replace_id),
                     "-u", urgency,
                     "-t", str(timeout_ms),
                     "-h", "int:transient:1",
-                    "-h", "string:x-canonical-private-synchronous:aegis-notification",
+                    "-h", f"string:x-canonical-private-synchronous:{sync_tag}",
                     "-i", icon,
                     title,
                     message

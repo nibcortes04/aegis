@@ -18,7 +18,7 @@ import env_detector
 
 def print_banner():
     print("====================================================")
-    print("   AGY PowerPack Universal Installer (Cross-Platform)  ")
+    print("       Aegis Universal Installer (Cross-Platform)   ")
     print("====================================================")
     print(f"• Detected OS      : {env_detector.get_os_type().upper()}")
     print(f"• Active Surface   : {env_detector.get_surface_type().upper()}")
@@ -51,6 +51,7 @@ def copy_scripts(scripts_dir):
         "agy-session.sh",
         "dev-worktree.sh",
         "env_inspector.py",
+        "aegis_test_notify.py",
     ]
 
     for fname in files_to_copy:

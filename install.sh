@@ -9,7 +9,7 @@ GEMINI_CLI="${HOME}/.gemini/antigravity-cli"
 GEMINI_SKILLS="${GEMINI_CLI}/skills"
 
 echo "===================================================="
-echo "    Instalador de Antigravity Powerpack (agy)       "
+echo "          Instalador de Aegis para AGY              "
 echo "===================================================="
 
 # 1. Comprobar dependencias básicas
@@ -37,6 +37,7 @@ cp "${SCRIPT_DIR}/scripts/statusline_formatter.py" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/statusline.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/agy-session.sh" "$USER_SCRIPTS/"
 cp "${SCRIPT_DIR}/scripts/env_inspector.py" "$USER_SCRIPTS/"
+cp "${SCRIPT_DIR}/scripts/aegis_test_notify.py" "$USER_SCRIPTS/"
 chmod +x "${USER_SCRIPTS}"/*.py "${USER_SCRIPTS}"/*.sh 2>/dev/null || true
 
 # Opcional: enlazar agy-session a ~/.local/bin si existe
@@ -45,9 +46,9 @@ if [ -d "${HOME}/.local/bin" ]; then
 fi
 
 # 4. Instalar la Skill en el entorno de AGY
-echo "▶ Instalando Skill agy-powerpack en $GEMINI_SKILLS..."
-rm -rf "${GEMINI_SKILLS}/agy-powerpack"
-cp -r "${SCRIPT_DIR}/skills/agy-powerpack" "${GEMINI_SKILLS}/"
+echo "▶ Instalando Skill aegis en $GEMINI_SKILLS..."
+rm -rf "${GEMINI_SKILLS}/aegis" "${GEMINI_SKILLS}/agy-powerpack"
+cp -r "${SCRIPT_DIR}/skills/aegis" "${GEMINI_SKILLS}/"
 
 # 5. Configurar hooks en ~/.gemini/config/hooks.json
 echo "▶ Configurando Lifecycle Hooks..."

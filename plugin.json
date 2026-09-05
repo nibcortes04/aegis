@@ -1,6 +1,6 @@
 {
   "name": "aegis",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "High-performance runtime, live telemetry, and execution guardrails for autonomous terminal agents.",
   "author": {
     "name": "nibcortes04"

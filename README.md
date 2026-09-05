@@ -62,17 +62,20 @@ python3 install.py
 
 ### Antigravity Plugin Manager
 ```bash
-agy plugin install ./agy-powerpack
-agy plugin validate agy-powerpack
+agy plugin install ./aegis
+agy plugin validate aegis
 ```
 
-### Verification
+### Verification & Live Diagnostics
 ```bash
 # Validate plugin integrity
-agy plugin validate ~/.gemini/antigravity-cli/plugins/agy-powerpack
+agy plugin validate ~/.gemini/antigravity-cli/plugins/aegis
 
-# Run built-in test suite
-cd ~/.gemini/antigravity-cli/plugins/agy-powerpack
+# Run interactive notification & terminal bell diagnostic
+python3 scripts/aegis_test_notify.py --all
+
+# Run full automated test suite
+cd ~/.gemini/antigravity-cli/plugins/aegis
 python3 -m unittest discover -s tests -p "test_*.py"
 ./tests/test_hooks.sh
 ```
@@ -82,7 +85,7 @@ python3 -m unittest discover -s tests -p "test_*.py"
 ## 🏗️ Architecture & Component Layout
 
 ```
-agy-powerpack/
+aegis/
 ├── plugin.json                 # Antigravity Plugin Manifest (passes agy plugin validate)
 ├── hooks.json                  # Hook declarations (PreToolUse & Stop)
 ├── mcp_config.json             # MCP server registration config
@@ -101,7 +104,7 @@ agy-powerpack/
 ├── rules/
 │   └── AGENTS.md               # Standard agent governance rule
 ├── skills/
-│   └── agy-powerpack/
+│   └── aegis/
 │       ├── SKILL.md            # Master operational skill
 │       └── references/         # Deep architectural guides
 │           ├── auto_mode.md    # Classifier design & critical command rules
@@ -113,13 +116,16 @@ agy-powerpack/
 │   ├── agy_hook_handler.py     # Sub-10ms hook dispatcher & security gate
 │   ├── trust_levels.py         # 4-tier graduated trust levels engine
 │   ├── env_detector.py         # Cross-platform & surface detector with debounce
+│   ├── aegis_test_notify.py    # Terminal bell & notification diagnostic tool
 │   ├── agy-hook-dispatcher.sh  # Fast execution wrapper
 │   ├── statusline_formatter.py # Claude Code statusline renderer
 │   ├── statusline.sh           # Statusline wrapper
 │   ├── agy-session.sh          # Session resume/inspect helper
-│   └── dev-worktree.sh         # Git worktree isolation utility
+│   ├── dev-worktree.sh         # Git worktree isolation utility
+│   └── env_inspector.py        # Host tool & compiler inspector
 ├── tests/
 │   ├── test_classifier.py      # Classifier unit test suite
+│   ├── test_notifications.py   # Multi-session debounce & notification tests
 │   ├── test_statusline.py      # Statusline formatting & quota test suite
 │   ├── test_trust_levels.py    # Trust levels permissions test suite
 │   ├── test_mcp_server.py      # MCP server tools unit test suite
