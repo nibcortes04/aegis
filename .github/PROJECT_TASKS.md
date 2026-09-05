@@ -1,64 +1,108 @@
-# 📋 AGY PowerPack — Project Tasks & Roadmap Dashboard
+# 📋 Aegis — Project Tasks & Engineering Roadmap Dashboard
 
-Welcome to the centralized task board and engineering roadmap for **AGY PowerPack**.
-This dashboard tracks planned features, active epics, and bot-delegated maintenance tasks. Both human engineers and autonomous AI bots (Gemini, Codex, Claude) operate against this backlog.
+Welcome to the centralized task board and engineering roadmap for **Aegis**.
+This dashboard tracks delivered capabilities, active epics, refactoring targets, and future roadmap items. Both human engineers and autonomous AI bots operate against this backlog.
+
+- **System Architect & Orchestrator:** Nicolas Cortes ([@nibcortes04](https://github.com/nibcortes04))
+- **Engineered with:** Gemini 3.8 Flash (High) & Google Antigravity (AGY)
+- **Current Version:** `v1.5.0` (Production Ready)
 
 ---
 
 ## 🚦 Kanban Board & Pipeline Status
 
-### 🟢 Completed (Done)
-- [x] **EPIC-01: Terminal Notifications & Tab Bell**
-  - Direct `\a` emit to `/dev/tty` for bell icon 🔔 on KDE Konsole, Orca, Kitty, iTerm2 tabs.
-  - KDE Plasma transient notifications with auto-dismiss (`-t 4000 -h int:transient:1`).
-  - Fixed sticky notification bug.
-- [x] **EPIC-02: Claude Code-Grade 3-Line Statusline**
-  - Line 1: Model with reasoning effort (`🧠 high`), Git branch with diff (`+X -Y`), session title from SQLite.
-  - Line 2: Context window graphic bar, USD cost, duration, 5h quota with local reset time `(🕦HH:MM)` and 7d quota.
-  - Line 3: Interactive cycle mode indicator (`▶▶ auto mode on`).
-- [x] **EPIC-03: Cross-Platform & Multi-Surface Architecture (v1.1.0)**
-  - Linux, macOS, and Windows 10/11 native adaptors (`scripts/env_detector.py`).
-  - Automatic surface detection: pure CLI, Antigravity IDE (VS Code), and Antigravity 2.0 Desktop App.
-  - Universal Python installer (`install.py`) and PowerShell script (`install.ps1`).
+### 🟢 Completed Epics (Delivered & Verified in v1.5.0)
 
----
-
-### 🟡 In Progress (Current Sprint)
-- [ ] **EPIC-04: Auto Mode Trust Levels (Niveles de Confianza)**
-  - [x] Implement 4 graduated security profiles: `audit` (0), `workspace-safe` (1), `full-developer` (2), `subagent-worker` (3).
+- [x] **EPIC-01: Deterministic Auto Mode & Graduated Trust Levels**
+  - [x] Sub-10ms hook classification engine in `scripts/agy_hook_handler.py`.
+  - [x] 4 graduated security profiles: `audit` (0), `workspace-safe` (1), `full-developer` (2), `subagent-worker` (3) in `scripts/trust_levels.py`.
   - [x] Dynamic level selection via `settings.json` and `AGY_AUTO_MODE_LEVEL`.
-  - [x] Statusline indicator showing active trust level (`▶▶ auto (dev)`, `▶▶ auto (safe)`).
-  - [x] Automated unit test suite (`tests/test_trust_levels.py`).
-- [ ] **EPIC-05: Anti-Spam Notification Engine & Silent Test Mode**
-  - [x] Replaced stacking notifications with single-card replacement (`-r 9942` and `x-canonical-private-synchronous`).
-  - [x] Silent test mode (`AGY_HOOK_SILENT=1`) preventing popups during test execution.
-  - [x] Windows Toast tag grouping (`Tag: agy-notification`) to prevent notification center clutter.
-- [ ] **EPIC-06: Bundled Documentation MCP Server (`mcp/`)**
-  - [x] Implement lightweight stdio JSON-RPC 2.0 server (`mcp/mcp_server.py`).
-  - [x] Expose tools: `powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`.
-  - [x] Register in `mcp_config.json` (passes `agy plugin validate`).
-- [ ] **EPIC-07: Subagent Delegation Catalog (`agents/`)**
-  - [x] Define 5 core agents: `researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`.
-  - [x] Document Fork & Join and Worker Pool architectural patterns (`multi_agent_delegation.md`).
+  - [x] Automated unit test suite (`tests/test_trust_levels.py` and `tests/test_classifier.py`).
+
+- [x] **EPIC-02: Two-Factor Safety Gate (Doble Confirmación Obligatoria)**
+  - [x] Mandatory 2-step intercept for critical commands (`rm -rf`, `docker stop/rm`, `drop database`, `mkfs`, `dd`, `sudo`, `git push --force`).
+  - [x] Step 1 blocks (`decision: deny`) requiring agent-to-human explanation.
+  - [x] Step 2 within 120s TTL prompts interactive terminal confirmation (`decision: ask`).
+  - [x] Confirmation ledger persistence in `~/.gemini/antigravity-cli/.danger_confirmations.json`.
+  - [x] Automated hook contract tests in `tests/test_hooks.sh`.
+
+- [x] **EPIC-03: Claude Code-Grade 3-Line Statusline**
+  - [x] Line 1: Model (`[Gemini-3.8 Flash]`), reasoning effort (`🧠 high`), Git branch, live diff lines (`+X -Y`), session title from SQLite.
+  - [x] Line 2: Context window graphic bar (`███░░░░░░░ 35%`), cost in USD, duration, 5h quota with local reset time `(🕦HH:MM)` and 7d quota.
+  - [x] Line 3: Interactive cycle mode indicator (`▶▶ auto (safe) (shift+tab to cycle) · ← for agents`).
+  - [x] Automated test suite in `tests/test_statusline.py`.
+
+- [x] **EPIC-04: Multi-Session Notification Telemetry & Tab Bell (🔔)**
+  - [x] Direct `\a` emit to `/dev/tty` for bell icon 🔔 on KDE Konsole, Orca, Kitty, iTerm2 tabs without OSC 777 duplication.
+  - [x] KDE Plasma transient notifications with strict auto-dismiss (`-t 4000/5000ms`, `-h int:transient:1`, `safe_urgency = "normal"`).
+  - [x] Per-session isolation via `conversationId` in `/tmp/.aegis_notify_state.json` preventing cross-session silencing.
+  - [x] Zero notification noise during intermediate tool execution; notification exclusively on turn completion or human action request.
+
+- [x] **EPIC-05: Kernel Inotify Capacity Telemetry & Leak Guard**
+  - [x] Kernel telemetry scanner `get_inotify_capacity()` in `scripts/env_detector.py`.
+  - [x] Real-time warning triggers when active instances exceed 80% and 95% of `/proc/sys/fs/inotify/max_user_instances`.
+  - [x] Integrated into `scripts/aegis_test_notify.py --verify` and `scripts/env_inspector.py`.
+
+- [x] **EPIC-06: Autonomous Environment Inspector (`env_inspector.py`)**
+  - [x] Host scanner for compilers (`gcc`, `clang`, `rustc`, `go`), runtimes (`python`, `node`, `bun`), and package managers (`pnpm`, `npm`, `cargo`, `pip`).
+  - [x] Auto-generation of personalized safe rules for `settings.json`.
+
+- [x] **EPIC-07: Subagent Delegation Catalog (`agents/`) & Git Worktrees**
+  - [x] 5 specialized agent definitions: `researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`.
+  - [x] Worktree isolation script `./scripts/dev-worktree.sh` for collision-free branch development.
+
+- [x] **EPIC-08: Portal Web, Cyber Shield Branding & AEO/SEO Standard (v1.5.0)**
+  - [x] Vector branding (`docs/logo.svg`, `docs/favicon.svg`).
+  - [x] Responsive 2-column installation grid with centered verification banner (`docs/index.html`, `docs/styles.css`).
+  - [x] Interactive Terminal Lab with tab switcher (Statusline, Auto Mode, Safety Gate, Multi-Session).
+  - [x] Full attribution to `@nibcortes04` and Gemini 3.8 Flash (High).
+  - [x] AI Engine Optimization (`docs/llms.txt`, `docs/robots.txt`, `docs/sitemap.xml`, Schema.org JSON-LD).
+  - [x] Anthropic `frontend-design` skill integrated in AGY.
 
 ---
 
-### 🔵 Backlog & Future Tasks (Next Sprints)
-- [ ] **TASK-101: Autonomous Bot PR Validator GitHub Action**
-  - Auto-triage pull requests opened with the `bot/...` prefix.
-  - Verify worktree compliance and unit test pass rate automatically.
-- [ ] **TASK-102: Terminal Profiles Auto-Configuration Helper**
-  - Interactive CLI wizard to verify and turn on visual bell in KDE Konsole, iTerm2, and Windows Terminal.
-- [ ] **TASK-103: Dynamic Model Swapping per Subagent in Settings**
-  - Allow users to override default subagent models (`flash` vs `pro`) via `settings.json`.
-- [ ] **TASK-104: Custom Notification Sounds & Audio Chimes**
-  - Optional subtle sound themes for task completion and approval requests.
+### 🟡 Maintenance & Refactoring Epics (Next Sprint)
+
+- [ ] **EPIC-CORRECT-01: MCP Server Harmonization & Legacy Cleansing**
+  - [ ] Rename MCP server identifier to `aegis-mcp` in `mcp/mcp_server.py`.
+  - [ ] Expose native `aegis_*` tools (`aegis_get_trust_levels`, `aegis_get_surface_info`, `aegis_verify_system`, etc.) with backward-compatible aliases for `powerpack_*`.
+  - [ ] Clean remaining legacy references in `skills/aegis/references/*.md`, `docs/TRUST_LEVELS.md`, `docs/TERMINALS.md`, and `rules/AGENTS.md`.
+  - [ ] Update `tests/test_mcp_server.py`.
+
+- [ ] **EPIC-CORRECT-02: Synchronize Community Contribution Templates**
+  - [ ] Update `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md` to reference Aegis exclusively.
+
+---
+
+### 🔵 Future Roadmap Epics (Backlog)
+
+- [ ] **EPIC-09: Dynamic Real Quota & Live Metrics Integration**
+  - [ ] Connect statusline line 2 with real-time session tokens and live API usage telemetry when exposed by AGY.
+  - [ ] Fallback gracefully to local SQLite estimates when offline.
+
+- [ ] **EPIC-10: Android Remote PWA Pairing & Tunnel Bridge (`aegis mobile`)**
+  - [ ] Interactive CLI wizard (`aegis mobile --pair`) generating a local QR code and secure tunnel (Tailscale/Cloudflare/SSH) for mobile session continuity on `https://antigravity.google`.
+
+- [ ] **EPIC-11: Bot Contributor Automation & Autonomous PR Review Gate**
+  - [ ] GitHub Action workflow auto-validating PRs opened by bots (`bot/*` branches).
+  - [ ] Automatic check for worktree hygiene, linting, and 100% test pass rate before merge to `dev`.
+
+- [ ] **EPIC-12: Interactive Terminal Setup & Visual/Audio Bell Wizard**
+  - [ ] CLI tool (`aegis doctor --terminal`) to inspect active terminal and auto-configure visual bell settings.
+  - [ ] Optional subtle audio chimes for human approval requests.
+
+- [ ] **EPIC-13: Production VPS Agent Orchestration Guardrails**
+  - [ ] Native `vps-production` profile for remote servers managing production containers (n8n, Chatwoot, Caddy).
+  - [ ] Enforces double confirmation interactively on any docker compose or volume operations.
+
+- [ ] **EPIC-14: Official Antigravity Plugin Registry Packaging**
+  - [ ] Prepare distribution bundle and automated release pipeline for `agy plugin publish`.
 
 ---
 
 ## 🤖 Protocol for Autonomous Bot Contributors
 
 When an autonomous bot claims a task from this backlog:
-1. **Create Worktree**: Run `./scripts/dev-worktree.sh create bot/<task-id>-<description>`.
-2. **Execute inside Worktree**: Develop and run full test suite (`python3 -m unittest discover`, `./tests/test_hooks.sh`).
+1. **Create Worktree**: Run `./scripts/dev-worktree.sh new bot/<task-id>-<description>`.
+2. **Execute inside Worktree**: Develop and run full test suite (`python3 -m unittest discover -s tests -p "test_*.py"`, `./tests/test_hooks.sh`).
 3. **Open Pull Request**: Use `.github/PULL_REQUEST_TEMPLATE.md`, set contributor type to `Autonomous Agent Bot`, link the task ID, and target branch `dev`.
