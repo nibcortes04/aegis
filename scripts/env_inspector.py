@@ -17,10 +17,10 @@ import platform
 import subprocess
 
 try:
-    from env_detector import get_os_type, get_surface_type, get_terminal_type, get_app_data_dir
+    from env_detector import get_os_type, get_surface_type, get_terminal_type, get_app_data_dir, get_inotify_capacity
 except ImportError:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from env_detector import get_os_type, get_surface_type, get_terminal_type, get_app_data_dir
+    from env_detector import get_os_type, get_surface_type, get_terminal_type, get_app_data_dir, get_inotify_capacity
 
 TOOL_CATALOG = {
     "compilers_and_runtimes": [
@@ -136,6 +136,7 @@ def inspect_environment():
             "desktop": desktop_env,
             "terminal": terminal,
             "surface": surface,
+            "inotify": get_inotify_capacity(),
         },
         "detected_tools": detected,
         "total_tools_found": len(found_binaries),
@@ -188,13 +189,18 @@ def print_report(profile):
     """Muestra un resumen formateado y limpio en la terminal."""
     sys_info = profile["system"]
     print("====================================================")
-    print("    AGY PowerPack — Autonomous Environment Inspector")
+    print("        Aegis — Autonomous Environment Inspector     ")
     print("====================================================")
     print(f"• Sistema Operativo : {sys_info['os_type'].upper()} ({sys_info['distro']})")
     print(f"• Kernel / Arch     : {sys_info['kernel']} ({sys_info['arch']})")
     print(f"• Entorno Gráfico   : {sys_info['desktop']}")
     print(f"• Emulador Terminal : {sys_info['terminal'].upper()}")
     print(f"• Superficie AGY    : {sys_info['surface'].upper()}")
+    inotify = sys_info.get("inotify")
+    if inotify:
+        print(f"• Capacidad Inotify : {inotify['active_instances']}/{inotify['max_instances']} ({inotify['usage_percent']}%) - Estado: {inotify['status'].upper()}")
+        if inotify["status"] in ("warning", "critical"):
+            print(f"  ⚠️ Sugerencia: Aumentar límite con: sudo sysctl -w fs.inotify.max_user_instances=1024")
     print(f"• Total Herramientas: {profile['total_tools_found']} binarios detectados")
     print("----------------------------------------------------")
     print("▶ Herramientas Detectadas por Categoría:")

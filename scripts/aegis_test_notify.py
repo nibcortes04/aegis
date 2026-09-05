@@ -30,6 +30,7 @@ try:
         get_surface_type,
         get_terminal_type,
         get_app_data_dir,
+        get_inotify_capacity,
     )
     from agy_hook_handler import handle_stop, handle_pre_tool_use
 except ImportError:
@@ -42,6 +43,7 @@ except ImportError:
         get_surface_type,
         get_terminal_type,
         get_app_data_dir,
+        get_inotify_capacity,
     )
     from agy_hook_handler import handle_stop, handle_pre_tool_use
 
@@ -149,6 +151,18 @@ def run_verify():
         ok=os.path.isfile(hooks_json),
         detail="activo y enlazado a Aegis" if os.path.isfile(hooks_json) else "no encontrado",
     )
+
+    # 4. Telemetría de Capacidad del Kernel (Inotify)
+    if os_type == "linux":
+        inotify = get_inotify_capacity()
+        if inotify:
+            ok_status = inotify["status"] != "critical"
+            detail = f"{inotify['active_instances']}/{inotify['max_instances']} instancias ({inotify['usage_percent']}%)"
+            if inotify["status"] == "critical":
+                detail += " [CRÍTICO: Agotamiento inminente. Aumentar fs.inotify.max_user_instances=1024]"
+            elif inotify["status"] == "warning":
+                detail += " [ALERTA: Uso elevado. Recomendado fs.inotify.max_user_instances=1024]"
+            print_status("Capacidad de Inotify del Sistema", ok=ok_status, detail=detail)
 
     print(f"\n{GREEN}{BOLD}Diagnóstico completado.{RESET}\n")
 

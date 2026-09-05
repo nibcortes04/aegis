@@ -91,6 +91,35 @@ class TestNotifications(unittest.TestCase):
             aegis_test_notify.run_desktop()
             aegis_test_notify.run_simulate_stop("unit-test-session")
 
+    def test_notification_timer_and_safe_urgency_enforcement(self):
+        """Verifica que ninguna notificación quede fija: critical se mapea a normal con timeout."""
+        with patch("env_detector.is_silent_mode", return_value=False), \
+             patch("subprocess.run") as mock_run:
+            send_desktop_notification(
+                "Critical Test",
+                "Should have timer",
+                urgency="critical",
+                timeout_ms=3500,
+                session_id="test-timer-unit",
+            )
+            self.assertTrue(mock_run.called)
+            called_cmd = mock_run.call_args[0][0]
+            cmd_str = " ".join(called_cmd)
+            self.assertIn("-u normal", cmd_str, "Debe mapear 'critical' a 'normal' para evitar quedarse fija en KDE")
+            self.assertIn("-t 3500", cmd_str, "Debe pasar el timer de auto-cierre")
+            self.assertIn("-h int:transient:1", cmd_str, "Debe marcarse como transient")
+
+    def test_inotify_capacity_telemetry(self):
+        """Verifica la función de telemetría de inotify."""
+        from env_detector import get_inotify_capacity
+        info = get_inotify_capacity()
+        if sys.platform.startswith("linux"):
+            self.assertIsNotNone(info)
+            self.assertIn("max_instances", info)
+            self.assertIn("active_instances", info)
+            self.assertIn("usage_percent", info)
+            self.assertIn(info["status"], ["ok", "warning", "critical"])
+
 
 if __name__ == "__main__":
     unittest.main()

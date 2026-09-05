@@ -282,12 +282,20 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
                 if session_id and replace_id == 9942:
                     target_replace_id = 9940 + (abs(hash(session_id)) % 30)
                 sync_tag = f"aegis-{session_id}" if session_id else "aegis-notification"
+
+                # REGLA CRÍTICA: En FreeDesktop/KDE Plasma, -u critical ignora el timeout y deja la notificación
+                # fija en pantalla indefinidamente. Para asegurar que TODAS las notificaciones tengan timer de
+                # auto-cierre y nunca se queden fijas, forzamos urgency="normal" y representamos la criticidad
+                # mediante el icono (dialog-error / dialog-warning).
+                safe_urgency = "normal" if urgency == "critical" else urgency
+                safe_timeout = timeout_ms if (timeout_ms and timeout_ms > 0) else 4000
+
                 cmd = [
                     "notify-send",
                     "-a", "Aegis",
                     "-r", str(target_replace_id),
-                    "-u", urgency,
-                    "-t", str(timeout_ms),
+                    "-u", safe_urgency,
+                    "-t", str(safe_timeout),
                     "-h", "int:transient:1",
                     "-h", f"string:x-canonical-private-synchronous:{sync_tag}",
                     "-i", icon,
@@ -352,3 +360,57 @@ def send_desktop_notification(title, message, urgency="normal", timeout_ms=4000,
             )
         except Exception:
             pass
+
+def get_inotify_capacity():
+    """
+    Retorna telemetría de capacidad de inotify en Linux:
+    - max_instances: límite del sistema (/proc/sys/fs/inotify/max_user_instances)
+    - active_instances: cantidad de descriptores inotify en uso por los procesos del usuario
+    - usage_percent: porcentaje de uso
+    - status: 'ok', 'warning' (>=80%) o 'critical' (>=95%)
+    """
+    if get_os_type() != "linux":
+        return None
+
+    try:
+        max_instances_path = "/proc/sys/fs/inotify/max_user_instances"
+        if not os.path.isfile(max_instances_path):
+            return None
+
+        with open(max_instances_path, "r", encoding="utf-8") as f:
+            max_instances = int(f.read().strip())
+
+        active = 0
+        fd_dir = "/proc"
+        my_uid = os.getuid() if hasattr(os, "getuid") else None
+        for pid in os.listdir(fd_dir):
+            if not pid.isdigit():
+                continue
+            pdir = os.path.join(fd_dir, pid)
+            try:
+                if my_uid is not None and os.stat(pdir).st_uid != my_uid:
+                    continue
+                fd_path = os.path.join(pdir, "fd")
+                for fd in os.listdir(fd_path):
+                    target = os.readlink(os.path.join(fd_path, fd))
+                    if "inotify" in target:
+                        active += 1
+            except (OSError, IOError):
+                continue
+
+        percent = round((active / max_instances) * 100, 1) if max_instances > 0 else 0.0
+        status = "ok"
+        if percent >= 95.0:
+            status = "critical"
+        elif percent >= 80.0:
+            status = "warning"
+
+        return {
+            "max_instances": max_instances,
+            "active_instances": active,
+            "usage_percent": percent,
+            "status": status,
+        }
+    except Exception:
+        return None
+

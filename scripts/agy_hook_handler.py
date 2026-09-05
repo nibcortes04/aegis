@@ -186,7 +186,7 @@ def handle_pre_tool_use(payload, raw_input):
         send_desktop_notification(
             f"Aegis: {session_title}",
             f"Comando interceptado: {reason[:65]}",
-            urgency="critical",
+            urgency="normal",
             timeout_ms=5000,
             icon="dialog-error",
             session_id=conv_id
