@@ -1,6 +1,6 @@
 # Smart Auto Mode Reference
 
-The `agy-powerpack` Auto Mode brings the seamless execution experience of Claude Code's Auto Mode to Antigravity CLI while preserving critical safety boundaries.
+The `Aegis` Auto Mode brings the seamless execution experience of Claude Code's Auto Mode to Antigravity CLI while preserving critical safety boundaries.
 
 ---
 

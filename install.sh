@@ -1,5 +1,5 @@
 #!/bin/bash
-# agy-powerpack: Instalador automatizado para Antigravity CLI
+# Aegis: Instalador automatizado para Antigravity CLI
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

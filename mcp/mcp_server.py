@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Documentation & Diagnostics MCP Server for AGY PowerPack
+Documentation & Diagnostics MCP Server for Aegis
 Implementa el protocolo JSON-RPC 2.0 del Model Context Protocol (MCP) sobre stdio
 utilizando la biblioteca estándar de Python (sin dependencias externas).
 Exprime herramientas para que cualquier agente o LLM consulte documentación,
@@ -25,8 +25,9 @@ except ImportError:
     trust_levels = None
 
 TOOLS_DEFINITIONS = [
+    # Aegis Primary Tools
     {
-        "name": "powerpack_get_trust_levels",
+        "name": "aegis_get_trust_levels",
         "description": "Consulta la especificación de los 4 niveles de confianza de Auto Mode (audit, workspace-safe, full-developer, subagent-worker), qué comandos permite cada uno y cómo configurarlos.",
         "inputSchema": {
             "type": "object",
@@ -41,7 +42,7 @@ TOOLS_DEFINITIONS = [
         }
     },
     {
-        "name": "powerpack_get_surface_info",
+        "name": "aegis_get_surface_info",
         "description": "Detecta en tiempo real el sistema operativo (Linux, macOS, Windows), la superficie activa de Antigravity (CLI, IDE, Electron Desktop App) y el emulador de terminal.",
         "inputSchema": {
             "type": "object",
@@ -49,7 +50,7 @@ TOOLS_DEFINITIONS = [
         }
     },
     {
-        "name": "powerpack_get_delegation_guide",
+        "name": "aegis_get_delegation_guide",
         "description": "Obtiene la guía técnica y plantillas de prompts para delegación concurrente de subagentes en Antigravity CLI manteniendo el contexto limpio.",
         "inputSchema": {
             "type": "object",
@@ -63,15 +64,15 @@ TOOLS_DEFINITIONS = [
         }
     },
     {
-        "name": "powerpack_verify_system",
-        "description": "Ejecuta un diagnóstico completo del entorno de AGY PowerPack (hooks, statusline, dependencias de notificación, detección de superficie y permisos).",
+        "name": "aegis_verify_system",
+        "description": "Ejecuta un diagnóstico completo del entorno de Aegis (hooks, statusline, dependencias de notificación, detección de superficie y permisos).",
         "inputSchema": {
             "type": "object",
             "properties": {}
         }
     },
     {
-        "name": "powerpack_inspect_environment",
+        "name": "aegis_inspect_environment",
         "description": "Inspecciona de forma autónoma el host para detectar compiladores, runtimes, gestores de paquetes y herramientas DevOps, generando un perfil y recomendaciones de permisos para Auto Mode.",
         "inputSchema": {
             "type": "object",
@@ -81,6 +82,48 @@ TOOLS_DEFINITIONS = [
                     "description": "Si es True, aplica automáticamente los comandos seguros detectados a settings.json."
                 }
             }
+        }
+    },
+    # Backward-compatibility aliases (powerpack_*)
+    {
+        "name": "powerpack_get_trust_levels",
+        "description": "(Alias legacy) Consulta los 4 niveles de confianza de Auto Mode.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "enum": ["audit", "workspace-safe", "full-developer", "subagent-worker", "all"]
+                }
+            }
+        }
+    },
+    {
+        "name": "powerpack_get_surface_info",
+        "description": "(Alias legacy) Detecta en tiempo real el OS, superficie Antigravity y terminal.",
+        "inputSchema": { "type": "object", "properties": {} }
+    },
+    {
+        "name": "powerpack_get_delegation_guide",
+        "description": "(Alias legacy) Guía técnica y plantillas de subagentes.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "pattern": { "type": "string", "enum": ["fork-join", "worker-pool", "reviewer-gate", "all"] }
+            }
+        }
+    },
+    {
+        "name": "powerpack_verify_system",
+        "description": "(Alias legacy) Diagnóstico completo del entorno Aegis.",
+        "inputSchema": { "type": "object", "properties": {} }
+    },
+    {
+        "name": "powerpack_inspect_environment",
+        "description": "(Alias legacy) Inspección autónoma de compiladores, runtimes y herramientas.",
+        "inputSchema": {
+            "type": "object",
+            "properties": { "apply": { "type": "boolean" } }
         }
     }
 ]
@@ -216,8 +259,8 @@ def process_message(msg):
                     "tools": {}
                 },
                 "serverInfo": {
-                    "name": "agy-powerpack-mcp",
-                    "version": "1.3.0"
+                    "name": "aegis-mcp",
+                    "version": "1.5.0"
                 }
             }
         }
@@ -242,15 +285,15 @@ def process_message(msg):
         tool_name = params.get("name")
         tool_args = params.get("arguments") or {}
 
-        if tool_name == "powerpack_get_trust_levels":
+        if tool_name in ("aegis_get_trust_levels", "powerpack_get_trust_levels"):
             out_text = handle_get_trust_levels(tool_args)
-        elif tool_name == "powerpack_get_surface_info":
+        elif tool_name in ("aegis_get_surface_info", "powerpack_get_surface_info"):
             out_text = handle_get_surface_info(tool_args)
-        elif tool_name == "powerpack_get_delegation_guide":
+        elif tool_name in ("aegis_get_delegation_guide", "powerpack_get_delegation_guide"):
             out_text = handle_get_delegation_guide(tool_args)
-        elif tool_name == "powerpack_verify_system":
+        elif tool_name in ("aegis_verify_system", "powerpack_verify_system"):
             out_text = handle_verify_system(tool_args)
-        elif tool_name == "powerpack_inspect_environment":
+        elif tool_name in ("aegis_inspect_environment", "powerpack_inspect_environment"):
             out_text = handle_inspect_environment(tool_args)
         else:
             return {

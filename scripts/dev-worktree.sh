@@ -35,7 +35,7 @@ create_worktree() {
 
   local safe_name
   safe_name=$(echo "$branch_name" | tr '/' '-')
-  local target_dir="${REPO_ROOT}/../agy-powerpack-${safe_name}"
+  local target_dir="${REPO_ROOT}/../aegis-${safe_name}"
 
   # Asegurar que dev exista
   if ! git show-ref --verify --quiet refs/heads/dev; then
@@ -65,7 +65,7 @@ remove_worktree() {
 
   local safe_name
   safe_name=$(echo "$branch_name" | tr '/' '-')
-  local target_dir="${REPO_ROOT}/../agy-powerpack-${safe_name}"
+  local target_dir="${REPO_ROOT}/../aegis-${safe_name}"
 
   if [ -d "$target_dir" ]; then
     git worktree remove "$target_dir"

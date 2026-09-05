@@ -1,6 +1,6 @@
-# Antigravity Powerpack Guidelines
+# Aegis Agent Guidelines
 
-When operating within a project using the `agy-powerpack` plugin:
+When operating within a project using the Aegis plugin:
 
 ## 1. Auto Mode, Safe Execution & Two-Factor Safety Gate
 - Favor safe, idempotent operations that can be automatically approved by the classifier.
@@ -16,7 +16,7 @@ When operating within a project using the `agy-powerpack` plugin:
 - No ejecute bucles que saturen la terminal de alertas sonoras.
 
 ## 3. Inspección Autónoma del Entorno
-- Utilice el inspector autónomo (`python3 scripts/env_inspector.py` o herramienta MCP `powerpack_inspect_environment`) para verificar qué compiladores, runtimes y herramientas DevOps están presentes en el host antes de asumir disponibilidad de software.
+- Utilice el inspector autónomo (`python3 scripts/env_inspector.py` o herramienta MCP `aegis_inspect_environment`) para verificar qué compiladores, runtimes y herramientas DevOps están presentes en el host antes de asumir disponibilidad de software.
 
 ## 4. Session Continuity & Worktrees
 - Para tareas complejas, aislamiento de bugs o colaboración con bots autónomos, cree un Git Worktree dedicado con `./scripts/dev-worktree.sh` para preservar el contexto limpio y evitar conflictos en la rama principal.

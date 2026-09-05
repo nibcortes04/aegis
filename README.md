@@ -16,7 +16,7 @@
 - **🔒 Two-Factor Safety Gate (Doble Confirmación Obligatoria)**: Destructive commands (`rm -rf`, `docker rm/stop/volume rm`, `dd`, `mkfs`, `sudo`, `drop database`, `git push --force`) are intercepted in two mandatory phases (Step 1 denies execution and forces agent to ask user; Step 2 within 120s prompts physical `y/n` confirmation in terminal).
 - **🔍 Autonomous Environment Inspector (`env_inspector.py`)**: Automatically scans host compilers, runtimes (Python, Node, Rust, Go, Java), package managers (pnpm, npm, cargo, pip), and devops tools at install time, auto-populating `settings.json` with personalized safe rules.
 - **🤖 Native Multi-Agent Delegation**: 5 bundled subagents (`researcher`, `worker-backend`, `worker-frontend`, `qa-tester`, `reviewer-bot`) for Fork & Join, Worker Pool, and Reviewer Gate orchestration while preserving a clean context window.
-- **🔌 Built-in MCP Documentation Server**: Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools (`powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`, `powerpack_inspect_environment`) for dynamic agent self-discovery.
+- **🔌 Built-in MCP Documentation Server**: Zero-dependency stdio JSON-RPC 2.0 MCP server exposing tools (`aegis_get_trust_levels`, `aegis_get_surface_info`, `aegis_get_delegation_guide`, `aegis_verify_system`, `aegis_inspect_environment`) for dynamic agent self-discovery.
 - **🌐 100% Cross-Platform & Surface-Aware**:
   - **Operating Systems**: Native support for **Linux** (KDE Plasma, GNOME, Orca), **macOS** (AppleScript/terminal-notifier), and **Windows 10/11** (Windows Terminal, WinRT PowerShell Toasts).
   - **Antigravity Surfaces**: Automatically detects execution environment across **Antigravity CLI (`agy`)**, **Antigravity IDE (VS Code)**, and **Antigravity 2.0 (Electron Desktop App)**.
@@ -186,7 +186,7 @@ Run complex projects in parallel without context bloat using AGY's native subage
 - **`qa-tester`**: Redacts QA test plans, executes unit/integration suites, and diagnoses test failures.
 - **`reviewer-bot`**: Independent reviewer for code compliance, security, and edge-case verification.
 
-See the complete guide in [skills/agy-powerpack/references/multi_agent_delegation.md](file:///home/n_n/projects/agy-powerpack/skills/agy-powerpack/references/multi_agent_delegation.md).
+See the complete guide in [skills/aegis/references/multi_agent_delegation.md](skills/aegis/references/multi_agent_delegation.md).
 
 ---
 
@@ -194,10 +194,11 @@ See the complete guide in [skills/agy-powerpack/references/multi_agent_delegatio
 
 The plugin includes a stdio JSON-RPC 2.0 MCP server (`mcp/mcp_server.py`) that agents can query dynamically:
 
-- **`powerpack_get_trust_levels`**: Query available security profiles and permitted commands.
-- **`powerpack_get_surface_info`**: Inspect current OS, terminal emulator, and Antigravity surface.
-- **`powerpack_get_delegation_guide`**: Retrieve recommended multi-agent delegation architectures.
-- **`powerpack_verify_system`**: Run quick health checks on local scripts and configs.
+- **`aegis_get_trust_levels`**: Query available security profiles and permitted commands.
+- **`aegis_get_surface_info`**: Inspect current OS, terminal emulator, and Antigravity surface.
+- **`aegis_get_delegation_guide`**: Retrieve recommended multi-agent delegation architectures.
+- **`aegis_verify_system`**: Run quick health checks on local scripts and configs.
+- **`aegis_inspect_environment`**: Scan host compilers and runtimes to generate safe rules.
 
 ---
 

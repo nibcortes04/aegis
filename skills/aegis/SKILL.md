@@ -48,7 +48,7 @@ description: High-performance runtime, live telemetry, and execution guardrails 
 - Read more: [references/multi_agent_delegation.md](references/multi_agent_delegation.md)
 
 ### G. Built-in Documentation MCP Server
-- **Zero-Dependency Stdio MCP Server:** Exposes `powerpack_get_trust_levels`, `powerpack_get_surface_info`, `powerpack_get_delegation_guide`, `powerpack_verify_system`, and `powerpack_inspect_environment` via stdio JSON-RPC 2.0.
+- **Zero-Dependency Stdio MCP Server:** Exposes `aegis_get_trust_levels`, `aegis_get_surface_info`, `aegis_get_delegation_guide`, `aegis_verify_system`, and `aegis_inspect_environment` (alongside backward-compatible `powerpack_*` aliases) via stdio JSON-RPC 2.0.
 - Registered via `mcp_config.json`.
 
 ### H. Autonomous Environment Inspector
@@ -60,7 +60,7 @@ description: High-performance runtime, live telemetry, and execution guardrails 
 
 ## 2. Quick Setup & Verification
 
-To install or update the powerpack on any system:
+To install or update Aegis on any system:
 ```bash
 ./install.sh
 ```

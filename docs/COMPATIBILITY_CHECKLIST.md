@@ -1,6 +1,6 @@
 # 📋 Compatibility Checklist & Certified Platforms
 
-This document tracks all certified operating systems, terminal emulators, and Antigravity surfaces tested with **AGY PowerPack**.
+This document tracks all certified operating systems, terminal emulators, and Antigravity surfaces tested with **Aegis**.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea or capability for agy-powerpack
+about: Suggest an idea or capability for Aegis
 title: "[FEAT] "
 labels: ["enhancement"]
 assignees: ""

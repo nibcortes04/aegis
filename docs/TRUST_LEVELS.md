@@ -1,6 +1,6 @@
 # 🛡️ Auto Mode Trust Levels & Two-Factor Safety Gate
 
-Este documento detalla la arquitectura de seguridad y niveles de confianza graduados de **AGY PowerPack**, permitiendo a los desarrolladores y agentes de IA seleccionar el equilibrio perfecto entre autonomía y protección del sistema.
+Este documento detalla la arquitectura de seguridad y niveles de confianza graduados de **Aegis**, permitiendo a los desarrolladores y agentes de IA seleccionar el equilibrio perfecto entre autonomía y protección del sistema.
 
 ---
 
@@ -49,7 +49,7 @@ Para garantizar la estabilidad del sistema y evitar pérdidas catastróficas de 
 
 ## 🔍 3. Inspector Autónomo del Entorno (`env_inspector.py`)
 
-AGY PowerPack incluye un motor de detección autónoma que inspecciona las herramientas instaladas en la máquina host y personaliza la configuración de Auto Mode:
+Aegis incluye un motor de detección autónoma que inspecciona las herramientas instaladas en la máquina host y personaliza la configuración de Auto Mode:
 
 ```bash
 # Inspeccionar herramientas instaladas y estado del sistema
@@ -59,4 +59,4 @@ python3 scripts/env_inspector.py
 python3 scripts/env_inspector.py --apply
 ```
 
-El perfil generado se almacena en `~/.gemini/antigravity-cli/system_profile.json` y puede ser consultado por agentes mediante la herramienta MCP `powerpack_inspect_environment`.
+El perfil generado se almacena en `~/.gemini/antigravity-cli/system_profile.json` y puede ser consultado por agentes mediante la herramienta MCP `aegis_inspect_environment`.

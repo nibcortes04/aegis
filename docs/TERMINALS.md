@@ -8,7 +8,7 @@ This guide provides step-by-step configuration instructions for popular terminal
 
 ### 1. KDE Konsole (Primary Reference Setup)
 *Tested on KDE Plasma 6.3 / Fedora Linux*
-- **Tab Bell Icon:** Konsole automatically intercepts the ASCII BEL (`\a`) emitted by `agy-powerpack` and displays a bell icon 🔔 directly on the active tab header.
+- **Tab Bell Icon:** Konsole automatically intercepts the ASCII BEL (`\a`) emitted by `Aegis` and displays a bell icon 🔔 directly on the active tab header.
 - **Visual Bell Configuration:**
   1. Open **Settings > Edit Current Profile > Advanced**.
   2. Under **Terminal features**, set **Bell Mode** to **"System Notifications"** or **"Visual Bell"**.
@@ -16,7 +16,7 @@ This guide provides step-by-step configuration instructions for popular terminal
 
 ### 2. Orca Terminal
 - Orca directly receives agent lifecycle events via its local agent hook daemon (`endpoint.env`).
-- `agy-powerpack` synchronizes hook payloads over HTTP/JSON to the Orca server, triggering tab status updates and panel indicators natively.
+- `Aegis` synchronizes hook payloads over HTTP/JSON to the Orca server, triggering tab status updates and panel indicators natively.
 
 ### 3. Kitty
 Add to your `~/.config/kitty/kitty.conf`:

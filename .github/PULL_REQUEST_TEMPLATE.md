@@ -35,7 +35,7 @@ Please confirm that the contribution complies with our development protocol:
 - [ ] **Unit Tests**: Passed `python3 -m unittest discover -s tests -p "test_*.py"`.
 - [ ] **Hook Contract Integration**: Passed `./tests/test_hooks.sh`.
 - [ ] **Plugin Schema**: Verified with `agy plugin validate .`.
-- [ ] **Documentation**: Updated `docs/` or `skills/agy-powerpack/references/` if behavior changed.
+- [ ] **Documentation**: Updated `docs/` or `skills/aegis/references/` if behavior changed.
 
 ---
 

@@ -63,14 +63,14 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
 
 ### 🟡 Maintenance & Refactoring Epics (Next Sprint)
 
-- [ ] **EPIC-CORRECT-01: MCP Server Harmonization & Legacy Cleansing**
-  - [ ] Rename MCP server identifier to `aegis-mcp` in `mcp/mcp_server.py`.
-  - [ ] Expose native `aegis_*` tools (`aegis_get_trust_levels`, `aegis_get_surface_info`, `aegis_verify_system`, etc.) with backward-compatible aliases for `powerpack_*`.
-  - [ ] Clean remaining legacy references in `skills/aegis/references/*.md`, `docs/TRUST_LEVELS.md`, `docs/TERMINALS.md`, and `rules/AGENTS.md`.
-  - [ ] Update `tests/test_mcp_server.py`.
+- [x] **EPIC-CORRECT-01: MCP Server Harmonization & Legacy Cleansing**
+  - [x] Rename MCP server identifier to `aegis-mcp` in `mcp/mcp_server.py`.
+  - [x] Expose native `aegis_*` tools (`aegis_get_trust_levels`, `aegis_get_surface_info`, `aegis_verify_system`, etc.) with backward-compatible aliases for `powerpack_*`.
+  - [x] Clean remaining legacy references in `skills/aegis/references/*.md`, `docs/TRUST_LEVELS.md`, `docs/TERMINALS.md`, and `rules/AGENTS.md`.
+  - [x] Update `tests/test_mcp_server.py`.
 
-- [ ] **EPIC-CORRECT-02: Synchronize Community Contribution Templates**
-  - [ ] Update `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md` to reference Aegis exclusively.
+- [x] **EPIC-CORRECT-02: Synchronize Community Contribution Templates**
+  - [x] Update `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md` to reference Aegis exclusively.
 
 ---
 

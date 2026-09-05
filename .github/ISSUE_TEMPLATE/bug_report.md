@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve agy-powerpack
+about: Create a report to help us improve Aegis
 title: "[BUG] "
 labels: ["bug"]
 assignees: ""

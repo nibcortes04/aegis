@@ -1,6 +1,6 @@
 # Multiplatform & Surface Architecture Reference
 
-`agy-powerpack` includes an intelligent environment and surface detector (`scripts/env_detector.py`) designed to ensure 100% portable operation across operating systems and execution surfaces.
+`Aegis` includes an intelligent environment and surface detector (`scripts/env_detector.py`) designed to ensure 100% portable operation across operating systems and execution surfaces.
 
 ---
 

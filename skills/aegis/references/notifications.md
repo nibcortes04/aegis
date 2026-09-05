@@ -1,6 +1,6 @@
 # Terminal Bell and Notifications Reference
 
-This guide details how `agy-powerpack` communicates with terminal emulators and desktop notification daemons.
+This guide details how `Aegis` communicates with terminal emulators and desktop notification daemons.
 
 ---
 

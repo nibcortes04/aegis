@@ -20,7 +20,7 @@ By delegating heavy exploration, testing, and implementation to independent suba
 
 ## 2. Bundled Subagent Catalog (`agents/`)
 
-`agy-powerpack` bundles 5 specialized agent definitions:
+`Aegis` bundles 5 specialized agent definitions:
 
 | Subagent | Default Model | Primary Tools | Purpose |
 | :--- | :--- | :--- | :--- |

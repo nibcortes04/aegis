@@ -1,6 +1,6 @@
-# Advanced Statusline Reference
+# 📊 Claude Code-Grade Statusline Reference
 
-The `agy-powerpack` statusline replicates the rich information density of Claude Code while remaining optimized for Antigravity's JSON payload.
+The `Aegis` statusline replicates the rich information density of Claude Code while remaining optimized for Antigravity's JSON payload.
 
 ---
 

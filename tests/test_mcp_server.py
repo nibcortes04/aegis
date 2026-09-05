@@ -17,7 +17,8 @@ class TestMCPServer(unittest.TestCase):
         }
         res = process_message(req)
         self.assertIsNotNone(res)
-        self.assertEqual(res["result"]["serverInfo"]["name"], "agy-powerpack-mcp")
+        self.assertEqual(res["result"]["serverInfo"]["name"], "aegis-mcp")
+        self.assertEqual(res["result"]["serverInfo"]["version"], "1.5.0")
 
     def test_tools_list(self):
         req = {
@@ -28,19 +29,26 @@ class TestMCPServer(unittest.TestCase):
         res = process_message(req)
         tools = res["result"]["tools"]
         tool_names = [t["name"] for t in tools]
+        # Primary Aegis tools
+        self.assertIn("aegis_get_trust_levels", tool_names)
+        self.assertIn("aegis_get_surface_info", tool_names)
+        self.assertIn("aegis_get_delegation_guide", tool_names)
+        self.assertIn("aegis_verify_system", tool_names)
+        self.assertIn("aegis_inspect_environment", tool_names)
+        # Backward compatibility aliases
         self.assertIn("powerpack_get_trust_levels", tool_names)
         self.assertIn("powerpack_get_surface_info", tool_names)
         self.assertIn("powerpack_get_delegation_guide", tool_names)
         self.assertIn("powerpack_verify_system", tool_names)
         self.assertIn("powerpack_inspect_environment", tool_names)
 
-    def test_call_get_trust_levels(self):
+    def test_call_get_trust_levels_native(self):
         req = {
             "jsonrpc": "2.0",
             "id": 3,
             "method": "tools/call",
             "params": {
-                "name": "powerpack_get_trust_levels",
+                "name": "aegis_get_trust_levels",
                 "arguments": {"level": "full-developer"}
             }
         }
@@ -49,13 +57,28 @@ class TestMCPServer(unittest.TestCase):
         data = json.loads(content_text)
         self.assertIn("full-developer", data)
 
-    def test_call_verify_system(self):
+    def test_call_get_trust_levels_alias(self):
         req = {
             "jsonrpc": "2.0",
             "id": 4,
             "method": "tools/call",
             "params": {
-                "name": "powerpack_verify_system",
+                "name": "powerpack_get_trust_levels",
+                "arguments": {"level": "audit"}
+            }
+        }
+        res = process_message(req)
+        content_text = res["result"]["content"][0]["text"]
+        data = json.loads(content_text)
+        self.assertIn("audit", data)
+
+    def test_call_verify_system(self):
+        req = {
+            "jsonrpc": "2.0",
+            "id": 5,
+            "method": "tools/call",
+            "params": {
+                "name": "aegis_verify_system",
                 "arguments": {}
             }
         }
@@ -67,10 +90,10 @@ class TestMCPServer(unittest.TestCase):
     def test_call_inspect_environment(self):
         req = {
             "jsonrpc": "2.0",
-            "id": 5,
+            "id": 6,
             "method": "tools/call",
             "params": {
-                "name": "powerpack_inspect_environment",
+                "name": "aegis_inspect_environment",
                 "arguments": {"apply": False}
             }
         }
