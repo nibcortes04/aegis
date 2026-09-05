@@ -1,6 +1,6 @@
 {
   "name": "agy-powerpack",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "Smart Auto Mode, terminal bell notifications (tab bell), advanced Claude-style statusline, and multiplatform session continuity for Antigravity CLI.",
   "author": {
     "name": "Antigravity Community"
