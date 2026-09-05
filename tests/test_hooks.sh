@@ -66,4 +66,28 @@ echo -n "Test 5: Empty input fallback -> "
 OUTPUT=$(echo "" | python3 "$HOOK_SCRIPT")
 echo "PASS (clean exit)"
 
+# 6. Test ask_question -> Must return decision: "allow"
+echo -n "Test 6: PreToolUse ask_question -> "
+INPUT_JSON='{"hookEventName":"PreToolUse","toolCall":{"name":"ask_question","args":{"questions":[]}}}'
+OUTPUT=$(echo "$INPUT_JSON" | python3 "$HOOK_SCRIPT")
+DECISION=$(echo "$OUTPUT" | jq -r '.decision')
+if [ "$DECISION" == "allow" ]; then
+    echo "PASS (decision: $DECISION)"
+else
+    echo "FAIL (expected 'allow', got '$DECISION')"
+    exit 1
+fi
+
+# 7. Test PreToolUse write_to_file in plan mode -> Must return decision: "ask"
+echo -n "Test 7: PreToolUse write_to_file in plan mode -> "
+INPUT_JSON='{"hookEventName":"PreToolUse","cycle_mode":"plan","toolCall":{"name":"write_to_file","args":{"TargetFile":"/tmp/test.txt","CodeContent":""}}}'
+OUTPUT=$(echo "$INPUT_JSON" | python3 "$HOOK_SCRIPT")
+DECISION=$(echo "$OUTPUT" | jq -r '.decision')
+if [ "$DECISION" == "ask" ]; then
+    echo "PASS (decision: $DECISION)"
+else
+    echo "FAIL (expected 'ask', got '$DECISION')"
+    exit 1
+fi
+
 echo "=== All AGY Hook Contract Tests Passed! ==="

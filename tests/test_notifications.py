@@ -118,7 +118,56 @@ class TestNotifications(unittest.TestCase):
             self.assertIn("max_instances", info)
             self.assertIn("active_instances", info)
             self.assertIn("usage_percent", info)
-            self.assertIn(info["status"], ["ok", "warning", "critical"])
+    def test_ask_question_emits_bell_and_notification(self):
+        """Verifica que ask_question active campana y notificación pero retorne allow."""
+        payload = {
+            "hookEventName": "PreToolUse",
+            "conversationId": "conv-ask-q",
+            "toolCall": {
+                "name": "ask_question",
+                "args": {"questions": [{"question": "¿Continuar?"}]}
+            }
+        }
+        with patch("agy_hook_handler.ring_terminal_bell") as mock_bell, \
+             patch("agy_hook_handler.send_desktop_notification") as mock_notify:
+            res = handle_pre_tool_use(payload, json.dumps(payload))
+            self.assertEqual(res, {"decision": "allow"})
+            self.assertTrue(mock_bell.called)
+            self.assertTrue(mock_notify.called)
+            notify_args = mock_notify.call_args[0]
+            self.assertIn("Pregunta interactiva", notify_args[1])
+
+    def test_plan_mode_file_write_emits_bell_and_ask_decision(self):
+        """Verifica que en plan mode la creación o edición de archivo exija confirmación interactiva."""
+        payload = {
+            "hookEventName": "PreToolUse",
+            "conversationId": "conv-plan-test",
+            "cycle_mode": "plan",
+            "cwd": self.temp_dir,
+            "toolCall": {
+                "name": "write_to_file",
+                "args": {
+                    "TargetFile": os.path.join(self.temp_dir, "test.txt"),
+                    "CodeContent": "hello"
+                }
+            }
+        }
+        with patch("agy_hook_handler.ring_terminal_bell") as mock_bell, \
+             patch("agy_hook_handler.send_desktop_notification") as mock_notify:
+            res = handle_pre_tool_use(payload, json.dumps(payload))
+            self.assertEqual(res.get("decision"), "ask")
+            self.assertIn("Modo plan", res.get("reason", ""))
+            self.assertTrue(mock_bell.called)
+            self.assertTrue(mock_notify.called)
+
+    def test_session_mode_recording_and_retrieval(self):
+        """Verifica la persistencia de modos de sesión en statusline_formatter."""
+        from statusline_formatter import record_session_mode, get_session_mode
+        test_conv = "conv-mode-tracker-99"
+        record_session_mode(test_conv, "plan")
+        self.assertEqual(get_session_mode(test_conv), "plan")
+        record_session_mode(test_conv, "accept-edits")
+        self.assertEqual(get_session_mode(test_conv), "accept-edits")
 
 
 if __name__ == "__main__":

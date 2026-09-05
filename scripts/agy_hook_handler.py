@@ -146,10 +146,16 @@ def is_command_critical(cmd):
     return False
 
 try:
-    from trust_levels import evaluate_trust, is_command_critical, get_active_trust_level
+    from trust_levels import evaluate_trust, is_command_critical, is_command_safe_read, get_active_trust_level
 except ImportError:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from trust_levels import evaluate_trust, is_command_critical, get_active_trust_level
+    from trust_levels import evaluate_trust, is_command_critical, is_command_safe_read, get_active_trust_level
+
+try:
+    from statusline_formatter import get_session_mode
+except ImportError:
+    def get_session_mode(conv_id):
+        return "accept-edits"
 
 def handle_pre_tool_use(payload, raw_input):
     """
@@ -159,12 +165,53 @@ def handle_pre_tool_use(payload, raw_input):
     - 'full-developer': Autonomía para build, install y servers locales. Bloquea daño irreversible.
     - 'subagent-worker': Autonomía acotada al worktree asignado.
     - Protocolo de Doble Confirmación para comandos destructivos (deny en paso 1 -> ask en paso 2).
+    - Soporte interactivo: Notifica y activa campana para 'ask_question' y en 'plan mode' / 'request-review'.
     """
     tool_call = payload.get("toolCall") or {}
     tool_name = tool_call.get("name", "")
     args = tool_call.get("args") or {}
     conv_id = payload.get("conversationId", "")
     workspace_root = payload.get("cwd") or payload.get("workspace", {}).get("current_dir")
+
+    # 1. Herramienta interactiva ask_question: El agente espera respuesta del usuario
+    if tool_name == "ask_question":
+        ring_terminal_bell()
+        session_title = get_session_title(conv_id)
+        send_desktop_notification(
+            f"Aegis: {session_title}",
+            "Pregunta interactiva: El agente requiere tu respuesta",
+            urgency="normal",
+            timeout_ms=5000,
+            icon="help-browser",
+            session_id=conv_id
+        )
+        return {"decision": "allow"}
+
+    # 2. Obtener cycle_mode activo de la sesión (ej: 'plan', 'request-review', 'accept-edits')
+    cycle_mode = payload.get("cycle_mode") or payload.get("cycleMode")
+    if not cycle_mode and conv_id:
+        cycle_mode = get_session_mode(conv_id)
+    cycle_mode = (cycle_mode or "accept-edits").lower()
+
+    # 3. En plan mode o request-review mode, toda mutación de archivo o comando de modificación
+    # requiere aprobación interactiva en terminal; emitir campana y notificación preventiva.
+    if cycle_mode in ("plan", "plan-only", "request-review", "manual"):
+        is_modifying_file = tool_name in ("write_to_file", "replace_file_content")
+        cmd_str = args.get("CommandLine", "") if tool_name == "run_command" else ""
+        is_modifying_cmd = (tool_name == "run_command" and not is_command_safe_read(cmd_str))
+        if is_modifying_file or is_modifying_cmd:
+            ring_terminal_bell()
+            session_title = get_session_title(conv_id)
+            target_desc = os.path.basename(args.get("TargetFile", "")) if is_modifying_file else (cmd_str[:40] or "comando")
+            send_desktop_notification(
+                f"Aegis: {session_title}",
+                f"Aprobación requerida ({cycle_mode}): {target_desc}",
+                urgency="normal",
+                timeout_ms=5000,
+                icon="dialog-warning",
+                session_id=conv_id
+            )
+            return {"decision": "ask", "reason": f"Modo {cycle_mode}: requiere aprobación para {target_desc}"}
 
     decision, reason = evaluate_trust(tool_name, args, workspace_root=workspace_root, session_id=conv_id)
 

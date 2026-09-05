@@ -17,6 +17,8 @@ import json
 import sqlite3
 import datetime
 import subprocess
+import time
+import tempfile
 
 # Códigos de color ANSI
 CYAN = "\033[36m"
@@ -93,9 +95,50 @@ def get_session_name(conv_id):
                 return title[:30] + ("…" if len(title) > 30 else "")
     except Exception:
         pass
-    return conv_id[:8]
+def record_session_mode(conv_id, cycle_mode):
+    """Guarda en cache atómico el cycle_mode de la sesión para sincronización con PreToolUse."""
+    if not conv_id or not cycle_mode:
+        return
+    cache_file = os.path.join(tempfile.gettempdir(), ".aegis_session_modes.json")
+    try:
+        data = {}
+        if os.path.isfile(cache_file):
+            with open(cache_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        data[conv_id] = {
+            "cycle_mode": cycle_mode,
+            "timestamp": time.time()
+        }
+        # Limpiar entradas antiguas de más de 48 horas
+        now = time.time()
+        data = {k: v for k, v in data.items() if (now - v.get("timestamp", 0)) < 172800}
+        with open(cache_file, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+def get_session_mode(conv_id):
+    """Obtiene el último cycle_mode registrado para una sesión específica."""
+    if not conv_id:
+        return "accept-edits"
+    cache_file = os.path.join(tempfile.gettempdir(), ".aegis_session_modes.json")
+    try:
+        if os.path.isfile(cache_file):
+            with open(cache_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                entry = data.get(conv_id)
+                if entry and isinstance(entry, dict):
+                    return entry.get("cycle_mode", "accept-edits")
+    except Exception:
+        pass
+    return "accept-edits"
 
 def format_statusline(payload):
+    # Registrar modo de ciclo de la sesión
+    conv_id = payload.get("conversation_id") or payload.get("session_id") or ""
+    cycle_mode = payload.get("cycle_mode", "accept-edits")
+    if conv_id and cycle_mode:
+        record_session_mode(conv_id, cycle_mode)
     # 1. Modelo y Esfuerzo
     model_info = payload.get("model") or {}
     model_name = model_info.get("display_name") or model_info.get("id") or "Gemini"
