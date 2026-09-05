@@ -1,0 +1,55 @@
+name: CI Verification
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  verify:
+    name: Lint, Test & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system test dependencies
+        run: |
+          sudo apt-get update -qy
+          sudo apt-get install -qy jq libnotify-bin
+
+      - name: Syntax check Python scripts
+        run: |
+          python3 -m py_compile scripts/*.py tests/*.py
+
+      - name: Syntax check Shell scripts
+        run: |
+          bash -n scripts/*.sh tests/*.sh install.sh uninstall.sh
+
+      - name: Run Python unit tests
+        run: |
+          python3 -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Run End-to-End Hook Contract tests
+        run: |
+          ./tests/test_hooks.sh
+
+      - name: Validate Plugin & Hook JSON schemas
+        run: |
+          python3 -c "
+          import json
+          with open('plugin.json') as f:
+              p = json.load(f)
+              assert 'name' in p and 'version' in p, 'Invalid plugin.json'
+          with open('hooks.json') as f:
+              h = json.load(f)
+              assert 'agy-powerpack' in h, 'Invalid hooks.json'
+          print('Plugin & Hooks JSON schemas validated successfully.')
+          "
