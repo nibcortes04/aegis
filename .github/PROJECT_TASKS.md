@@ -76,26 +76,26 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
 
 ### 🔵 Future Roadmap Epics (Backlog)
 
-- [ ] **EPIC-09: Dynamic Real Quota & Live Metrics Integration**
+- [ ] **[EPIC-09](https://github.com/nibcortes04/aegis/issues/1): Dynamic Real Quota & Live Metrics Integration**
   - [ ] Connect statusline line 2 with real-time session tokens and live API usage telemetry when exposed by AGY.
   - [ ] Fallback gracefully to local SQLite estimates when offline.
 
-- [ ] **EPIC-10: Android Remote PWA Pairing & Tunnel Bridge (`aegis mobile`)**
+- [ ] **[EPIC-10](https://github.com/nibcortes04/aegis/issues/2): Android Remote PWA Pairing & Tunnel Bridge (`aegis mobile`)**
   - [ ] Interactive CLI wizard (`aegis mobile --pair`) generating a local QR code and secure tunnel (Tailscale/Cloudflare/SSH) for mobile session continuity on `https://antigravity.google`.
 
-- [ ] **EPIC-11: Bot Contributor Automation & Autonomous PR Review Gate**
+- [ ] **[EPIC-11](https://github.com/nibcortes04/aegis/issues/3): Bot Contributor Automation & Autonomous PR Review Gate**
   - [ ] GitHub Action workflow auto-validating PRs opened by bots (`bot/*` branches).
   - [ ] Automatic check for worktree hygiene, linting, and 100% test pass rate before merge to `dev`.
 
-- [ ] **EPIC-12: Interactive Terminal Setup & Visual/Audio Bell Wizard**
+- [ ] **[EPIC-12](https://github.com/nibcortes04/aegis/issues/4): Interactive Terminal Setup & Visual/Audio Bell Wizard**
   - [ ] CLI tool (`aegis doctor --terminal`) to inspect active terminal and auto-configure visual bell settings.
   - [ ] Optional subtle audio chimes for human approval requests.
 
-- [ ] **EPIC-13: Production VPS Agent Orchestration Guardrails**
+- [ ] **[EPIC-13](https://github.com/nibcortes04/aegis/issues/5): Production VPS Agent Orchestration Guardrails**
   - [ ] Native `vps-production` profile for remote servers managing production containers (n8n, Chatwoot, Caddy).
   - [ ] Enforces double confirmation interactively on any docker compose or volume operations.
 
-- [ ] **EPIC-14: Official Antigravity Plugin Registry Packaging**
+- [ ] **[EPIC-14](https://github.com/nibcortes04/aegis/issues/6): Official Antigravity Plugin Registry Packaging**
   - [ ] Prepare distribution bundle and automated release pipeline for `agy plugin publish`.
 
 ---
