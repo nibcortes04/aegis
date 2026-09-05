@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGY PowerPack — Superpowers for Google Antigravity CLI</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-glow"></div>
+
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <span class="brand-badge">⚡</span>
+        <span class="brand-name">AGY PowerPack</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#terminal-preview">Live Preview</a>
+        <a href="#android-pwa">Android PWA</a>
+        <a href="#worktrees">Worktrees</a>
+        <a href="#install" class="btn-nav">Install</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero">
+      <div class="hero-badge">🚀 v1.0.0 Ready for Production</div>
+      <h1 class="hero-title">Supercharge Google <br><span class="gradient-text">Antigravity CLI</span></h1>
+      <p class="hero-subtitle">
+        Smart Auto Mode without approval lag, terminal tab notification bells, auto-dismissing desktop alerts, a Claude Code-grade 3-line statusline, and cross-platform session continuity.
+      </p>
+
+      <div class="install-box">
+        <span class="prompt-sym">$</span>
+        <code id="install-cmd">git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack && ~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh</code>
+        <button class="copy-btn" id="copy-btn" title="Copy to clipboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copy-feedback">Copy</span>
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-val">&lt; 10ms</span>
+          <span class="stat-label">Hook & Statusline Latency</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-val">0s</span>
+          <span class="stat-label">Auto Mode Approval Delay</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-val">100%</span>
+          <span class="stat-label">Fail-Closed Security</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Terminal Mockup Section -->
+    <section id="terminal-preview" class="section">
+      <div class="section-header">
+        <span class="section-tag">Statusline & Hooks</span>
+        <h2>Terminal Experience, Reimagined</h2>
+        <p>Exact replica of the rich telemetry statusline and non-intrusive alert system.</p>
+      </div>
+
+      <div class="terminal-window">
+        <div class="terminal-bar">
+          <div class="terminal-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="terminal-title">bash — konsole / orca (🔔 Terminal Tab Bell Active)</div>
+          <div class="terminal-actions">
+            <span class="badge-pill">4s Auto-Dismiss</span>
+          </div>
+        </div>
+        <div class="terminal-body">
+          <div class="term-line output-text"><span class="term-gray">Running task in isolated workspace...</span></div>
+          <div class="term-line output-text"><span class="term-green">✔</span> Verified all 5 unit tests passed in 0.013s</div>
+          <div class="term-line output-text"><span class="term-blue">ℹ</span> Hook emitted BEL (\a) to /dev/tty · KDE Konsole tab notified 🔔</div>
+          <div class="term-line output-text"><span class="term-gray">------------------------------------------------------------</span></div>
+          <!-- Line 1 Statusline -->
+          <div class="term-line statusline-l1">
+            <span class="cyan-bold">[Gemini-2.5 Pro]</span>
+            <span class="term-white"> 📁 agy-powerpack</span>
+            <span class="term-blue"> 🌿 main</span>
+            <span class="term-green"> +42</span><span class="term-red">-3</span>
+            <span class="term-yellow"> 🧠 high</span>
+            <span class="term-dim"> 🏷️  Refactor Auto Mode Hooks…</span>
+          </div>
+          <!-- Line 2 Statusline -->
+          <div class="term-line statusline-l2">
+            <span class="term-green">███░░░░░░░</span>
+            <span class="term-white"> 35%</span>
+            <span class="term-dim"> │ </span>
+            <span class="term-yellow">💰 $0.0421</span>
+            <span class="term-dim"> │ </span>
+            <span class="term-white">⏱ 2m5s</span>
+            <span class="term-dim"> │ </span>
+            <span class="term-green">5h:45%</span><span class="term-dim">(🕦04:30)</span>
+            <span class="term-green"> 7d:12%</span>
+          </div>
+          <!-- Line 3 Statusline -->
+          <div class="term-line statusline-l3">
+            <span class="term-yellow">▶▶</span>
+            <span class="term-white"> auto mode on </span>
+            <span class="term-dim">(shift+tab to cycle) · ← for agents</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section id="features" class="section">
+      <div class="section-header">
+        <span class="section-tag">Core Capabilities</span>
+        <h2>Built for High-Velocity Engineering</h2>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="card-icon">⚡</div>
+          <h3>Smart Auto Mode</h3>
+          <p>
+            Zero approval lag for safe tools (reads, searches, in-workspace edits, tests). Fails closed and requests human approval for critical commands (<code>rm -rf</code>, <code>git push -f</code>, <code>docker rm</code>, <code>dd</code>).
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🔔</div>
+          <h3>Tab Bell & Notifications</h3>
+          <p>
+            Direct <code>\a</code> ASCII 7 emit to <code>/dev/tty</code> for native bell icons in KDE Konsole and Orca tabs. Auto-dismissing desktop notifications (4s) via <code>notify-send</code> with <code>int:transient:1</code> to prevent sticky alerts.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">📊</div>
+          <h3>Claude Code Statusline</h3>
+          <p>
+            Real-time reasoning effort (🧠), live Git diff line counter (+X -Y), session title from SQLite database, context bar with color thresholds (&gt;70% yellow, &gt;90% red), and 5h/7d quota tracking with local reset time.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">📱</div>
+          <h3>Android PWA & Cloud Sync</h3>
+          <p>
+            Seamless remote control via official Google Antigravity Remote PWA (<code>antigravity.google</code>). Full workflow to pair, monitor, and resume sessions from Android phones or tablets.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🌳</div>
+          <h3>Git Worktree Workflow</h3>
+          <p>
+            Built-in scripts (<code>scripts/dev-worktree.sh</code>) to isolate features, fixes, and autonomous bot contributions without polluting main or dirtying working trees.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🤖</div>
+          <h3>Bot & Human Ready PRs</h3>
+          <p>
+            Standardized PR template and CI gate designed for both human engineers and autonomous agents (Codex, Claude, AGY) to contribute with zero merge regressions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Android PWA Setup Guide -->
+    <section id="android-pwa" class="section">
+      <div class="section-header">
+        <span class="section-tag">Cross-Platform Continuity</span>
+        <h2>Access AGY from Android via Google PWA</h2>
+        <p>Monitor long-running tasks, approve critical tools, and continue sessions on mobile.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h4>Start Remote Control</h4>
+          <p>Run <code>agy remote-control start</code> on your workstation or VPS to generate an authenticated session pairing token.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h4>Open PWA in Chrome</h4>
+          <p>Navigate to <code>https://antigravity.google</code> on Chrome Mobile. Tap the three dots menu (⋮) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h4>Pair & Resume</h4>
+          <p>Log in with your Google account, select your remote workstation, and resume any active CLI session in real-time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Git Worktrees Section -->
+    <section id="worktrees" class="section">
+      <div class="section-header">
+        <span class="section-tag">DevOps & Collaboration</span>
+        <h2>Git Worktree Isolation Standard</h2>
+        <p>No more stash conflicts. Every feature, bugfix, or autonomous bot PR gets its own isolated tree.</p>
+      </div>
+
+      <div class="code-terminal">
+        <pre><code><span class="term-dim"># 1. Create an isolated worktree for a new feature</span>
+<span class="term-green">$</span> ./scripts/dev-worktree.sh new feat/smart-filtering
+
+<span class="term-dim"># 2. Develop & run tests inside the isolated worktree</span>
+<span class="term-green">$</span> cd worktrees/feat/smart-filtering
+<span class="term-green">$</span> python3 -m unittest discover -s tests -p "test_*.py"
+
+<span class="term-dim"># 3. Clean up when merged into dev</span>
+<span class="term-green">$</span> ./scripts/dev-worktree.sh remove feat/smart-filtering</code></pre>
+      </div>
+    </section>
+
+    <!-- Installation & Setup -->
+    <section id="install" class="section">
+      <div class="section-header">
+        <span class="section-tag">Getting Started</span>
+        <h2>Quick Installation</h2>
+      </div>
+
+      <div class="install-steps">
+        <div class="install-step">
+          <h4>Option A: Automatic Installer</h4>
+          <div class="code-block">
+            <pre><code>git clone https://github.com/n-n/agy-powerpack.git ~/.gemini/antigravity-cli/plugins/agy-powerpack
+~/.gemini/antigravity-cli/plugins/agy-powerpack/install.sh</code></pre>
+          </div>
+        </div>
+
+        <div class="install-step">
+          <h4>Option B: Antigravity CLI Plugin Manager</h4>
+          <div class="code-block">
+            <pre><code>agy plugin install ./agy-powerpack
+agy plugin validate agy-powerpack</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>AGY PowerPack is open source software licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>.</p>
+      <p class="term-dim">Built with ❤️ for the Google Antigravity & Agentic Engineering community.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
