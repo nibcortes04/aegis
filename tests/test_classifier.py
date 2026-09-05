@@ -60,7 +60,8 @@ class TestHookClassifier(unittest.TestCase):
 
     def test_workspace_file_edits(self):
         # Safe in-workspace file edit
-        payload_safe = {"toolCall": {"name": "write_to_file", "args": {"TargetFile": "/home/n_n/projects/test.py"}}}
+        safe_file = os.path.join(os.getcwd(), "test.py")
+        payload_safe = {"toolCall": {"name": "write_to_file", "args": {"TargetFile": safe_file}}}
         res_safe = handle_pre_tool_use(payload_safe, "")
         self.assertEqual(res_safe.get("decision"), "allow")
 
