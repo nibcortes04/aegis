@@ -24,15 +24,17 @@ except ImportError:
 
 # Constantes de Niveles
 LEVEL_AUDIT = "audit"
+LEVEL_VPS_PRODUCTION = "vps-production"
 LEVEL_WORKSPACE_SAFE = "workspace-safe"
 LEVEL_FULL_DEVELOPER = "full-developer"
 LEVEL_SUBAGENT_WORKER = "subagent-worker"
 
 TRUST_LEVEL_HIERARCHY = {
     LEVEL_AUDIT: 0,
-    LEVEL_WORKSPACE_SAFE: 1,
-    LEVEL_FULL_DEVELOPER: 2,
-    LEVEL_SUBAGENT_WORKER: 3,
+    LEVEL_VPS_PRODUCTION: 1,
+    LEVEL_WORKSPACE_SAFE: 2,
+    LEVEL_FULL_DEVELOPER: 3,
+    LEVEL_SUBAGENT_WORKER: 4,
 }
 
 # 1. Herramientas de solo lectura (seguras en todos los niveles)
@@ -86,6 +88,69 @@ CRITICAL_COMMAND_PATTERNS = [
     r"\b(?:sudo|su\s+-?)\b",
     r"\bchmod\s+.*-R\s+777\b",
 ]
+
+# 5. Patrones de telemetría e inspección seguros en VPS (permitidos en vps-production)
+VPS_SAFE_INSPECTION_PATTERNS = [
+    r"^\s*docker\s+(?:ps|logs|inspect|top|port|stats(?:\s+--no-stream)?)\b",
+    r"^\s*docker\s+compose\s+(?:ps|logs|top)\b",
+    r"^\s*docker-compose\s+(?:ps|logs|top)\b",
+    r"^\s*systemctl\s+(?:status|is-active|is-failed)\b",
+    r"^\s*journalctl\b",
+    r"^\s*caddy\s+(?:validate|version)\b",
+    r"^\s*(?:df|free|uptime|uname|top|htop|ps|netstat|ss|lsof)\b",
+    r"^\s*curl\s+(?:-[a-zA-Z0-9]*\s+)?https?://",
+    r"^\s*ping\s+-c\s+\d+\b",
+]
+
+# 6. Patrones de ciclo de vida de VPS (requieren DOBLE CONFIRMACIÓN en vps-production)
+VPS_LIFECYCLE_COMMAND_PATTERNS = [
+    r"\bdocker\s+(?:stop|restart|kill|pause|unpause|rm|run)\b",
+    r"\bdocker\s+compose\s+(?:down|restart|stop|kill|up|build)\b",
+    r"\bdocker-compose\s+(?:down|restart|stop|kill|up|build)\b",
+    r"\bsystemctl\s+(?:restart|stop|reload|disable|mask)\b",
+    r"\bcaddy\s+(?:reload|stop)\b",
+    r"\bdocker\s+volume\s+(?:rm|prune)\b",
+    r"\bdocker\s+system\s+prune\b",
+    r"\bredis-cli\s+(?:flushall|flushdb)\b",
+    r"\b(?:psql|mysql)\b",
+]
+
+# 7. Archivos críticos de infraestructura en VPS
+VPS_CRITICAL_CONFIG_FILES = [
+    r"(?:^|/)Caddyfile(?:\.|$)",
+    r"(?:^|/)docker-compose(?:\.[a-zA-Z0-9_-]+)?\.ya?ml$",
+    r"(?:^|/)\.env(?:\.[a-zA-Z0-9_-]+)?$",
+]
+
+def is_vps_safe_inspection(cmd):
+    """Verifica si el comando es de inspección/telemetría segura en entorno VPS."""
+    if not cmd:
+        return False
+    if is_command_safe_read(cmd):
+        return True
+    for pattern in VPS_SAFE_INSPECTION_PATTERNS:
+        if re.search(pattern, cmd, re.IGNORECASE):
+            return True
+    return False
+
+def is_vps_lifecycle_command(cmd):
+    """Verifica si el comando afecta el ciclo de vida de contenedores o servicios en producción."""
+    if not cmd:
+        return False
+    for pattern in VPS_LIFECYCLE_COMMAND_PATTERNS:
+        if re.search(pattern, cmd, re.IGNORECASE):
+            return True
+    return False
+
+def is_vps_critical_file(filepath):
+    """Verifica si el archivo es un archivo de configuración crítica en producción VPS."""
+    if not filepath:
+        return False
+    norm_path = filepath.replace("\\", "/")
+    for pattern in VPS_CRITICAL_CONFIG_FILES:
+        if re.search(pattern, norm_path, re.IGNORECASE):
+            return True
+    return False
 
 class DangerousConfirmationLedger:
     """
@@ -200,6 +265,8 @@ def get_active_trust_level():
     env_level = os.environ.get("AGY_AUTO_MODE_LEVEL", "").strip().lower()
     if env_level in TRUST_LEVEL_HIERARCHY:
         return env_level
+    if env_level in ("vps", "vps-prod", "production-vps"):
+        return LEVEL_VPS_PRODUCTION
     if env_level in ("safe", "default"):
         return LEVEL_WORKSPACE_SAFE
     if env_level in ("dev", "developer", "full"):
@@ -306,6 +373,8 @@ def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id=
     # 3. Herramientas de edición de archivos
     if tool_name in ("write_to_file", "replace_file_content"):
         target_file = args.get("TargetFile", "")
+        if level == LEVEL_VPS_PRODUCTION and is_vps_critical_file(target_file):
+            return "ask", f"⚠️ Archivo crítico de infraestructura VPS en producción: {os.path.basename(target_file)}"
         if not is_path_in_workspace(target_file, workspace_root):
             return "ask", f"Edición fuera del espacio de trabajo: {target_file}"
         return "allow", "Edición permitida dentro del espacio de trabajo"
@@ -329,7 +398,27 @@ def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id=
         if check_settings and is_command_allowed_by_settings(cmd):
             return "allow", "Comando autorizado explícitamente en configuración de permisos"
 
-        # Nivel 1: 'workspace-safe'
+        # Nivel 1: 'vps-production' (Blindaje de servidores y contenedores de producción)
+        if level == LEVEL_VPS_PRODUCTION:
+            if is_vps_lifecycle_command(cmd):
+                conf_ledger = ledger or DangerousConfirmationLedger()
+                stage, reason = conf_ledger.check_and_advance(cmd, session_id=session_id)
+                if stage == 1:
+                    return "deny", (
+                        f"🛡️ [PROTOCOLO VPS - PASO 1 DE 2]: El comando de ciclo de vida '{cmd}' puede alterar o detener "
+                        f"servicios de producción. El agente DEBE explicar el impacto y solicitar autorización explícita. "
+                        f"Reintente en {conf_ledger.ttl_seconds}s tras confirmación del usuario."
+                    )
+                else:
+                    return "ask", (
+                        f"⚠️ [CONFIRMACIÓN VPS - PASO 2 DE 2]: Se ha recibido la primera autorización. "
+                        f"¿Confirmas definitivamente ejecutar '{cmd}' en el VPS de producción?"
+                    )
+            if is_vps_safe_inspection(cmd):
+                return "allow", "Comando de telemetría e inspección seguro en VPS"
+            return "ask", f"Comando requiere confirmación en modo vps-production: {cmd}"
+
+        # Nivel 2: 'workspace-safe'
         if level == LEVEL_WORKSPACE_SAFE:
             if is_command_safe_read(cmd):
                 return "allow", "Comando de inspección seguro"
