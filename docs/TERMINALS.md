@@ -4,6 +4,26 @@ This guide provides step-by-step configuration instructions for popular terminal
 
 ---
 
+## ⚡ Automated Terminal Doctor & Setup Wizard
+
+Aegis includes an interactive CLI diagnostic wizard that automatically identifies your active terminal emulator, tests visual bells (`\a`), plays non-intrusive audio chimes, and prints exact configuration snippets:
+
+```bash
+# Run full terminal diagnostic and configuration recommendations
+aegis doctor --terminal
+
+# Test terminal tab bell (ASCII 7)
+aegis doctor --terminal --test-bell
+
+# Test subtle non-disruptive audio chime
+aegis doctor --terminal --test-chime
+
+# Output JSON report for agents and scripts
+aegis doctor --terminal --json
+```
+
+---
+
 ## 🐧 Linux Terminals
 
 ### 1. KDE Konsole (Primary Reference Setup)

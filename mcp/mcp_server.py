@@ -92,6 +92,23 @@ TOOLS_DEFINITIONS = [
             }
         }
     },
+    {
+        "name": "aegis_doctor_terminal",
+        "description": "Inspecciona el emulador de terminal del usuario (Konsole, iTerm, Alacritty, Kitty, Windows Terminal, etc.), verificando el soporte de campana visual 🔔, audio chimes sutiles y recomendaciones de configuración.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "test_bell": {
+                    "type": "boolean",
+                    "description": "Si es True, emite la campana ASCII (\\a) para probar la pestaña."
+                },
+                "test_chime": {
+                    "type": "boolean",
+                    "description": "Si es True, prueba la reproducción de un chime suave en el sistema."
+                }
+            }
+        }
+    },
     # Backward-compatibility aliases (powerpack_*)
     {
         "name": "powerpack_get_trust_levels",
@@ -267,6 +284,18 @@ def handle_check_vps_health(args):
     except Exception as e:
         return json.dumps({"error": f"Error al ejecutar diagnóstico VPS: {str(e)}"}, ensure_ascii=False)
 
+def handle_doctor_terminal(args):
+    try:
+        import terminal_wizard
+    except ImportError:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
+        import terminal_wizard
+
+    test_bell = args.get("test_bell", False)
+    test_chime = args.get("test_chime", False)
+    report = terminal_wizard.run_terminal_doctor(test_bell=test_bell, test_chime=test_chime, json_output=False, quiet=True)
+    return json.dumps(report, indent=2, ensure_ascii=False)
+
 def process_message(msg):
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -320,6 +349,8 @@ def process_message(msg):
             out_text = handle_inspect_environment(tool_args)
         elif tool_name == "aegis_check_vps_health":
             out_text = handle_check_vps_health(tool_args)
+        elif tool_name in ("aegis_doctor_terminal", "powerpack_doctor_terminal"):
+            out_text = handle_doctor_terminal(tool_args)
         else:
             return {
                 "jsonrpc": "2.0",

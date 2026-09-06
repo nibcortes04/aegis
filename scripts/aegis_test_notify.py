@@ -33,6 +33,7 @@ try:
         get_inotify_capacity,
     )
     from agy_hook_handler import handle_stop, handle_pre_tool_use
+    import terminal_wizard
 except ImportError:
     sys.path.insert(0, "/home/n_n/scripts")
     from env_detector import (
@@ -264,12 +265,37 @@ def main():
         help="Simula el hook PreToolUse que requiere confirmación humana.",
     )
     parser.add_argument(
+        "--terminal",
+        action="store_true",
+        help="Ejecuta el asistente y diagnóstico del emulador de terminal (Aegis Terminal Wizard).",
+    )
+    parser.add_argument(
+        "--chime",
+        action="store_true",
+        help="Prueba la reproducción de un timbre sutil de audio en el sistema.",
+    )
+    parser.add_argument(
         "--all",
         action="store_true",
         help="Ejecuta la suite completa (verificación, campana, escritorio y simulación).",
     )
 
     args = parser.parse_args()
+
+    if args.terminal:
+        if terminal_wizard:
+            terminal_wizard.run_terminal_doctor(test_bell=args.bell, test_chime=args.chime)
+        else:
+            print(f"{RED}terminal_wizard module not available{RESET}")
+        return
+
+    if args.chime:
+        if terminal_wizard:
+            res = terminal_wizard.play_subtle_chime("complete")
+            print(f"Chime playback result: {res}")
+        else:
+            print(f"{RED}terminal_wizard module not available{RESET}")
+        return
 
     # Si no se pasó ningún argumento, ejecutar --all por defecto
     if not any([args.verify, args.bell, args.desktop, args.simulate_stop, args.simulate_ask, args.all]):

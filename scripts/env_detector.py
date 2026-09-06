@@ -62,19 +62,48 @@ def get_terminal_type():
     - 'orca': Orca Terminal
     - 'iterm': iTerm2
     - 'kitty': Kitty
+    - 'alacritty': Alacritty
     - 'windows_terminal': Windows Terminal
+    - 'ghostty': Ghostty
+    - 'wezterm': WezTerm
+    - 'gnome_terminal': GNOME Terminal / Ptyxis
+    - 'mintty': Mintty (Git Bash / MSYS2)
+    - 'vscode': VSCode Integrated Terminal
+    - 'apple_terminal': macOS Terminal.app
+    - 'tmux': Tmux Multiplexer
     - 'generic': Terminal genérica
     """
     if "KONSOLE_VERSION" in os.environ or "KONSOLE_DBUS_SERVICE" in os.environ:
         return "konsole"
-    if "ORCA_PANE_KEY" in os.environ or "ORCA_AGENT_LAUNCH_TOKEN" in os.environ:
+    if "ORCA_PANE_KEY" in os.environ or "ORCA_AGENT_LAUNCH_TOKEN" in os.environ or "ORCA_TERMINAL" in os.environ:
         return "orca"
-    if "ITERM_SESSION_ID" in os.environ:
+    if "ITERM_SESSION_ID" in os.environ or os.environ.get("TERM_PROGRAM") == "iTerm.app":
         return "iterm"
-    if "KITTY_WINDOW_ID" in os.environ:
+    if "KITTY_WINDOW_ID" in os.environ or "KITTY_PID" in os.environ:
         return "kitty"
-    if "WT_SESSION" in os.environ:
+    if (
+        "ALACRITTY_LOG" in os.environ
+        or "ALACRITTY_WINDOW_ID" in os.environ
+        or "ALACRITTY_SOCKET" in os.environ
+        or os.environ.get("TERM", "").startswith("alacritty")
+    ):
+        return "alacritty"
+    if "WT_SESSION" in os.environ or "WT_PROFILE_ID" in os.environ:
         return "windows_terminal"
+    if "GHOSTTY_RESOURCES_DIR" in os.environ or os.environ.get("TERM") == "xterm-ghostty":
+        return "ghostty"
+    if "WEZTERM_PANE" in os.environ or "WEZTERM_EXECUTABLE" in os.environ or "WEZTERM_CONFIG_FILE" in os.environ:
+        return "wezterm"
+    if "GNOME_TERMINAL_SCREEN" in os.environ or "GNOME_TERMINAL_SERVICE" in os.environ or "PTYXIS_VERSION" in os.environ:
+        return "gnome_terminal"
+    if os.environ.get("TERM_PROGRAM") == "mintty" or ("MSYSTEM" in os.environ and "WT_SESSION" not in os.environ):
+        return "mintty"
+    if os.environ.get("TERM_PROGRAM") == "vscode":
+        return "vscode"
+    if os.environ.get("TERM_PROGRAM") == "Apple_Terminal":
+        return "apple_terminal"
+    if "TMUX" in os.environ or "TMUX_PANE" in os.environ:
+        return "tmux"
     return "generic"
 
 def get_app_data_dir():
