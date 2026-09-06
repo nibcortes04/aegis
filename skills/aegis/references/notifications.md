@@ -10,17 +10,21 @@ Modern terminal emulators (KDE Konsole, Orca, iTerm2, Kitty, WezTerm, Alacritty)
 - Byte: `\a` or `\007` (Hex `0x07`).
 - Target: `/dev/tty` (the controlling terminal of the process).
 
-When `agy` finishes answering (`Stop` hook) or is waiting for user confirmation (`PreToolUse` hook with `ask`), the handler writes directly to `/dev/tty`:
+### Strict Policy: Interactive/Blocking Only
+To avoid intrusive "Timbre en <sesión>" popups in terminal emulators (e.g. KDE Konsole) whenever routine commands or responses finish:
+- **Terminal Bell is ONLY emitted when human intervention is required to advance**:
+  1. `ask_question`: Agent is blocked waiting for interactive user response.
+  2. `PreToolUse` with `decision: "ask"`: Tool execution requires interactive user approval (plan mode mutation, dangerous command confirmation, or untrusted action).
+- **Terminal Bell is NEVER emitted on routine turn completions (`Stop`)**: Normal response completion sends a non-intrusive desktop notification (`notify-send`) without triggering terminal emulator bells.
+
 ```python
 with open("/dev/tty", "w") as tty:
     tty.write("\a")
-    tty.write("\033]9;AGY: Notificación\007")
-    tty.write("\033]777;notify;AGY;Notificación\007")
     tty.flush()
 ```
 This triggers:
-1. **The Bell icon in the terminal tab:** Indicates that the background agent is ready or waiting.
-2. **KDE Konsole / Desktop Audio/Visual Bell:** Configurable in Konsole settings.
+1. **The Bell icon in the terminal tab:** Indicates that the background agent is actively blocked waiting for user input.
+2. **KDE Konsole / Desktop Alert:** Alerting the user that their decision is required to proceed.
 
 ---
 

@@ -204,8 +204,8 @@ def run_simulate_stop(session_id=None):
     raw_input = json.dumps(payload)
     res = handle_stop(payload, raw_input)
     print(f"{GREEN}Evento procesado exitosamente por handler.{RESET} Resultado hook: {res}")
-    print(f"  - Campana de pestaña 🔔 activada.")
     print(f"  - Notificación de escritorio enviada con ID y tag de sesión aislado.")
+    print(f"  - Campana de pestaña 🔔 omitida intencionalmente en Stop (reservada para acciones bloqueantes).")
 
 
 def run_simulate_ask(session_id=None):

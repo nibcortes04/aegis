@@ -249,7 +249,44 @@ def is_command_dev_allowed(cmd):
             return True
     return False
 
-def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id="", ledger=None):
+def get_settings_permissions_allow():
+    """Consulta la lista de comandos explícitamente autorizados en settings.json."""
+    try:
+        app_dir = get_app_data_dir()
+        settings_file = os.path.join(app_dir, "settings.json")
+        if os.path.isfile(settings_file):
+            with open(settings_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                perms = data.get("permissions", {}).get("allow", [])
+                commands = []
+                for p in perms:
+                    if isinstance(p, str) and p.startswith("command(") and p.endswith(")"):
+                        commands.append(p[8:-1].strip())
+                return commands
+    except Exception:
+        pass
+    return []
+
+def is_command_allowed_by_settings(cmd):
+    """Evalúa si un comando coincide con las autorizaciones explícitas de settings.json."""
+    if not cmd:
+        return False
+    allowed_list = get_settings_permissions_allow()
+    if not allowed_list:
+        return False
+    cmd_clean = cmd.strip()
+    for allowed in allowed_list:
+        if not allowed:
+            continue
+        # Coincidencia exacta o comando seguido de argumentos/espacios
+        if cmd_clean == allowed or cmd_clean.startswith(allowed + " "):
+            return True
+        # Coincidencia por binario base (ej: 'python3' para 'python3 -m unittest')
+        if re.match(rf"^\s*(?:sudo\s+)?{re.escape(allowed)}\b", cmd_clean):
+            return True
+    return False
+
+def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id="", ledger=None, check_settings=False):
     """
     Evalúa si la herramienta solicitada se aprueba automáticamente o requiere confirmación.
     Retorna: (decision, reason)
@@ -287,6 +324,10 @@ def evaluate_trust(tool_name, args, workspace_root=None, level=None, session_id=
                 return "deny", reason
             else:
                 return "ask", reason
+
+        # Comandos explícitamente autorizados por el usuario en settings.json (si se habilita)
+        if check_settings and is_command_allowed_by_settings(cmd):
+            return "allow", "Comando autorizado explícitamente en configuración de permisos"
 
         # Nivel 1: 'workspace-safe'
         if level == LEVEL_WORKSPACE_SAFE:

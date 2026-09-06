@@ -267,6 +267,17 @@ def handle_stop(payload, raw_input):
     if fully_idle is False:
         return {"decision": ""}
 
+    # Si el motivo de terminación no indica una finalización normal o esperable en prompt
+    final_reasons = (
+        "model_stop",
+        "stop_sequence",
+        "EXECUTOR_TERMINATION_REASON_NO_TOOL_CALL",
+        "no_tool_call",
+        "",
+    )
+    if termination_reason and termination_reason not in final_reasons:
+        return {"decision": ""}
+
     # Debounce persistente en disco entre procesos aislado por sesión (mínimo 3.0s entre paradas para la misma sesión)
     stop_state_file = os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
     now = time.time()
@@ -298,7 +309,10 @@ def handle_stop(payload, raw_input):
     except Exception:
         pass
 
-    ring_terminal_bell()
+    # NOTA CRÍTICA: NO emitir ring_terminal_bell() en handle_stop.
+    # El timbre (\a) en Konsole/KDE genera popups de 'Timbre en <sesión>'.
+    # El timbre se reserva EXCLUSIVAMENTE para cuando el agente está a la espera
+    # de un mensaje o acción del usuario para avanzar (ask_question o PreToolUse 'ask').
     session_title = get_session_title(conv_id)
     send_desktop_notification(
         f"Aegis: {session_title}",

@@ -83,6 +83,40 @@ class TestNotifications(unittest.TestCase):
             self.assertEqual(res, {"decision": ""})
             mock_notify.assert_not_called()
 
+    def test_handle_stop_does_not_ring_terminal_bell(self):
+        """Verifica que Stop NO ejecute ring_terminal_bell (evita popups de Timbre en Konsole)."""
+        payload = {
+            "hookEventName": "Stop",
+            "conversationId": "conv-no-bell",
+            "terminationReason": "model_stop",
+            "fullyIdle": True,
+        }
+        with patch("agy_hook_handler.ring_terminal_bell") as mock_bell, \
+             patch("agy_hook_handler.send_desktop_notification") as mock_notify:
+            handle_stop(payload, json.dumps(payload))
+            mock_bell.assert_not_called()
+            mock_notify.assert_called_once()
+
+    def test_handle_stop_skips_when_not_fully_idle(self):
+        """Verifica que Stop no notifique si fullyIdle es False (tareas/subprocesos en background)."""
+        payload = {
+            "hookEventName": "Stop",
+            "conversationId": "conv-bg-running",
+            "terminationReason": "model_stop",
+            "fullyIdle": False,
+        }
+        with patch("agy_hook_handler.send_desktop_notification") as mock_notify:
+            handle_stop(payload, json.dumps(payload))
+            mock_notify.assert_not_called()
+
+    def test_settings_permissions_allow_in_workspace_safe(self):
+        """Verifica que comandos autorizados en settings.json se ejecuten sin pedir confirmación."""
+        from trust_levels import evaluate_trust
+        with patch("trust_levels.get_settings_permissions_allow", return_value=["python3", "pnpm", "node"]):
+            decision, reason = evaluate_trust("run_command", {"CommandLine": "python3 -m unittest discover"}, level="workspace-safe", check_settings=True)
+            self.assertEqual(decision, "allow")
+            self.assertIn("autorizado explícitamente", reason)
+
     def test_diagnostic_tool_execution(self):
         """Verifica que las funciones de diagnóstico se ejecuten sin lanzar excepciones."""
         with patch("sys.stdout"):
