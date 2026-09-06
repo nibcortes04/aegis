@@ -6,6 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 HOOK_SCRIPT="$REPO_ROOT/scripts/agy_hook_handler.py"
 export AGY_HOOK_SILENT=1
+export AGY_DANGER_LEDGER_FILE="$(mktemp -t aegis_hook_ledger_XXXXXX.json)"
+trap 'rm -f "$AGY_DANGER_LEDGER_FILE"' EXIT
 
 echo "=== Running AGY Hook Contract Tests ==="
 
