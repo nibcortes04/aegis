@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+"""
+Aegis Unified CLI Dispatcher (aegis)
+Punto de entrada unificado para todas las herramientas de diagnóstico, guardrails,
+auditoría de terminal, estado del VPS y empaquetado del ecosistema Aegis.
+"""
+
+import os
+import sys
+import subprocess
+
+# Resolver directorio base de scripts
+AEGIS_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SCRIPTS_DIR = os.path.join(AEGIS_ROOT, "scripts")
+if not os.path.isdir(SCRIPTS_DIR):
+    SCRIPTS_DIR = "/home/n_n/scripts"
+
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+CYAN = "\033[96m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+VERSION = "1.5.0"
+
+BANNER = f"""{BOLD}{CYAN}
+   ╔═════════════════════════════════════════════════════════════╗
+   ║  🛡️  AEGIS — Unified Agentic Runtime & Telemetry CLI v{VERSION} ║
+   ╚═════════════════════════════════════════════════════════════╝{RESET}
+"""
+
+def print_help():
+    print(BANNER)
+    print(f"{BOLD}USO:{RESET}")
+    print(f"  aegis <comando> [opciones]\n")
+    print(f"{BOLD}COMANDOS DISPONIBLES:{RESET}")
+    print(f"  {GREEN}doctor{RESET}           Diagnóstico integral del sistema y entorno.")
+    print(f"    {CYAN}--terminal{RESET}     Ejecuta el asistente interactivo de emulador de terminal.")
+    print(f"    {CYAN}--test-bell{RESET}    Prueba la campana ASCII (\\a) y el icono 🔔 en la pestaña.")
+    print(f"    {CYAN}--test-chime{RESET}   Prueba la reproducción de audio sutil (PipeWire/Pulse/macOS).")
+    print(f"    {CYAN}--recommend{RESET}    Muestra snippets de configuración optimizados para tu emulador.")
+    print(f"    {CYAN}--json{RESET}         Salida en formato JSON estructurado.")
+    print(f"")
+    print(f"  {GREEN}terminal-wizard{RESET}  Acceso directo al asistente interactivo de terminal (EPIC-12).")
+    print(f"  {GREEN}vps-health{RESET}       Diagnóstico del VPS de producción (Docker, Caddy, n8n, Chatwoot).")
+    print(f"  {GREEN}check-pr{RESET}         Quality Gate de auto-certificación para PRs y bots agénticos.")
+    print(f"  {GREEN}test-notify{RESET}      Prueba notificaciones de escritorio y rate-limiting persistente.")
+    print(f"  {GREEN}inspect-env{RESET}      Escaneo de compiladores, runtimes y reglas seguras para AGY.")
+    print(f"  {GREEN}package{RESET}          Empaquetador oficial para el registro de plugins Antigravity.")
+    print(f"  {GREEN}version{RESET}          Muestra la versión instalada de Aegis.")
+    print(f"  {GREEN}help{RESET}             Muestra este mensaje de ayuda.\n")
+
+def run_script(script_name, args):
+    script_path = os.path.join(SCRIPTS_DIR, script_name)
+    if not os.path.isfile(script_path):
+        # Intentar en ~/scripts
+        fallback = os.path.join("/home/n_n/scripts", script_name)
+        if os.path.isfile(fallback):
+            script_path = fallback
+        else:
+            print(f"{BOLD}\033[91mError:{RESET} Script {script_name} no encontrado en {SCRIPTS_DIR}")
+            sys.exit(1)
+
+    cmd = [sys.executable, script_path] + args
+    try:
+        res = subprocess.run(cmd)
+        sys.exit(res.returncode)
+    except KeyboardInterrupt:
+        print(f"\n{YELLOW}Operación cancelada por el usuario.{RESET}")
+        sys.exit(130)
+
+def main():
+    if len(sys.argv) < 2:
+        print_help()
+        sys.exit(0)
+
+    command = sys.argv[1].lower()
+    sub_args = sys.argv[2:]
+
+    if command in ["-h", "--help", "help"]:
+        print_help()
+        sys.exit(0)
+
+    elif command in ["-v", "--version", "version"]:
+        print(f"Aegis CLI v{VERSION} — Runtime & Telemetry for Google Antigravity (AGY)")
+        sys.exit(0)
+
+    elif command == "doctor":
+        # Si se incluye --terminal, invocar terminal_wizard
+        if "--terminal" in sub_args:
+            args_clean = [a for a in sub_args if a != "--terminal"]
+            run_script("terminal_wizard.py", args_clean)
+        else:
+            # Por defecto invocar aegis_test_notify.py --verify
+            run_script("aegis_test_notify.py", ["--verify"] + sub_args)
+
+    elif command in ["terminal-wizard", "terminal"]:
+        run_script("terminal_wizard.py", sub_args)
+
+    elif command in ["vps-health", "vps"]:
+        run_script("vps_health.py", sub_args)
+
+    elif command in ["check-pr", "bot-gate", "gate"]:
+        run_script("bot_pr_check.py", sub_args)
+
+    elif command in ["test-notify", "notify"]:
+        run_script("aegis_test_notify.py", sub_args)
+
+    elif command in ["inspect-env", "env"]:
+        run_script("env_inspector.py", sub_args)
+
+    elif command in ["package", "package-plugin"]:
+        run_script("package_plugin.py", sub_args)
+
+    else:
+        print(f"{BOLD}\033[91mComando desconocido:{RESET} '{command}'")
+        print(f"Ejecuta '{CYAN}aegis help{RESET}' para ver los comandos disponibles.")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

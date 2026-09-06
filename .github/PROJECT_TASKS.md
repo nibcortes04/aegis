@@ -89,9 +89,13 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
   - [x] Autonomous bot verification tagging (`bot-verified`) and structured markdown audit report commenting.
   - [x] Unit test suite (`tests/test_bot_gate.py`) verifying all phases and recursion safety.
 
-- [ ] **[EPIC-12](https://github.com/nibcortes04/aegis/issues/4): Interactive Terminal Setup & Visual/Audio Bell Wizard**
-  - [ ] CLI tool (`aegis doctor --terminal`) to inspect active terminal and auto-configure visual bell settings.
-  - [ ] Optional subtle audio chimes for human approval requests.
+- [x] **[EPIC-12](https://github.com/nibcortes04/aegis/issues/4): Interactive Terminal Setup & Visual/Audio Bell Wizard**
+  - [x] Comprehensive terminal emulator matrix (12+ profiles: Konsole, Orca, Kitty, Alacritty, iTerm2, Windows Terminal, Ghostty, WezTerm, GNOME/Ptyxis, Mintty, VSCode, Tmux).
+  - [x] Unified CLI entrypoint (`bin/aegis` and `scripts/terminal_wizard.py`) with `aegis doctor --terminal`.
+  - [x] Automated visual bell tester (`\a` BEL) for tab badges 🔔.
+  - [x] Non-intrusive subtle audio chime engine with multi-platform fallbacks (PipeWire, PulseAudio, macOS CoreAudio, Windows SystemSounds).
+  - [x] MCP tool `aegis_doctor_terminal` in `mcp/mcp_server.py`.
+  - [x] Unit test suite (`tests/test_terminal_wizard.py`) with 10 passing tests.
 
 - [x] **[EPIC-13](https://github.com/nibcortes04/aegis/issues/5): Production VPS Agent Orchestration Guardrails**
   - [x] Native `vps-production` trust profile in `scripts/trust_levels.py`.

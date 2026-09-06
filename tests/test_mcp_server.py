@@ -35,6 +35,7 @@ class TestMCPServer(unittest.TestCase):
         self.assertIn("aegis_get_delegation_guide", tool_names)
         self.assertIn("aegis_verify_system", tool_names)
         self.assertIn("aegis_inspect_environment", tool_names)
+        self.assertIn("aegis_doctor_terminal", tool_names)
         # Backward compatibility aliases
         self.assertIn("powerpack_get_trust_levels", tool_names)
         self.assertIn("powerpack_get_surface_info", tool_names)
@@ -102,6 +103,22 @@ class TestMCPServer(unittest.TestCase):
         data = json.loads(content_text)
         self.assertIn("system", data)
         self.assertIn("detected_tools", data)
+
+    def test_call_doctor_terminal(self):
+        req = {
+            "jsonrpc": "2.0",
+            "id": 7,
+            "method": "tools/call",
+            "params": {
+                "name": "aegis_doctor_terminal",
+                "arguments": {"test_bell": False, "test_chime": False}
+            }
+        }
+        res = process_message(req)
+        content_text = res["result"]["content"][0]["text"]
+        data = json.loads(content_text)
+        self.assertIn("terminal", data)
+        self.assertIn("audio", data)
 
 if __name__ == "__main__":
     unittest.main()
