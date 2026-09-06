@@ -164,7 +164,11 @@ class DangerousConfirmationLedger:
     def __init__(self, ledger_file=None, ttl_seconds=120):
         self.ttl_seconds = ttl_seconds
         if ledger_file is None:
-            self.ledger_file = os.path.join(get_app_data_dir(), ".danger_confirmations.json")
+            env_ledger = os.environ.get("AGY_DANGER_LEDGER_FILE")
+            if env_ledger:
+                self.ledger_file = env_ledger
+            else:
+                self.ledger_file = os.path.join(get_app_data_dir(), ".danger_confirmations.json")
         else:
             self.ledger_file = ledger_file
 

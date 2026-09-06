@@ -83,9 +83,11 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
 - [ ] **[EPIC-10](https://github.com/nibcortes04/aegis/issues/2): Android Remote PWA Pairing & Tunnel Bridge (`aegis mobile`)**
   - [ ] Interactive CLI wizard (`aegis mobile --pair`) generating a local QR code and secure tunnel (Tailscale/Cloudflare/SSH) for mobile session continuity on `https://antigravity.google`.
 
-- [ ] **[EPIC-11](https://github.com/nibcortes04/aegis/issues/3): Bot Contributor Automation & Autonomous PR Review Gate**
-  - [ ] GitHub Action workflow auto-validating PRs opened by bots (`bot/*` branches).
-  - [ ] Automatic check for worktree hygiene, linting, and 100% test pass rate before merge to `dev`.
+- [x] **[EPIC-11](https://github.com/nibcortes04/aegis/issues/3): Bot Contributor Automation & Autonomous PR Review Gate**
+  - [x] Pre-flight certification validator (`scripts/bot_pr_check.py`) with 4-phase audit (hygiene, packaging dry-run, 100% tests, hook contracts).
+  - [x] GitHub Actions workflow (`.github/workflows/bot-pr-gate.yml`) auto-auditing bot PRs (`bot/**` branches or `bot` label).
+  - [x] Autonomous bot verification tagging (`bot-verified`) and structured markdown audit report commenting.
+  - [x] Unit test suite (`tests/test_bot_gate.py`) verifying all phases and recursion safety.
 
 - [ ] **[EPIC-12](https://github.com/nibcortes04/aegis/issues/4): Interactive Terminal Setup & Visual/Audio Bell Wizard**
   - [ ] CLI tool (`aegis doctor --terminal`) to inspect active terminal and auto-configure visual bell settings.
