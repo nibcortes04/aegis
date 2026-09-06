@@ -34,11 +34,19 @@ TOOLS_DEFINITIONS = [
             "properties": {
                 "level": {
                     "type": "string",
-                    "enum": ["audit", "workspace-safe", "full-developer", "subagent-worker", "all"],
+                    "enum": ["audit", "vps-production", "workspace-safe", "full-developer", "subagent-worker", "all"],
                     "description": "Nivel específico a consultar o 'all' para la matriz completa."
                 }
             },
             "required": []
+        }
+    },
+    {
+        "name": "aegis_check_vps_health",
+        "description": "Ejecuta un diagnóstico rápido y no destructivo del VPS de producción: estado de Docker y contenedores (Caddy, n8n, Chatwoot, Postgres, Redis), memoria RAM, espacio en disco, carga del sistema y descriptores inotify.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
         }
     },
     {
@@ -139,6 +147,14 @@ def handle_get_trust_levels(args):
                 "file_edits": "Requiere confirmación siempre (decision: ask)",
                 "commands": "Requiere confirmación siempre (decision: ask)",
                 "use_case": "Auditorías de código, entornos de producción sensible, revisión de dependencias."
+            },
+            "vps-production": {
+                "description": "Blindaje de infraestructura y contenedores en servidores de producción",
+                "reads": "Permitidas (telemetría segura: docker ps/logs, systemctl status, caddy validate, df, free)",
+                "file_edits": "Permitidas dentro del workspace; Archivos críticos (Caddyfile, docker-compose, .env) requieren confirmación (decision: ask)",
+                "commands": "Comandos de ciclo de vida (docker stop/restart, docker compose up/down, systemctl restart/stop) bloqueados por Doble Confirmación (2FA)",
+                "blocked": "Operaciones destructivas de contenedores, volúmenes, bases de datos o servicios sin doble confirmación",
+                "use_case": "Administración segura de VPS de producción (n8n, Chatwoot, Caddy, datastores)."
             },
             "workspace-safe": {
                 "description": "Predeterminado: Desarrollo estándar seguro",
@@ -244,6 +260,13 @@ def handle_inspect_environment(args):
         }
     return json.dumps(profile, indent=2, ensure_ascii=False)
 
+def handle_check_vps_health(args):
+    try:
+        import vps_health
+        return json.dumps(vps_health.inspect_vps_health(), indent=2, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"error": f"Error al ejecutar diagnóstico VPS: {str(e)}"}, ensure_ascii=False)
+
 def process_message(msg):
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -295,6 +318,8 @@ def process_message(msg):
             out_text = handle_verify_system(tool_args)
         elif tool_name in ("aegis_inspect_environment", "powerpack_inspect_environment"):
             out_text = handle_inspect_environment(tool_args)
+        elif tool_name == "aegis_check_vps_health":
+            out_text = handle_check_vps_health(tool_args)
         else:
             return {
                 "jsonrpc": "2.0",

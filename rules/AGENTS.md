@@ -20,3 +20,9 @@ When operating within a project using the Aegis plugin:
 
 ## 4. Session Continuity & Worktrees
 - Para tareas complejas, aislamiento de bugs o colaboración con bots autónomos, cree un Git Worktree dedicado con `./scripts/dev-worktree.sh` para preservar el contexto limpio y evitar conflictos en la rama principal.
+
+## 5. Operaciones en VPS y Entornos de Producción (`vps-production`)
+- Al operar sobre servidores VPS o infraestructura en producción (Caddy, n8n, Chatwoot, Docker Compose, Postgres, Redis):
+  - Utilice comandos de telemetría y diagnóstico seguros (`docker ps`, `docker logs`, `systemctl status`, `caddy validate`, `python3 scripts/vps_health.py` o MCP `aegis_check_vps_health`).
+  - Las acciones que alteren el ciclo de vida de contenedores o servicios (`docker restart`, `docker stop`, `docker compose down/up`, `systemctl restart/reload`) están protegidas por el protocolo de doble verificación (Paso 1: Bloqueo y explicación de impacto; Paso 2: Aprobación interactiva en terminal).
+  - Toda mutación sobre archivos de infraestructura (`Caddyfile`, `docker-compose*.yml`, `.env*`) requiere confirmación humana interactiva.

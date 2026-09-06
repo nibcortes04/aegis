@@ -91,9 +91,12 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
   - [ ] CLI tool (`aegis doctor --terminal`) to inspect active terminal and auto-configure visual bell settings.
   - [ ] Optional subtle audio chimes for human approval requests.
 
-- [ ] **[EPIC-13](https://github.com/nibcortes04/aegis/issues/5): Production VPS Agent Orchestration Guardrails**
-  - [ ] Native `vps-production` profile for remote servers managing production containers (n8n, Chatwoot, Caddy).
-  - [ ] Enforces double confirmation interactively on any docker compose or volume operations.
+- [x] **[EPIC-13](https://github.com/nibcortes04/aegis/issues/5): Production VPS Agent Orchestration Guardrails**
+  - [x] Native `vps-production` trust profile in `scripts/trust_levels.py`.
+  - [x] Enforces Two-Factor Safety Gate (deny -> ask) on container lifecycle (`docker restart/stop`, `compose down/up`) and infrastructure mutations.
+  - [x] Interactive confirmation gate for critical VPS configuration files (`Caddyfile`, `docker-compose*.yml`, `.env*`).
+  - [x] Diagnostic health inspector module (`scripts/vps_health.py`) and MCP tool `aegis_check_vps_health`.
+  - [x] Unit test coverage in `tests/test_vps_guardrails.py` (7 tests passing).
 
 - [x] **[EPIC-14](https://github.com/nibcortes04/aegis/issues/6): Official Antigravity Plugin Registry Packaging**
   - [x] Implement bundle creation script (`scripts/package_plugin.py`).

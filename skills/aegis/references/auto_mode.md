@@ -14,25 +14,32 @@ Antigravity executes a lifecycle hook on every tool invocation (`PreToolUse`). T
 
 ---
 
-## 2. Policy Matrix
+## 2. Graduated Trust Levels
 
-| Category | Tools / Commands | Decision | Rationale |
+Aegis implements 5 graduated trust profiles tailored to different operating contexts:
+
+| Level | Identifier | Focus | Key Behavior |
 | :--- | :--- | :--- | :--- |
-| **Read-Only Tools** | `view_file`, `list_dir`, `grep_search`, `find_by_name`, `read_url_content`, `read_browser_page`, `search_web` | `allow` | Zero risk of state mutation. |
-| **Workspace File Edits** | `write_to_file`, `replace_file_content` targeting paths within workspace (`/home/<user>/...`) | `allow` | Safe development edits in project workspace. |
-| **Out-of-Workspace Edits** | File writes targeting system directories (`/etc/`, `/boot/`, etc.) | `ask` | Prevents unauthorized system modifications. |
-| **Safe Shell Commands** | `git status/diff/log/branch`, `pnpm test/lint`, `pytest`, `cargo check`, `ls`, `cat`, `grep`, `pwd` | `allow` | Standard developer inspection and validation workflows. |
-| **Destructive Commands** | `rm -rf`, `git push --force`, `git reset --hard`, `docker rm/stop`, `dd`, `mkfs`, `sudo`, `drop database` | `ask` | Irreversible or service-impacting operations require human consent. |
+| **0** | `audit` | Zero-Trust | Requires human confirmation for all file edits and shell commands. |
+| **1** | `vps-production` | VPS Infrastructure | Non-destructive telemetry allowed; container/service lifecycle (`docker restart/stop`, `systemctl`) and critical configs (`Caddyfile`, `docker-compose`, `.env`) require 2FA. |
+| **2** | `workspace-safe` | Standard Dev | Edits inside workspace and inspection commands allowed; mutating installs and destructive commands blocked. |
+| **3** | `full-developer` | Agile Prototyping | Package installs (`pnpm add`, `pip install`), local servers, and git branches allowed; irreversible damage blocked. |
+| **4** | `subagent-worker` | Multi-Agent Worktrees | Autonomy scoped strictly within assigned Git Worktree directory. |
 
 ---
 
 ## 3. Configuration in settings.json
 
-Ensure `settings.json` has:
+Set your default auto mode level in `~/.gemini/antigravity-cli/settings.json`:
 ```json
 {
-  "mode": "accept-edits"
+  "mode": "accept-edits",
+  "autoModeLevel": "vps-production"
 }
+```
+Or via environment variable:
+```bash
+export AGY_AUTO_MODE_LEVEL="vps-production"
 ```
 You can cycle execution modes on the fly using `Shift+Tab`:
 `request-review` -> `accept-edits` -> `plan`.

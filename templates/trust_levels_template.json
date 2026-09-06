@@ -33,8 +33,30 @@
       "commands_allowed": false,
       "use_case": "Auditorías de seguridad, entornos de producción sensible, verificación previa de dependencias."
     },
-    "workspace-safe": {
+    "vps-production": {
       "id": 1,
+      "name": "VPS Production (Infrastructure Guardrails)",
+      "badge": "▶▶ auto (vps)",
+      "description": "Blindaje de servidores en producción. Telemetría y diagnóstico seguros permitidos; ciclo de vida de contenedores y servicios (docker restart/stop, compose down/up) y archivos críticos (Caddyfile, docker-compose, .env) requieren Doble Confirmación (2FA).",
+      "read_tools": "all_safe_reads",
+      "write_tools_allowed": true,
+      "write_scope": "in_workspace_only",
+      "critical_config_files": ["Caddyfile", "docker-compose*.yml", ".env*"],
+      "commands_allowed": [
+        "docker ps", "docker logs", "docker inspect", "docker top", "docker port", "docker stats --no-stream",
+        "docker compose ps", "docker compose logs", "docker-compose ps", "docker-compose logs",
+        "systemctl status", "systemctl is-active", "journalctl",
+        "caddy validate", "caddy version",
+        "df -h", "free -m", "uptime", "top -b -n 1", "htop", "ps aux", "curl -I", "ping -c",
+        "git status", "git diff", "git log", "git branch",
+        "cat", "head", "tail", "grep", "find", "pwd", "which"
+      ],
+      "lifecycle_commands": "requires_double_confirmation",
+      "dangerous_commands": "requires_double_confirmation",
+      "use_case": "Gestión segura de servidores VPS en vivo con n8n, Chatwoot, Caddy, Docker y datastores."
+    },
+    "workspace-safe": {
+      "id": 2,
       "name": "Workspace Safe (Default)",
       "badge": "▶▶ auto (safe)",
       "description": "Predeterminado de producción segura: lectura libre, edición en el workspace/home del usuario y comandos seguros de inspección y test.",
@@ -55,7 +77,7 @@
       "use_case": "Desarrollo diario habitual en proyectos con balance perfecto entre velocidad y seguridad."
     },
     "full-developer": {
-      "id": 2,
+      "id": 3,
       "name": "Full Developer",
       "badge": "▶▶ auto (dev)",
       "description": "Alta autonomía para iteración ágil: instalación de dependencias, servidores de desarrollo local, Docker Compose y gestión de ramas locales.",
@@ -74,7 +96,7 @@
       "use_case": "Desarrollo acelerado de funcionalidades completas, refactorizaciones y creación de proyectos desde cero."
     },
     "subagent-worker": {
-      "id": 3,
+      "id": 4,
       "name": "Subagent Worker",
       "badge": "▶▶ auto (worker)",
       "description": "Autonomía acotada para subagentes concurrentes que trabajan dentro de un Git Worktree aislado.",
