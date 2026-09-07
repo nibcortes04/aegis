@@ -188,70 +188,30 @@ def format_statusline(payload):
     # Línea 1
     line1 = f"{CYAN}{BOLD}[{model_display}]{RESET} 📁 {dir_name}{branch_str}{lines_str}{effort_str}{session_str}"
 
-    # 4. Ventana de Contexto (Barra gráfica)
-    ctx = payload.get("context_window") or {}
-    pct_float = ctx.get("used_percentage", 0.0)
-    pct_int = int(round(pct_float))
-    exceeds = payload.get("exceeds_200k_tokens", False)
-
-    if pct_int >= 90 or exceeds:
-        bar_color = RED
-    elif pct_int >= 70:
-        bar_color = YELLOW
-    else:
-        bar_color = GREEN
-
-    filled = max(0, min(10, pct_int // 10))
-    empty = 10 - filled
-    bar = "█" * filled + "░" * empty
-    bar_str = f"{bar_color}{bar}{RESET} {pct_int}%"
-
-    # 5. Costo y Tiempo
-    cost_info = payload.get("cost") or {}
-    total_cost = cost_info.get("total_cost_usd", 0.0)
-    cost_str = f"{YELLOW}💰 ${total_cost:.4f}{RESET}"
-
-    duration_ms = cost_info.get("total_duration_ms", 0)
-    dur_secs = duration_ms // 1000
-    mins = dur_secs // 60
-    secs = dur_secs % 60
-    time_str = f"⏱ {mins}m{secs}s"
-
-    # 6. Cuotas (5h y semanal 7d)
-    quota = payload.get("quota") or {}
-    q5 = quota.get("gemini-5h") or quota.get("3p-5h") or {}
-    q7 = quota.get("gemini-weekly") or quota.get("3p-weekly") or {}
-
-    rem_5h = q5.get("remaining_fraction")
-    rem_7d = q7.get("remaining_fraction")
-
-    rate_str = ""
-    if rem_5h is not None:
-        used_5h = int(round((1.0 - float(rem_5h)) * 100.0))
-        c5 = RED if used_5h >= 80 else (YELLOW if used_5h >= 50 else GREEN)
-        
-        # Hora de reset en local time
-        reset_str = ""
-        reset_time = q5.get("reset_time")
-        if reset_time:
-            try:
-                dt = datetime.datetime.fromisoformat(reset_time.replace("Z", "+00:00")).astimezone()
-                reset_str = f"{DIM}(🕦{dt.strftime('%H:%M')}){RESET}"
-            except Exception:
-                pass
-        rate_str = f"{c5}5h:{used_5h}%{RESET}{reset_str}"
-
-    if rem_7d is not None:
-        used_7d = int(round((1.0 - float(rem_7d)) * 100.0))
-        c7 = RED if used_7d >= 80 else (YELLOW if used_7d >= 50 else GREEN)
-        if rate_str:
-            rate_str += " "
-        rate_str += f"{c7}7d:{used_7d}%{RESET}"
-
-    quota_segment = f" │ {rate_str}" if rate_str else ""
-
-    # Línea 2
-    line2 = f"{bar_str} │ {cost_str} │ {time_str}{quota_segment}"
+    # 4. Telemetría Dinámica y Cuotas en Tiempo Real (EPIC-09)
+    try:
+        from quota_metrics import resolve_telemetry, format_context_bar, format_cost, format_duration, format_quotas
+        telemetry = resolve_telemetry(payload)
+        bar_str = format_context_bar(
+            telemetry["used_percentage"],
+            tokens=telemetry["tokens"],
+            max_tokens=telemetry["max_tokens"],
+            exceeds=telemetry["exceeds_200k_tokens"]
+        )
+        cost_str = format_cost(telemetry["total_cost_usd"])
+        time_str = format_duration(telemetry["duration_ms"])
+        rate_str = format_quotas(telemetry["quota_5h"], telemetry["quota_7d"])
+        quota_segment = f" │ {rate_str}" if rate_str else ""
+        line2 = f"{bar_str} │ {cost_str} │ {time_str}{quota_segment}"
+    except Exception:
+        ctx = payload.get("context_window") or {}
+        pct_int = int(round(ctx.get("used_percentage", 0.0)))
+        bar = "█" * max(0, min(10, pct_int // 10)) + "░" * (10 - max(0, min(10, pct_int // 10)))
+        bar_str = f"{GREEN}{bar}{RESET} {pct_int}%"
+        cost_info = payload.get("cost") or {}
+        cost_str = f"{YELLOW}💰 ${cost_info.get('total_cost_usd', 0.0):.4f}{RESET}"
+        time_str = "⏱ 0m0s"
+        line2 = f"{bar_str} │ {cost_str} │ {time_str}"
 
     # 7. Línea 3: Modo de Ejecución y Nivel de Confianza (Auto Mode / Shift+Tab)
     cycle_mode = payload.get("cycle_mode", "accept-edits")

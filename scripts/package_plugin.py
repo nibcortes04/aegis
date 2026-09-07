@@ -37,6 +37,8 @@ ESSENTIAL_RUNTIME_FILES = [
     "scripts/env_inspector.py",
     "scripts/dev-worktree.sh",
     "scripts/agy-hook-dispatcher.sh",
+    "scripts/mobile_wizard.py",
+    "scripts/quota_metrics.py",
 ]
 
 EXCLUDE_DIR_PATTERNS = {

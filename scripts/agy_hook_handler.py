@@ -335,6 +335,15 @@ def main():
         except Exception:
             payload = {}
 
+    # Sincronización de telemetría si el payload de AGY runtime contiene datos de uso o cuota (EPIC-09)
+    conv_id = payload.get("conversationId") or payload.get("conversation_id") or ""
+    if conv_id and any(k in payload for k in ("context_window", "contextWindow", "cost", "quota", "usage", "tokens")):
+        try:
+            from quota_metrics import record_live_telemetry
+            record_live_telemetry(conv_id, payload)
+        except Exception:
+            pass
+
     event_name = sys.argv[1] if len(sys.argv) > 1 else (
         payload.get("hookEventName") or 
         payload.get("hook_event_name") or 

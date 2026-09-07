@@ -76,9 +76,13 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
 
 ### 🔵 Future Roadmap Epics (Backlog)
 
-- [ ] **[EPIC-09](https://github.com/nibcortes04/aegis/issues/1): Dynamic Real Quota & Live Metrics Integration**
-  - [ ] Connect statusline line 2 with real-time session tokens and live API usage telemetry when exposed by AGY.
-  - [ ] Fallback gracefully to local SQLite estimates when offline.
+- [x] **[EPIC-09](https://github.com/nibcortes04/aegis/issues/1): Dynamic Real Quota & Live Metrics Integration**
+  - [x] Multi-tier live telemetry engine (`scripts/quota_metrics.py`) resolving runtime stdin payload, atomic disk cache, and sub-millisecond SQLite fallback.
+  - [x] Technical specification in `docs/specs/epic-09-dynamic-real-quota.md`.
+  - [x] Visual threshold indicators in Line 2 for context window (Green / Yellow ⚠️ / Red 🚨), cumulative spend (Green / Yellow / Magenta 💸), and rolling quotas (`5h:XX% (🕦HH:MM)` and `7d:YY%`).
+  - [x] CLI entrypoints `aegis metrics` and `aegis quota` (`--json`, `--record`, `--conv-id`) in `bin/aegis`.
+  - [x] MCP tools `aegis_get_live_metrics` and legacy alias `powerpack_get_live_metrics` in `mcp/mcp_server.py`.
+  - [x] Unit test suite in `tests/test_quota_metrics.py` (8 tests passing) with 100% coverage of live, cache, and SQLite paths.
 
 - [x] **[EPIC-10](https://github.com/nibcortes04/aegis/issues/2): Android Remote PWA Pairing & Official Guide (`aegis mobile`)**
   - [x] Interactive CLI wizard (`aegis mobile`, `aegis mobile --pair`, `aegis mobile --status`, `aegis mobile --guide`) with live daemon inspection and ASCII QR code.

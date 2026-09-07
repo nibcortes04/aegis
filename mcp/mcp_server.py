@@ -117,6 +117,19 @@ TOOLS_DEFINITIONS = [
             "properties": {}
         }
     },
+    {
+        "name": "aegis_get_live_metrics",
+        "description": "Obtiene la telemetría en tiempo real de la sesión (ventana de contexto, tokens consumidos, gasto estimado en USD, duración y cuotas rodantes 5h/7d) con fallback a SQLite.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "conversation_id": {
+                    "type": "string",
+                    "description": "ID de la conversación a inspeccionar (opcional, detecta la activa por defecto)."
+                }
+            }
+        }
+    },
     # Backward-compatibility aliases (powerpack_*)
     {
         "name": "powerpack_get_trust_levels",
@@ -157,6 +170,16 @@ TOOLS_DEFINITIONS = [
         "inputSchema": {
             "type": "object",
             "properties": { "apply": { "type": "boolean" } }
+        }
+    },
+    {
+        "name": "powerpack_get_live_metrics",
+        "description": "(Alias legacy) Telemetría en tiempo real de la sesión y cuotas.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "conversation_id": { "type": "string" }
+            }
         }
     }
 ]
@@ -314,6 +337,21 @@ def handle_get_mobile_pairing_guide(args):
     info = mobile_wizard.get_pairing_info()
     return json.dumps(info, indent=2, ensure_ascii=False)
 
+def handle_get_live_metrics(args):
+    try:
+        import quota_metrics
+    except ImportError:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
+        import quota_metrics
+
+    conv_id = args.get("conversation_id", "") or quota_metrics.get_active_conversation_id()
+    payload = {
+        "conversation_id": conv_id,
+        "model": {"id": "gemini-3.8-flash", "display_name": "Gemini 3.8 Flash"}
+    }
+    summary = quota_metrics.get_metrics_summary(payload)
+    return json.dumps(summary, indent=2, ensure_ascii=False)
+
 def process_message(msg):
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -371,6 +409,8 @@ def process_message(msg):
             out_text = handle_doctor_terminal(tool_args)
         elif tool_name in ("aegis_get_mobile_pairing_guide", "powerpack_get_mobile_pairing_guide"):
             out_text = handle_get_mobile_pairing_guide(tool_args)
+        elif tool_name in ("aegis_get_live_metrics", "powerpack_get_live_metrics"):
+            out_text = handle_get_live_metrics(tool_args)
         else:
             return {
                 "jsonrpc": "2.0",

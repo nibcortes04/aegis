@@ -48,6 +48,10 @@ def print_help():
     print(f"    {CYAN}--status{RESET}       Verifica si el daemon 'agy remote-control' está activo.")
     print(f"    {CYAN}--guide{RESET}        Muestra la guía completa sin código QR grande.")
     print(f"    {CYAN}--json{RESET}         Salida en formato JSON estructurado.")
+    print(f"  {GREEN}metrics{RESET}          Telemetría en tiempo real, tokens, costo y cuotas (EPIC-09).")
+    print(f"    {CYAN}--json{RESET}         Salida en formato JSON estructurado.")
+    print(f"    {CYAN}--conv-id <id>{RESET} Especifica una sesión de conversación específica.")
+    print(f"  {GREEN}quota{RESET}            Alias directo para 'aegis metrics'.")
     print(f"  {GREEN}vps-health{RESET}       Diagnóstico del VPS de producción (Docker, Caddy, n8n, Chatwoot).")
     print(f"  {GREEN}check-pr{RESET}         Quality Gate de auto-certificación para PRs y bots agénticos.")
     print(f"  {GREEN}test-notify{RESET}      Prueba notificaciones de escritorio y rate-limiting persistente.")
@@ -105,6 +109,9 @@ def main():
 
     elif command in ["mobile", "pwa", "pair"]:
         run_script("mobile_wizard.py", sub_args)
+
+    elif command in ["metrics", "quota", "telemetry"]:
+        run_script("quota_metrics.py", sub_args)
 
     elif command in ["vps-health", "vps"]:
         run_script("vps_health.py", sub_args)
