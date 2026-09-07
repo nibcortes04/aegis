@@ -80,8 +80,12 @@ This dashboard tracks delivered capabilities, active epics, refactoring targets,
   - [ ] Connect statusline line 2 with real-time session tokens and live API usage telemetry when exposed by AGY.
   - [ ] Fallback gracefully to local SQLite estimates when offline.
 
-- [ ] **[EPIC-10](https://github.com/nibcortes04/aegis/issues/2): Android Remote PWA Pairing & Tunnel Bridge (`aegis mobile`)**
-  - [ ] Interactive CLI wizard (`aegis mobile --pair`) generating a local QR code and secure tunnel (Tailscale/Cloudflare/SSH) for mobile session continuity on `https://antigravity.google`.
+- [x] **[EPIC-10](https://github.com/nibcortes04/aegis/issues/2): Android Remote PWA Pairing & Official Guide (`aegis mobile`)**
+  - [x] Interactive CLI wizard (`aegis mobile`, `aegis mobile --pair`, `aegis mobile --status`, `aegis mobile --guide`) with live daemon inspection and ASCII QR code.
+  - [x] Complete technical specification in `docs/specs/epic-10-android-remote-pwa.md`.
+  - [x] Comprehensive Android PWA user guide in `docs/MOBILE.md` for official Google Antigravity PWA (`https://antigravity.google`).
+  - [x] MCP tool `aegis_get_mobile_pairing_guide` in `mcp/mcp_server.py`.
+  - [x] Unit test suite in `tests/test_mobile_wizard.py` (5 tests passing) and MCP integration in `tests/test_mcp_server.py`.
 
 - [x] **[EPIC-11](https://github.com/nibcortes04/aegis/issues/3): Bot Contributor Automation & Autonomous PR Review Gate**
   - [x] Pre-flight certification validator (`scripts/bot_pr_check.py`) with 4-phase audit (hygiene, packaging dry-run, 100% tests, hook contracts).
