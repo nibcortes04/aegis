@@ -4,6 +4,7 @@ import os
 import time
 import json
 import tempfile
+import shutil
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../scripts")))
@@ -20,12 +21,15 @@ import aegis_test_notify
 class TestNotifications(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
-        self.state_file = os.path.join(tempfile.gettempdir(), ".aegis_notify_state.json")
-        self.stop_file = os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
+        self.state_file = os.path.join(self.temp_dir, ".aegis_notify_state.json")
+        self.stop_file = os.path.join(self.temp_dir, ".aegis_stop_notify_state.json")
+        os.environ["AEGIS_NOTIFY_STATE_FILE"] = self.state_file
+        os.environ["AEGIS_STOP_STATE_FILE"] = self.stop_file
 
     def tearDown(self):
-        # Clean up temporary test entries
-        pass
+        os.environ.pop("AEGIS_NOTIFY_STATE_FILE", None)
+        os.environ.pop("AEGIS_STOP_STATE_FILE", None)
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_multi_session_debounce_isolation(self):
         """Verifica que dos sesiones concurrentes no se bloqueen mutuamente."""

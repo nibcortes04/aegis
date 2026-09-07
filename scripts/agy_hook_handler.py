@@ -279,7 +279,7 @@ def handle_stop(payload, raw_input):
         return {"decision": ""}
 
     # Debounce persistente en disco entre procesos aislado por sesión (mínimo 3.0s entre paradas para la misma sesión)
-    stop_state_file = os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
+    stop_state_file = os.environ.get("AEGIS_STOP_STATE_FILE") or os.path.join(tempfile.gettempdir(), ".aegis_stop_notify_state.json")
     now = time.time()
     session_key = conv_id or "default"
 

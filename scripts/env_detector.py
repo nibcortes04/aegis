@@ -249,7 +249,7 @@ def check_persistent_debounce(title, message, session_id="", min_interval=2.5):
     if is_silent_mode():
         return False
 
-    state_file = os.path.join(tempfile.gettempdir(), ".aegis_notify_state.json")
+    state_file = os.environ.get("AEGIS_NOTIFY_STATE_FILE") or os.path.join(tempfile.gettempdir(), ".aegis_notify_state.json")
     now = time.time()
     session_key = session_id or "default"
 

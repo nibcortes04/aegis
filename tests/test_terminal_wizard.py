@@ -100,6 +100,19 @@ class TestTerminalWizard(unittest.TestCase):
         self.assertTrue(res["success"])
         self.assertIn(res["channel"], ["/dev/tty", "stderr"])
 
+    def test_test_terminal_bell_headless_fallback(self):
+        """Verifica que si /dev/tty falla con OSError, caiga limpiamente a stderr."""
+        orig_open = open
+        def mock_open(path, *args, **kwargs):
+            if path == "/dev/tty":
+                raise OSError(6, "No such device or address")
+            return orig_open(path, *args, **kwargs)
+
+        with patch("builtins.open", side_effect=mock_open):
+            res = terminal_wizard.test_terminal_bell()
+            self.assertTrue(res["success"])
+            self.assertEqual(res["channel"], "stderr")
+
     def test_run_terminal_doctor_quiet_mode(self):
         """Verifica que run_terminal_doctor(quiet=True) no imprima nada y retorne el reporte."""
         report = terminal_wizard.run_terminal_doctor(quiet=True)

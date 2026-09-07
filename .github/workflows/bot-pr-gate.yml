@@ -56,17 +56,19 @@ jobs:
             }
 
             // Post structured audit report
-            const commentBody = `### 🤖 Aegis Autonomous Quality Gate Report
-            
-**Status**: 🟢 **PASSED — CERTIFIED FOR MERGE**  
-**Branch**: \`${branch}\`  
-**Verification Checklist**:
-- [x] **Git Worktree Hygiene**: No stray cache, credentials, or untracked debris.
-- [x] **Manifest Conformance**: \`plugin.json\` schema & packaging integrity verified (\`package_plugin.py --dry-run\`).
-- [x] **Unit Test Suite**: 100% pass rate achieved across all test modules.
-- [x] **Lifecycle Hook Contracts**: Sub-10ms hooks (PreToolUse, Stop, 2FA Gate) verified.
-
-*Autonomous gate approval granted. Ready for merge into \`dev\`.*`;
+            const commentBody = [
+              '### 🤖 Aegis Autonomous Quality Gate Report',
+              '',
+              '**Status**: 🟢 **PASSED — CERTIFIED FOR MERGE**',
+              `**Branch**: \`${branch}\``,
+              '**Verification Checklist**:',
+              '- [x] **Git Worktree Hygiene**: No stray cache, credentials, or untracked debris.',
+              '- [x] **Manifest Conformance**: `plugin.json` schema & packaging integrity verified (`package_plugin.py --dry-run`).',
+              '- [x] **Unit Test Suite**: 100% pass rate achieved across all test modules.',
+              '- [x] **Lifecycle Hook Contracts**: Sub-10ms hooks (PreToolUse, Stop, 2FA Gate) verified.',
+              '',
+              '*Autonomous gate approval granted. Ready for merge into `dev`.*'
+            ].join('\n');
 
             try {
               await github.rest.issues.createComment({

@@ -523,16 +523,19 @@ def play_subtle_chime(sound_name="complete", timeout=3.0):
 
 def test_terminal_bell():
     """Emite la campana de terminal ASCII BEL (\a) directamente a /dev/tty o stderr."""
-    try:
-        if os.path.exists("/dev/tty"):
+    if os.path.exists("/dev/tty"):
+        try:
             with open("/dev/tty", "w") as tty:
                 tty.write("\a")
                 tty.flush()
             return {"success": True, "channel": "/dev/tty"}
-        else:
-            sys.stderr.write("\a")
-            sys.stderr.flush()
-            return {"success": True, "channel": "stderr"}
+        except Exception:
+            pass
+
+    try:
+        sys.stderr.write("\a")
+        sys.stderr.flush()
+        return {"success": True, "channel": "stderr"}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
