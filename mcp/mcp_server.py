@@ -109,6 +109,14 @@ TOOLS_DEFINITIONS = [
             }
         }
     },
+    {
+        "name": "aegis_get_mobile_pairing_guide",
+        "description": "Obtiene la guía oficial paso a paso para instalar y emparejar la PWA oficial de Google Antigravity (https://antigravity.google) en dispositivos Android.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
     # Backward-compatibility aliases (powerpack_*)
     {
         "name": "powerpack_get_trust_levels",
@@ -296,6 +304,16 @@ def handle_doctor_terminal(args):
     report = terminal_wizard.run_terminal_doctor(test_bell=test_bell, test_chime=test_chime, json_output=False, quiet=True)
     return json.dumps(report, indent=2, ensure_ascii=False)
 
+def handle_get_mobile_pairing_guide(args):
+    try:
+        import mobile_wizard
+    except ImportError:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
+        import mobile_wizard
+
+    info = mobile_wizard.get_pairing_info()
+    return json.dumps(info, indent=2, ensure_ascii=False)
+
 def process_message(msg):
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -351,6 +369,8 @@ def process_message(msg):
             out_text = handle_check_vps_health(tool_args)
         elif tool_name in ("aegis_doctor_terminal", "powerpack_doctor_terminal"):
             out_text = handle_doctor_terminal(tool_args)
+        elif tool_name in ("aegis_get_mobile_pairing_guide", "powerpack_get_mobile_pairing_guide"):
+            out_text = handle_get_mobile_pairing_guide(tool_args)
         else:
             return {
                 "jsonrpc": "2.0",
