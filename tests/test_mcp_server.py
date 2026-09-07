@@ -37,12 +37,14 @@ class TestMCPServer(unittest.TestCase):
         self.assertIn("aegis_inspect_environment", tool_names)
         self.assertIn("aegis_doctor_terminal", tool_names)
         self.assertIn("aegis_get_mobile_pairing_guide", tool_names)
+        self.assertIn("aegis_get_live_metrics", tool_names)
         # Backward compatibility aliases
         self.assertIn("powerpack_get_trust_levels", tool_names)
         self.assertIn("powerpack_get_surface_info", tool_names)
         self.assertIn("powerpack_get_delegation_guide", tool_names)
         self.assertIn("powerpack_verify_system", tool_names)
         self.assertIn("powerpack_inspect_environment", tool_names)
+        self.assertIn("powerpack_get_live_metrics", tool_names)
 
     def test_call_get_trust_levels_native(self):
         req = {
@@ -138,6 +140,25 @@ class TestMCPServer(unittest.TestCase):
         self.assertIn("pwa_url", data)
         self.assertEqual(data["pwa_url"], "https://antigravity.google")
         self.assertIn("steps", data)
+
+    def test_call_get_live_metrics(self):
+        req = {
+            "jsonrpc": "2.0",
+            "id": 9,
+            "method": "tools/call",
+            "params": {
+                "name": "aegis_get_live_metrics",
+                "arguments": {"conversation_id": "test-live-metrics-123"}
+            }
+        }
+        res = process_message(req)
+        content_text = res["result"]["content"][0]["text"]
+        data = json.loads(content_text)
+        self.assertIn("source", data)
+        self.assertIn("context_window", data)
+        self.assertIn("cost", data)
+        self.assertIn("quotas", data)
+        self.assertEqual(data["conversation_id"], "test-live-metrics-123")
 
 if __name__ == "__main__":
     unittest.main()
