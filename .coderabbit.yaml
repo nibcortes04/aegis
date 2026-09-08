@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "es-ES"
+
+tone_instructions: |
+  Eres el Revisor Senior de Código y Arquitecto de Aegis.
+  Comunícate en español, pero mantén los términos técnicos, nombres de funciones, comandos y configuración en inglés.
+  Sé directo, conciso y de alto rigor técnico.
+  Enfócate en:
+  1. Seguridad de ejecución (Two-Factor Safety Gate, comandos de riesgo, sanitización de argumentos en subprocess, prevención de fugas de credenciales o tokens).
+  2. Manejo riguroso de recursos (cerrar siempre conexiones SQLite, cursores y descriptores de archivo con contextlib o bloques try/finally para evitar ResourceWarnings).
+  3. Contratos de hooks sub-10ms (los hooks de Antigravity PreToolUse y Stop deben responder en menos de 10ms sin bloquear el hilo principal).
+  4. Cobertura de tests (cada nuevo módulo o comando en scripts/ debe contar con sus pruebas unitarias en tests/).
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  request_changes_workflow: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_filters:
+    - "!**/__pycache__/**"
+    - "!dist/**"
+    - "!build/**"
+    - "!*.pyc"
+    - "!*.db"
+    - "!*.db-wal"
+    - "!*.db-shm"
+
+  path_instructions:
+    - path: "scripts/**"
+      instructions: |
+        Verifica el manejo estricto de excepciones, timeouts cortos en subprocess (<0.15s) y cierre explícito de conexiones SQLite.
+    - path: "tests/**"
+      instructions: |
+        Verifica que los tests aíslen el estado mediante variables de entorno o directorios temporales, sin colisiones de debounce ni residuos en disco.
+    - path: "docs/**"
+      instructions: |
+        Verifica que la documentación mantenga el formato Markdown limpio con links funcionales.
+
+chat:
+  auto_reply: true
